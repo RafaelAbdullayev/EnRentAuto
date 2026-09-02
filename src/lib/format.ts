@@ -1,5 +1,5 @@
 import { INTL_LOCALE, type Locale } from '@/i18n/routing';
-import { CURRENCY } from '@/lib/currency';
+import { CURRENCY, MINOR_UNITS } from '@/lib/currency';
 
 /**
  * Форматирование денег, дат и чисел с учётом языка интерфейса.
@@ -24,6 +24,29 @@ export function formatMoney(value: number, locale?: string): string {
     return new Intl.NumberFormat(intlTag(locale), options).format(value);
   } catch {
     // Старые среды без поддержки narrowSymbol — откатываемся на код валюты.
+    return new Intl.NumberFormat(intlTag(locale), {
+      ...options,
+      currencyDisplay: 'symbol',
+    }).format(value);
+  }
+}
+
+/**
+ * Дробная сумма из минорных единиц: 30 → «0,30 ₼».
+ * Используется для ставки за километр сверх лимита.
+ */
+export function formatMoneyMinor(minorValue: number, locale?: string): string {
+  const options: Intl.NumberFormatOptions = {
+    style: 'currency',
+    currency: CURRENCY,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+    currencyDisplay: 'narrowSymbol',
+  };
+  const value = minorValue / MINOR_UNITS;
+  try {
+    return new Intl.NumberFormat(intlTag(locale), options).format(value);
+  } catch {
     return new Intl.NumberFormat(intlTag(locale), {
       ...options,
       currencyDisplay: 'symbol',

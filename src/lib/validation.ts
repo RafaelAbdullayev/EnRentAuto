@@ -24,7 +24,14 @@ export const carInputSchema = z.object({
   discount: z.coerce.number().int().min(0).max(90).default(0),
   deposit: z.coerce.number().int().min(0).max(10_000_000).default(0),
   mileageLimit: z.coerce.number().int().min(0).max(100_000).default(0),
-  overMileageFee: z.coerce.number().int().min(0).max(100_000).default(0),
+  // Ставка за км сверх лимита вводится в манатах с копейками (0.30)
+  // и сразу переводится в гяпики (30) — в БД лежит целое число.
+  overMileageFee: z.coerce
+    .number()
+    .min(0, 'Ставка не может быть отрицательной')
+    .max(10_000, 'Слишком большая ставка')
+    .default(0)
+    .transform((v) => Math.round(v * 100)),
   description: z.string().trim().max(4000).default(''),
   features: z.array(z.string().trim().max(60)).max(30).default([]),
   status: z.enum(['AVAILABLE', 'MAINTENANCE', 'RETIRED']).default('AVAILABLE'),

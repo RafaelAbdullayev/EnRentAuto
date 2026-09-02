@@ -70,13 +70,15 @@ export async function POST(request: NextRequest) {
         { status: 422 },
       );
     }
-    const { images, plateNumber, color, ...data } = parsed.data;
+    const { images, plateNumber, color, overMileageFee, ...data } = parsed.data;
 
     const car = await prisma.car.create({
       data: {
         ...data,
         color: color || null,
         plateNumber: plateNumber || null,
+        // zod уже перевёл ставку в гяпики
+        overMileageFeeMinor: overMileageFee,
         images: {
           create: images.map((url, position) => ({ url, position })),
         },

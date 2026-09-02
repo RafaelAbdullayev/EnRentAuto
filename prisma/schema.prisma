@@ -94,8 +94,10 @@ model Car {
   deposit      Int          @default(0)
   /// Включённый лимит пробега в сутки, км (0 = без ограничений)
   mileageLimit Int          @default(0)
-  /// Стоимость километра сверх лимита, ₼
-  overMileageFee Int        @default(0)
+  /// Стоимость километра сверх лимита — в МИНОРНЫХ единицах (гяпиках).
+  /// 30 = 0,30 ₼/км. Дробная ставка хранится целым числом, чтобы не
+  /// заводить float в денежных расчётах.
+  overMileageFeeMinor Int   @default(0)
   description  String       @default("")
   /// Опции: «Климат-контроль», «Камера 360», … (массив строк PostgreSQL)
   features     String[]     @default([])

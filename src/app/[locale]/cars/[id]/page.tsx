@@ -8,7 +8,7 @@ import { SiteFooter } from '@/components/SiteFooter';
 import { CarGallery } from '@/components/CarGallery';
 import { BookingForm } from '@/components/BookingForm';
 import { BLOCKING_STATUSES } from '@/lib/constants';
-import { formatMoney, formatDate, toDateTimeLocal } from '@/lib/format';
+import { formatMoney, formatMoneyMinor, formatDate, toDateTimeLocal } from '@/lib/format';
 import { effectivePricePerDay } from '@/lib/pricing';
 
 export const dynamic = 'force-dynamic';
@@ -72,6 +72,17 @@ export default async function CarPage({
     ...(car.mileageLimit
       ? [{ label: t('mileageLimit'), value: t('mileageValue', { km: car.mileageLimit }) }]
       : [{ label: t('mileage'), value: t('mileageUnlimited') }]),
+    // Ставку за перепробег показываем только когда лимит вообще есть
+    ...(car.mileageLimit && car.overMileageFeeMinor
+      ? [
+          {
+            label: t('overMileage'),
+            value: t('overMileageValue', {
+              fee: formatMoneyMinor(car.overMileageFeeMinor, locale),
+            }),
+          },
+        ]
+      : []),
     ...(car.deposit ? [{ label: t('deposit'), value: formatMoney(car.deposit, locale) }] : []),
   ];
 

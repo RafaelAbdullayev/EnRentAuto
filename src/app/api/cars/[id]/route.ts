@@ -49,7 +49,7 @@ export async function PATCH(request: NextRequest, { params }: Ctx) {
         { status: 422 },
       );
     }
-    const { images, plateNumber, color, ...data } = parsed.data;
+    const { images, plateNumber, color, overMileageFee, ...data } = parsed.data;
 
     const car = await prisma.$transaction(async (tx) => {
       await tx.carImage.deleteMany({ where: { carId: id } });
@@ -59,6 +59,7 @@ export async function PATCH(request: NextRequest, { params }: Ctx) {
           ...data,
           color: color || null,
           plateNumber: plateNumber || null,
+          overMileageFeeMinor: overMileageFee,
           images: { create: images.map((url, position) => ({ url, position })) },
         },
         select: { id: true, brand: true, model: true },

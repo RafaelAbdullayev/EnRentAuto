@@ -80,7 +80,9 @@
     "deposit": "التأمين المسترد",
     "featuresTitle": "التجهيزات",
     "busyTitle": "التواريخ المحجوزة القادمة",
-    "notFound": "لم يتم العثور على السيارة"
+    "notFound": "لم يتم العثور على السيارة",
+    "overMileage": "تجاوز الحد",
+    "overMileageValue": "{fee} / كم"
   },
   "booking": {
     "title": "إتمام الحجز",

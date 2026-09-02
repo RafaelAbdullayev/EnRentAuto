@@ -80,7 +80,9 @@
     "deposit": "Deposit",
     "featuresTitle": "Equipment",
     "busyTitle": "Upcoming booked dates",
-    "notFound": "Car not found"
+    "notFound": "Car not found",
+    "overMileage": "Over the limit",
+    "overMileageValue": "{fee} / km"
   },
   "booking": {
     "title": "Complete your rental",

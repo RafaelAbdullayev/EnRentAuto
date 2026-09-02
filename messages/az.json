@@ -80,7 +80,9 @@
     "deposit": "Depozit",
     "featuresTitle": "Komplektasiya",
     "busyTitle": "Yaxın məşğul tarixlər",
-    "notFound": "Avtomobil tapılmadı"
+    "notFound": "Avtomobil tapılmadı",
+    "overMileage": "Limitdən artıq",
+    "overMileageValue": "{fee} / km"
   },
   "booking": {
     "title": "İcarənin rəsmiləşdirilməsi",

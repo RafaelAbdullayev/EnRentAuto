@@ -26,7 +26,7 @@ const DEMO_CARS: {
   discount: number;
   deposit: number;
   mileageLimit: number;
-  overMileageFee: number;
+  overMileageFeeMinor: number;
   description: string;
   features: string[];
 }[] = [
@@ -44,7 +44,7 @@ const DEMO_CARS: {
     discount: 10,
     deposit: 1500,
     mileageLimit: 300,
-    overMileageFee: 1,
+    overMileageFeeMinor: 30,
     description:
       'Представительский седан бизнес-класса. Пневмоподвеска AIRMATIC, массаж передних сидений, аудиосистема Burmester.',
     features: ['Климат-контроль 4 зоны', 'Массаж сидений', 'Камера 360°', 'Apple CarPlay', 'Панорамная крыша'],
@@ -63,7 +63,7 @@ const DEMO_CARS: {
     discount: 0,
     deposit: 2000,
     mileageLimit: 300,
-    overMileageFee: 2,
+    overMileageFeeMinor: 50,
     description:
       'Полноразмерный кроссовер с рядной «шестёркой» 3.0 и полным приводом xDrive. Адаптивная подвеска, Laserlight.',
     features: ['Полный привод xDrive', 'Адаптивная подвеска', 'Проекция на лобовое', 'Harman/Kardon'],
@@ -82,7 +82,7 @@ const DEMO_CARS: {
     discount: 15,
     deposit: 1500,
     mileageLimit: 250,
-    overMileageFee: 1,
+    overMileageFeeMinor: 30,
     description: 'Технологичный седан с виртуальной приборной панелью и матричной оптикой Matrix LED.',
     features: ['Virtual Cockpit', 'Matrix LED', 'Bang & Olufsen', 'Подогрев всех сидений'],
   },
@@ -100,7 +100,7 @@ const DEMO_CARS: {
     discount: 0,
     deposit: 600,
     mileageLimit: 400,
-    overMileageFee: 1,
+    overMileageFeeMinor: 15,
     description: 'Надёжный бизнес-седан для города и трассы. Экономичный расход, просторный салон.',
     features: ['Климат-контроль', 'Камера заднего вида', 'Круиз-контроль', 'Android Auto'],
   },
@@ -118,7 +118,7 @@ const DEMO_CARS: {
     discount: 5,
     deposit: 1200,
     mileageLimit: 350,
-    overMileageFee: 1,
+    overMileageFeeMinor: 25,
     description: 'Минивэн для больших компаний и трансферов. Семь полноценных мест, трансформируемый салон.',
     features: ['7 мест', 'Двухзонный климат', 'Раздельные кресла', 'Парктроники'],
   },
@@ -136,7 +136,7 @@ const DEMO_CARS: {
     discount: 20,
     deposit: 1800,
     mileageLimit: 0,
-    overMileageFee: 0,
+    overMileageFeeMinor: 0,
     description: 'Электромобиль с запасом хода 600 км. Автопилот, доступ к сети зарядных станций.',
     features: ['Автопилот', 'Запас хода 600 км', 'Стеклянная крыша', 'Премиум-аудио'],
   },

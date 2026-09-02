@@ -80,7 +80,9 @@
     "deposit": "押金",
     "featuresTitle": "配置",
     "busyTitle": "近期已被预订的日期",
-    "notFound": "未找到该车辆"
+    "notFound": "未找到该车辆",
+    "overMileage": "超出里程",
+    "overMileageValue": "{fee} / 公里"
   },
   "booking": {
     "title": "办理租车",

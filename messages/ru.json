@@ -80,7 +80,9 @@
     "deposit": "Залог",
     "featuresTitle": "Комплектация",
     "busyTitle": "Ближайшие занятые даты",
-    "notFound": "Автомобиль не найден"
+    "notFound": "Автомобиль не найден",
+    "overMileage": "Сверх лимита",
+    "overMileageValue": "{fee} / км"
   },
   "booking": {
     "title": "Оформление аренды",

@@ -80,7 +80,9 @@
     "deposit": "Depozito",
     "featuresTitle": "Donanım",
     "busyTitle": "Yaklaşan dolu tarihler",
-    "notFound": "Araç bulunamadı"
+    "notFound": "Araç bulunamadı",
+    "overMileage": "Limit aşımı",
+    "overMileageValue": "{fee} / km"
   },
   "booking": {
     "title": "Kiralamayı tamamlayın",

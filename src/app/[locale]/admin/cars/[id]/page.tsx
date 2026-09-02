@@ -60,7 +60,8 @@ export default async function EditCarPage({ params }: { params: Promise<{ id: st
           discount: car.discount,
           deposit: car.deposit,
           mileageLimit: car.mileageLimit,
-          overMileageFee: car.overMileageFee,
+          // В БД ставка лежит в гяпиках, в форме показываем манаты
+          overMileageFee: car.overMileageFeeMinor / 100,
           description: car.description,
           features: car.features,
           status: car.status,

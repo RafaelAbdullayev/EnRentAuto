@@ -279,11 +279,16 @@ export function CarForm({
             />
           </Field>
 
-          <Field label={`Стоимость км сверх лимита, ${money}`}>
+          <Field
+            label={`Стоимость км сверх лимита, ${money}`}
+            error={errors.overMileageFee}
+            hint="Можно дробную: например 0,30 за километр"
+          >
             <input
               type="number"
-              className="field"
+              className={cn('field', errors.overMileageFee && 'field-error')}
               min={0}
+              step={0.01}
               value={values.overMileageFee}
               onChange={(e) => set('overMileageFee', Number(e.target.value))}
             />
