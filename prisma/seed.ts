@@ -142,12 +142,33 @@ const DEMO_CARS: {
   },
 ];
 
+/**
+ * Чистит значение из .env: убирает пробелы по краям и кавычки, которые
+ * иногда попадают внутрь значения при ручном редактировании файла
+ * (ADMIN_EMAIL=""user@mail.com" и подобное).
+ */
+function readEnv(name: string, fallback: string): string {
+  const raw = process.env[name] ?? fallback;
+  return raw.trim().replace(/^['"]+/, '').replace(/['"]+$/, '').trim();
+}
+
+const EMAIL_RE = /^[^\s@"']+@[^\s@"']+\.[^\s@"']{2,}$/;
+
 async function main() {
   // ─── 1. Супер-администратор ─────────────────────────────────────────
-  const email = (process.env.ADMIN_EMAIL ?? 'admin@enrentauto.ru').toLowerCase().trim();
-  const password = process.env.ADMIN_PASSWORD ?? 'ChangeMe_Str0ng!';
-  const name = process.env.ADMIN_NAME ?? 'Супер-администратор';
+  const email = readEnv('ADMIN_EMAIL', 'admin@enrentauto.ru').toLowerCase();
+  const password = readEnv('ADMIN_PASSWORD', 'ChangeMe_Str0ng!');
+  const name = readEnv('ADMIN_NAME', 'Супер-администратор');
 
+  // Без этой проверки опечатка в .env создаёт учётку, под которой
+  // невозможно войти: форма входа отправляет корректный адрес, а в БД
+  // лежит адрес с лишним символом.
+  if (!EMAIL_RE.test(email)) {
+    throw new Error(
+      `ADMIN_EMAIL="${email}" не похож на корректный адрес. ` +
+        'Проверьте кавычки и пробелы в .env',
+    );
+  }
   if (password.length < 8) {
     throw new Error('ADMIN_PASSWORD должен содержать минимум 8 символов');
   }
@@ -159,6 +180,20 @@ async function main() {
     create: { email, passwordHash, role: 'ADMIN', name, isActive: true },
   });
   console.log(`✔ Администратор готов: ${admin.email}`);
+
+  // Подсказываем, если в базе накопились лишние администраторы —
+  // войти можно только под тем, чей пароль совпадает с ADMIN_PASSWORD.
+  const admins = await prisma.user.findMany({
+    where: { role: 'ADMIN' },
+    select: { email: true },
+    orderBy: { createdAt: 'asc' },
+  });
+  if (admins.length > 1) {
+    console.log(
+      `  ⚠ В базе ${admins.length} администраторов: ${admins.map((a) => a.email).join(', ')}`,
+    );
+    console.log('    Пароль обновлён только у', admin.email);
+  }
 
   // ─── 2. Настройки площадки ──────────────────────────────────────────
   await prisma.settings.upsert({

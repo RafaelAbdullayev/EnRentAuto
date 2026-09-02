@@ -138,6 +138,35 @@ npm run db:seed               # создать супер-админа + 6 де�
 
 Сид идемпотентен: повторный запуск обновит пароль администратора и не продублирует автопарк.
 
+**Пароль администратора живёт в `.env` и попадает в БД только при запуске сида.**
+Если изменить `ADMIN_PASSWORD` и не выполнить `npm run db:seed`, войти по новому
+паролю не получится — в базе останется старый хеш.
+
+Сид чистит значения из `.env` от лишних кавычек и пробелов и отказывается
+работать с явно некорректным `ADMIN_EMAIL`, иначе опечатка создаёт учётную
+запись, под которой невозможно войти. Если администраторов в базе больше
+одного, сид напечатает список и напомнит, у кого именно обновил пароль.
+
+Проверить, что пароль из `.env` совпадает с хешем в БД:
+
+```bash
+cd /opt/enrentauto
+set -a; . ./.env; set +a
+node -e '
+const { PrismaClient } = require("@prisma/client");
+const bcrypt = require("bcryptjs");
+const prisma = new PrismaClient();
+(async () => {
+  const email = (process.env.ADMIN_EMAIL || "").toLowerCase().trim();
+  const u = await prisma.user.findUnique({ where: { email } });
+  console.log("Пользователи:", await prisma.user.findMany({ select: { email: true, role: true } }));
+  console.log(u ? (await bcrypt.compare(process.env.ADMIN_PASSWORD || "", u.passwordHash)
+    ? "пароль совпадает" : "пароль НЕ совпадает — запустите npm run db:seed")
+    : "пользователя с таким e-mail нет");
+})().finally(() => prisma.$disconnect());
+'
+```
+
 ### 5. Запуск
 
 ```bash
