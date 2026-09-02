@@ -1,9 +1,10 @@
 import { INTL_LOCALE, type Locale } from '@/i18n/routing';
+import { CURRENCY } from '@/lib/currency';
 
 /**
  * Форматирование денег, дат и чисел с учётом языка интерфейса.
- * Валюта одна для всех языков — рубль; меняется только запись числа,
- * разделители и позиция символа валюты.
+ * Валюта одна для всех языков (по умолчанию манат); от языка зависят только
+ * разделители разрядов и позиция символа валюты.
  */
 
 function intlTag(locale?: string): string {
@@ -12,11 +13,22 @@ function intlTag(locale?: string): string {
 }
 
 export function formatMoney(value: number, locale?: string): string {
-  return new Intl.NumberFormat(intlTag(locale), {
+  const options: Intl.NumberFormatOptions = {
     style: 'currency',
-    currency: 'RUB',
+    currency: CURRENCY,
     maximumFractionDigits: 0,
-  }).format(value);
+    // narrowSymbol даёт «₼» вместо «AZN» во всех языках, а не только в az.
+    currencyDisplay: 'narrowSymbol',
+  };
+  try {
+    return new Intl.NumberFormat(intlTag(locale), options).format(value);
+  } catch {
+    // Старые среды без поддержки narrowSymbol — откатываемся на код валюты.
+    return new Intl.NumberFormat(intlTag(locale), {
+      ...options,
+      currencyDisplay: 'symbol',
+    }).format(value);
+  }
 }
 
 export function formatNumber(value: number, locale?: string): string {

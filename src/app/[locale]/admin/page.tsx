@@ -54,7 +54,7 @@ export default async function AdminDashboardPage() {
           label="Выручка за сегодня"
           value={formatMoney(summary.revenueToday)}
           hint={`${summary.ordersToday} заказ. за сутки`}
-          icon="₽"
+          icon="₼"
           accent
         />
       </div>

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { BookingStatus } from '@prisma/client';
 import { formatMoney } from '@/lib/format';
+import { currencySymbol } from '@/lib/currency';
 
 type Action = 'confirm' | 'issue' | 'return' | 'cancel' | 'complete' | 'reopen';
 
@@ -27,6 +28,7 @@ export function BookingActions({
   const [returnMode, setReturnMode] = useState(false);
   const [extraCharge, setExtraCharge] = useState(0);
   const [extraNote, setExtraNote] = useState('');
+  const money = currencySymbol();
 
   async function run(action: Action, extra?: Record<string, unknown>) {
     setPending(action);
@@ -117,7 +119,7 @@ export function BookingActions({
           </p>
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
             <div>
-              <label className="label" htmlFor={`extra-${bookingId}`}>Доплата, ₽</label>
+              <label className="label" htmlFor={`extra-${bookingId}`}>{`Доплата, ${money}`}</label>
               <input
                 id={`extra-${bookingId}`}
                 type="number"

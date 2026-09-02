@@ -11,6 +11,7 @@ import {
   CAR_STATUS_LABELS,
 } from '@/lib/constants';
 import { effectivePricePerDay } from '@/lib/pricing';
+import { currencySymbol } from '@/lib/currency';
 import { formatMoney, cn } from '@/lib/format';
 
 export interface CarFormValues {
@@ -44,7 +45,7 @@ export const emptyCar: CarFormValues = {
   seats: 5,
   color: '',
   plateNumber: '',
-  pricePerDay: 5000,
+  pricePerDay: 150,
   discount: 0,
   deposit: 0,
   mileageLimit: 0,
@@ -72,6 +73,7 @@ export function CarForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [alert, setAlert] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const money = currencySymbol();
 
   const set = <K extends keyof CarFormValues>(key: K, v: CarFormValues[K]) =>
     setValues((prev) => ({ ...prev, [key]: v }));
@@ -235,7 +237,7 @@ export function CarForm({
       <section className="surface p-6">
         <h2 className="text-base font-semibold text-white">Тариф и условия</h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Field label="Цена за сутки, ₽" error={errors.pricePerDay}>
+          <Field label={`Цена за сутки, ${money}`} error={errors.pricePerDay}>
             <input
               type="number"
               className={cn('field', errors.pricePerDay && 'field-error')}
@@ -257,7 +259,7 @@ export function CarForm({
             />
           </Field>
 
-          <Field label="Залог, ₽">
+          <Field label={`Залог, ${money}`}>
             <input
               type="number"
               className="field"
@@ -277,7 +279,7 @@ export function CarForm({
             />
           </Field>
 
-          <Field label="Стоимость км сверх лимита, ₽">
+          <Field label={`Стоимость км сверх лимита, ${money}`}>
             <input
               type="number"
               className="field"
