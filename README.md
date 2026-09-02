@@ -13,6 +13,7 @@ Production-ready сервис посуточной аренды автомоби
 | БД | PostgreSQL + Prisma ORM |
 | Авторизация | NextAuth v5 (Auth.js), JWT-сессии, bcrypt |
 | Стили | Tailwind CSS 3 (тёмная премиальная тема) |
+| Локализация | next-intl (6 языков, включая RTL) |
 | Графики | Recharts |
 | Валидация | Zod (единые схемы для всех API) |
 | Хранение фото | Локальная ФС (`data/uploads`) + защищённый роут отдачи |
@@ -23,13 +24,18 @@ Production-ready сервис посуточной аренды автомоби
 
 ```
 enrentauto/
+├── messages/                  # Словари: ru, en, az, ar, tr, zh (по 159 ключей)
 ├── prisma/
 │   ├── schema.prisma          # Схема БД: User, Car, CarImage, Booking, VisitorSession, AuditLog, Settings
 │   ├── migrations/            # SQL-миграции
 │   └── seed.ts                # Супер-админ + демо-автопарк
 ├── data/uploads/              # Фотографии авто (вне репозитория)
 ├── src/
-│   ├── middleware.ts          # Выдача анонимного cookie для счётчика онлайна
+│   ├── middleware.ts          # Маршрутизация языков + cookie для счётчика онлайна
+│   ├── i18n/
+│   │   ├── routing.ts         # Список языков, RTL, теги Intl
+│   │   ├── navigation.ts      # Локале-осведомлённые Link / useRouter / redirect
+│   │   └── request.ts         # Загрузка словаря для запроса
 │   ├── lib/
 │   │   ├── prisma.ts          # Singleton PrismaClient
 │   │   ├── auth.ts            # NextAuth: провайдер, колбэки, requireStaff()
@@ -42,7 +48,7 @@ enrentauto/
 │   │   ├── format.ts          # Деньги, даты, cn()
 │   │   └── audit.ts           # Журнал действий администратора
 │   ├── components/
-│   │   ├── SiteHeader.tsx  SiteFooter.tsx  SearchForm.tsx
+│   │   ├── SiteHeader.tsx  SiteFooter.tsx  SearchForm.tsx  LanguageSwitcher.tsx
 │   │   ├── CarCard.tsx  CarGallery.tsx  BookingForm.tsx  LoginForm.tsx
 │   │   ├── PresenceTracker.tsx
 │   │   └── admin/
@@ -55,19 +61,22 @@ enrentauto/
 │   │       ├── CarRowActions.tsx
 │   │       └── BookingActions.tsx    # Выдать / принять / отменить
 │   └── app/
-│       ├── layout.tsx  globals.css  not-found.tsx  error.tsx
-│       ├── page.tsx                  # Лендинг с поиском по датам
-│       ├── cars/page.tsx             # Каталог
-│       ├── cars/[id]/page.tsx        # Карточка + форма бронирования
-│       ├── booking/success/page.tsx  # Подтверждение заявки
-│       ├── login/page.tsx            # Вход для сотрудников
-│       ├── uploads/[...path]/route.ts# Отдача загруженных фото
-│       ├── admin/
+│       ├── globals.css
+│       ├── uploads/[...path]/route.ts # Отдача загруженных фото
+│       ├── [locale]/                 # Весь UI живёт внутри языкового сегмента
+│       ├── [locale]/layout.tsx       # <html lang dir> + провайдер переводов
+│       ├── [locale]/page.tsx         # Лендинг с поиском по датам
+│       ├── [locale]/cars/page.tsx    # Каталог
+│       ├── [locale]/cars/[id]/page.tsx # Карточка + форма бронирования
+│       ├── [locale]/booking/success/page.tsx
+│       ├── [locale]/login/page.tsx   # Вход для сотрудников
+│       ├── [locale]/not-found.tsx  [locale]/error.tsx
+│       ├── [locale]/admin/
 │       │   ├── layout.tsx            # Защита раздела: нет прав → /login
 │       │   ├── page.tsx              # Дашборд
 │       │   ├── cars/page.tsx  cars/new/page.tsx  cars/[id]/page.tsx
 │       │   ├── bookings/page.tsx
-│       │   └── online/page.tsx
+│       │   └── online/page.tsx       # (интерфейс админки — на русском)
 │       └── api/
 │           ├── auth/[...nextauth]/route.ts
 │           ├── bookings/route.ts             POST — создать бронь
@@ -149,6 +158,58 @@ npm run db:migrate     # создать новую миграцию после �
 ```
 
 ---
+
+## Языки
+
+Сайт доступен на шести языках: **русский** (по умолчанию), **английский**,
+**азербайджанский**, **арабский**, **китайский** и **турецкий**.
+
+| Язык | URL | Направление |
+|---|---|---|
+| Русский | `/`, `/cars` | LTR |
+| English | `/en`, `/en/cars` | LTR |
+| Azərbaycan | `/az/…` | LTR |
+| Türkçe | `/tr/…` | LTR |
+| العربية | `/ar/…` | **RTL** |
+| 中文 | `/zh/…` | LTR |
+
+Русский живёт на корне без префикса, поэтому уже проиндексированные ссылки
+продолжают работать. Язык определяется по префиксу URL, затем по cookie
+`NEXT_LOCALE`, затем по заголовку `Accept-Language`; выбор в переключателе
+запоминается в cookie.
+
+Арабская версия рендерится с `dir="rtl"`: в вёрстке используются логические
+свойства Tailwind (`ms-`, `me-`, `start-`, `end-`, `text-start`), поэтому
+зеркалирование происходит без отдельной таблицы стилей. Цены и даты
+форматируются через `Intl` под каждую локаль — валюта одна (рубль), меняются
+разделители и позиция символа.
+
+### Как добавить или изменить перевод
+
+Все строки лежат в `messages/<код>.json` — по 159 ключей в каждом файле,
+структура одинаковая. Изменить текст на сайте — отредактировать значение
+и пересобрать проект.
+
+Проверка, что во всех языках одинаковый набор ключей:
+
+```bash
+node -e "
+const fs=require('fs');
+const keys=o=>Object.entries(o).flatMap(([k,v])=>typeof v==='object'?keys(v).map(s=>k+'.'+s):[k]).sort();
+const base=keys(JSON.parse(fs.readFileSync('messages/ru.json','utf8')));
+['en','az','tr','ar','zh'].forEach(l=>{
+  const k=keys(JSON.parse(fs.readFileSync('messages/'+l+'.json','utf8')));
+  console.log(l, k.length, JSON.stringify(k)===JSON.stringify(base)?'OK':'РАСХОЖДЕНИЕ');
+});"
+```
+
+Новый язык добавляется в трёх местах: `messages/<код>.json`, список `locales`
+в `src/i18n/routing.ts` и подпись в `LOCALE_LABELS` там же. Для языка с письмом
+справа налево код дописывается в `RTL_LOCALES`.
+
+**Админ-панель `/admin` остаётся на русском** — ею пользуются сотрудники
+проката. Переводить её сейчас нет смысла: это удвоило бы объём словарей.
+При необходимости она локализуется тем же механизмом.
 
 ## Ключевая бизнес-логика
 
@@ -308,4 +369,5 @@ tar czf /var/backups/uploads-$(date +%F).tar.gz -C /var/www/enrentauto data/uplo
 | Удаление авто с активной арендой | **409**, вместо удаления предлагается архив |
 | Неверный формат/размер фото | **422** с описанием ограничения, частичная загрузка откатывается |
 | Авто не найдено / архивировано | Страница 404 в фирменном оформлении |
-| Сбой рендеринга | `error.tsx` с кнопкой «Обновить» |
+| Сбой рендеринга | `error.tsx` с кнопкой «Обновить» (на языке страницы) |
+| Неизвестный языковой префикс | Редирект на язык по умолчанию |

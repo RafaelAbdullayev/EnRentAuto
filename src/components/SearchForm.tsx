@@ -1,7 +1,8 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useRouter } from '@/i18n/navigation';
 import { toDateInput } from '@/lib/format';
 
 /** Поиск свободных авто по датам. Ведёт в каталог с параметрами from/to. */
@@ -14,7 +15,9 @@ export function SearchForm({
   defaultTo?: string;
   compact?: boolean;
 }) {
+  const t = useTranslations('search');
   const router = useRouter();
+
   const today = toDateInput(new Date());
   const tomorrow = toDateInput(new Date(Date.now() + 86_400_000));
   const inThreeDays = toDateInput(new Date(Date.now() + 3 * 86_400_000));
@@ -26,11 +29,11 @@ export function SearchForm({
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (new Date(to) <= new Date(from)) {
-      setError('Дата возврата должна быть позже даты начала');
+      setError(t('error'));
       return;
     }
     setError(null);
-    router.push(`/cars?from=${from}&to=${to}`);
+    router.push({ pathname: '/cars', query: { from, to } });
   };
 
   return (
@@ -43,7 +46,7 @@ export function SearchForm({
       }
     >
       <div className="flex-1">
-        <label className="label" htmlFor="from">Дата начала</label>
+        <label className="label" htmlFor="from">{t('from')}</label>
         <input
           id="from"
           type="date"
@@ -55,7 +58,7 @@ export function SearchForm({
         />
       </div>
       <div className="flex-1">
-        <label className="label" htmlFor="to">Дата возврата</label>
+        <label className="label" htmlFor="to">{t('to')}</label>
         <input
           id="to"
           type="date"
@@ -67,9 +70,9 @@ export function SearchForm({
         />
       </div>
       <button type="submit" className="btn-primary h-[42px] sm:w-auto">
-        Найти автомобиль
+        {t('submit')}
       </button>
-      {error && <p className="error-text sm:absolute sm:-bottom-6">{error}</p>}
+      {error && <p className="error-text">{error}</p>}
     </form>
   );
 }

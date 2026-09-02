@@ -1,33 +1,33 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { prisma } from '@/lib/prisma';
+import { Link } from '@/i18n/navigation';
 import { SiteHeader } from '@/components/SiteHeader';
 import { SiteFooter } from '@/components/SiteFooter';
 import { CarGallery } from '@/components/CarGallery';
 import { BookingForm } from '@/components/BookingForm';
-import {
-  BODY_TYPE_LABELS,
-  TRANSMISSION_LABELS,
-  FUEL_LABELS,
-  BLOCKING_STATUSES,
-} from '@/lib/constants';
+import { BLOCKING_STATUSES } from '@/lib/constants';
 import { formatMoney, formatDate, toDateTimeLocal } from '@/lib/format';
 import { effectivePricePerDay } from '@/lib/pricing';
 
 export const dynamic = 'force-dynamic';
 
-type Params = Promise<{ id: string }>;
+type Params = Promise<{ id: string; locale: string }>;
 type SearchParams = Promise<{ from?: string; to?: string }>;
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
-  const { id } = await params;
+  const { id, locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'meta' });
   const car = await prisma.car.findUnique({
     where: { id },
     select: { brand: true, model: true, year: true },
   });
-  if (!car) return { title: 'Автомобиль не найден' };
-  return { title: `${car.brand} ${car.model} ${car.year} — аренда` };
+  if (!car) {
+    const e = await getTranslations({ locale, namespace: 'car' });
+    return { title: e('notFound') };
+  }
+  return { title: t('carTitle', { brand: car.brand, model: car.model, year: car.year }) };
 }
 
 export default async function CarPage({
@@ -37,7 +37,13 @@ export default async function CarPage({
   params: Params;
   searchParams: SearchParams;
 }) {
-  const { id } = await params;
+  const { id, locale } = await params;
+  setRequestLocale(locale);
+
+  const t = await getTranslations('car');
+  const e = await getTranslations('enums');
+  const nav = await getTranslations('nav');
+
   const { from, to } = await searchParams;
 
   const car = await prisma.car.findFirst({
@@ -57,16 +63,16 @@ export default async function CarPage({
   const price = effectivePricePerDay(car.pricePerDay, car.discount);
 
   const specs = [
-    { label: 'Год выпуска', value: String(car.year) },
-    { label: 'Кузов', value: BODY_TYPE_LABELS[car.bodyType] },
-    { label: 'Коробка', value: TRANSMISSION_LABELS[car.transmission] },
-    { label: 'Топливо', value: FUEL_LABELS[car.fuelType] },
-    { label: 'Мест', value: String(car.seats) },
-    ...(car.color ? [{ label: 'Цвет', value: car.color }] : []),
+    { label: t('year'), value: String(car.year) },
+    { label: t('body'), value: e(`body.${car.bodyType}`) },
+    { label: t('gearbox'), value: e(`transmission.${car.transmission}`) },
+    { label: t('fuel'), value: e(`fuel.${car.fuelType}`) },
+    { label: t('seatsLabel'), value: String(car.seats) },
+    ...(car.color ? [{ label: t('color'), value: car.color }] : []),
     ...(car.mileageLimit
-      ? [{ label: 'Лимит пробега', value: `${car.mileageLimit} км/сут.` }]
-      : [{ label: 'Пробег', value: 'Без ограничений' }]),
-    ...(car.deposit ? [{ label: 'Залог', value: formatMoney(car.deposit) }] : []),
+      ? [{ label: t('mileageLimit'), value: t('mileageValue', { km: car.mileageLimit }) }]
+      : [{ label: t('mileage'), value: t('mileageUnlimited') }]),
+    ...(car.deposit ? [{ label: t('deposit'), value: formatMoney(car.deposit, locale) }] : []),
   ];
 
   return (
@@ -76,9 +82,9 @@ export default async function CarPage({
       <main className="pt-28 pb-20">
         <div className="container-page">
           <nav className="text-sm text-zinc-600">
-            <Link href="/" className="transition-colors hover:text-accent">Главная</Link>
+            <Link href="/" className="transition-colors hover:text-accent">{nav('home')}</Link>
             <span className="mx-2">/</span>
-            <Link href="/cars" className="transition-colors hover:text-accent">Автопарк</Link>
+            <Link href="/cars" className="transition-colors hover:text-accent">{nav('fleet')}</Link>
             <span className="mx-2">/</span>
             <span className="text-zinc-400">{car.brand} {car.model}</span>
           </nav>
@@ -93,18 +99,18 @@ export default async function CarPage({
                   <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
                     {car.brand} <span className="text-zinc-400">{car.model}</span>
                   </h1>
-                  <div className="text-right">
+                  <div className="text-end">
                     <div className="flex items-baseline gap-2">
                       <span className="text-2xl font-semibold text-accent">
-                        {formatMoney(price)}
+                        {formatMoney(price, locale)}
                       </span>
                       {car.discount > 0 && (
                         <span className="text-sm text-zinc-600 line-through">
-                          {formatMoney(car.pricePerDay)}
+                          {formatMoney(car.pricePerDay, locale)}
                         </span>
                       )}
                     </div>
-                    <span className="text-xs text-zinc-500">за сутки</span>
+                    <span className="text-xs text-zinc-500">{t('perDay')}</span>
                   </div>
                 </div>
 
@@ -126,7 +132,7 @@ export default async function CarPage({
                 {car.features.length > 0 && (
                   <div className="mt-6">
                     <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-500">
-                      Комплектация
+                      {t('featuresTitle')}
                     </h2>
                     <ul className="mt-3 flex flex-wrap gap-2">
                       {car.features.map((f) => (
@@ -143,11 +149,11 @@ export default async function CarPage({
 
                 {busy.length > 0 && (
                   <div className="surface mt-6 border-signal-new/25 p-5">
-                    <h2 className="text-sm font-semibold text-white">Ближайшие занятые даты</h2>
+                    <h2 className="text-sm font-semibold text-white">{t('busyTitle')}</h2>
                     <ul className="mt-3 space-y-1.5 text-sm text-zinc-400">
                       {busy.map((b, i) => (
                         <li key={i}>
-                          {formatDate(b.startAt)} — {formatDate(b.endAt)}
+                          {formatDate(b.startAt, locale)} — {formatDate(b.endAt, locale)}
                         </li>
                       ))}
                     </ul>

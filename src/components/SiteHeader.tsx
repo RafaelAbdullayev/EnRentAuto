@@ -1,17 +1,13 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { cn } from '@/lib/format';
 
-const NAV = [
-  { href: '/', label: 'Главная' },
-  { href: '/cars', label: 'Автопарк' },
-  { href: '/#how', label: 'Как это работает' },
-  { href: '/#contacts', label: 'Контакты' },
-];
-
 export function SiteHeader() {
+  const t = useTranslations('nav');
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -22,6 +18,13 @@ export function SiteHeader() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  const nav = [
+    { href: '/', label: t('home') },
+    { href: '/cars', label: t('fleet') },
+    { href: '/#how', label: t('how') },
+    { href: '/#contacts', label: t('contacts') },
+  ];
+
   return (
     <header
       className={cn(
@@ -31,7 +34,7 @@ export function SiteHeader() {
           : 'border-b border-transparent',
       )}
     >
-      <div className="container-page flex h-16 items-center justify-between gap-6">
+      <div className="container-page flex h-16 items-center justify-between gap-4">
         <Link href="/" className="group flex items-center gap-2.5">
           <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-accent-soft to-accent-deep text-sm font-bold text-ink-950 transition-transform duration-300 group-hover:scale-105">
             ER
@@ -41,8 +44,8 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex">
-          {NAV.map((item) => (
+        <nav className="hidden items-center gap-1 lg:flex">
+          {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -54,14 +57,15 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <LanguageSwitcher compact />
           <Link href="/cars" className="btn-primary btn-sm hidden sm:inline-flex">
-            Забронировать
+            {t('book')}
           </Link>
           <button
             type="button"
-            aria-label="Меню"
+            aria-label={t('menu')}
             onClick={() => setOpen((v) => !v)}
-            className="btn-ghost btn-sm md:hidden"
+            className="btn-ghost btn-sm lg:hidden"
           >
             {open ? '✕' : '☰'}
           </button>
@@ -69,9 +73,9 @@ export function SiteHeader() {
       </div>
 
       {open && (
-        <div className="border-t border-ink-700 bg-ink-950/95 backdrop-blur-xl md:hidden">
+        <div className="border-t border-ink-700 bg-ink-950/95 backdrop-blur-xl lg:hidden">
           <nav className="container-page flex flex-col py-3">
-            {NAV.map((item) => (
+            {nav.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}

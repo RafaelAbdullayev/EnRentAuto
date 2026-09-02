@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { prisma } from '@/lib/prisma';
 import { SiteHeader } from '@/components/SiteHeader';
 import { SiteFooter } from '@/components/SiteFooter';
@@ -7,12 +8,28 @@ import { CarCard } from '@/components/CarCard';
 import { busyCarIds } from '@/lib/availability';
 import { formatDate } from '@/lib/format';
 
-export const metadata: Metadata = { title: 'Автопарк' };
 export const dynamic = 'force-dynamic';
 
+type Params = Promise<{ locale: string }>;
 type SearchParams = Promise<{ from?: string; to?: string; q?: string }>;
 
-export default async function CarsPage({ searchParams }: { searchParams: SearchParams }) {
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'meta' });
+  return { title: t('fleetTitle') };
+}
+
+export default async function CarsPage({
+  params,
+  searchParams,
+}: {
+  params: Params;
+  searchParams: SearchParams;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations('catalog');
+
   const { from, to, q } = await searchParams;
 
   // Парсим период: если он валиден — скрываем занятые авто.
@@ -45,7 +62,7 @@ export default async function CarsPage({ searchParams }: { searchParams: SearchP
     orderBy: [{ discount: 'desc' }, { pricePerDay: 'asc' }],
   });
 
-  const query = range ? `?from=${from}&to=${to}` : '';
+  const query: Record<string, string> = range ? { from: from!, to: to! } : {};
 
   return (
     <>
@@ -53,14 +70,18 @@ export default async function CarsPage({ searchParams }: { searchParams: SearchP
 
       <main className="pt-28 pb-20">
         <div className="container-page">
-          <p className="eyebrow">Каталог</p>
+          <p className="eyebrow">{t('eyebrow')}</p>
           <h1 className="mt-3 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-            Автопарк
+            {t('title')}
           </h1>
           <p className="mt-3 max-w-xl text-zinc-400">
             {range
-              ? `Свободны с ${formatDate(range.start)} по ${formatDate(range.end)} — ${cars.length} авт.`
-              : 'Укажите даты аренды, чтобы увидеть только свободные автомобили.'}
+              ? t('hintDates', {
+                  from: formatDate(range.start, locale),
+                  to: formatDate(range.end, locale),
+                  count: cars.length,
+                })
+              : t('hintNoDates')}
           </p>
 
           <div className="mt-8">
@@ -69,10 +90,8 @@ export default async function CarsPage({ searchParams }: { searchParams: SearchP
 
           {cars.length === 0 ? (
             <div className="surface mt-10 p-14 text-center">
-              <p className="text-lg text-white">На выбранные даты свободных авто нет</p>
-              <p className="mt-2 text-sm text-zinc-500">
-                Попробуйте сдвинуть период или связаться с менеджером — подберём альтернативу.
-              </p>
+              <p className="text-lg text-white">{t('emptyTitle')}</p>
+              <p className="mt-2 text-sm text-zinc-500">{t('emptyText')}</p>
             </div>
           ) : (
             <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

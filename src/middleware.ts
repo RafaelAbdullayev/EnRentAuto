@@ -1,20 +1,24 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import createIntlMiddleware from 'next-intl/middleware';
+import { routing } from '@/i18n/routing';
 import { VISITOR_COOKIE } from '@/lib/constants';
 
+const intlMiddleware = createIntlMiddleware(routing);
+
 /**
- * Middleware выполняет ровно одну задачу — выдаёт анонимный идентификатор
- * посетителя (httpOnly-cookie). Он нужен модулю «Онлайн сейчас».
+ * Middleware решает две задачи:
+ *  1. Маршрутизация языков (next-intl): определяет локаль по префиксу URL,
+ *     cookie NEXT_LOCALE или заголовку Accept-Language.
+ *  2. Выдаёт анонимный идентификатор посетителя для модуля «Онлайн сейчас».
  *
- * Проверку прав администратора намеренно НЕ делаем здесь: bcrypt и Prisma
- * недоступны в Edge Runtime. Доступ к /admin проверяется в серверном
- * layout-компоненте (src/app/admin/layout.tsx) — это надёжнее.
+ * Проверку прав администратора здесь НЕ делаем: bcrypt и Prisma недоступны
+ * в Edge Runtime. Доступ к /admin проверяется в серверном layout-компоненте.
  */
-export function middleware(request: NextRequest) {
-  const response = NextResponse.next();
+export default function middleware(request: NextRequest) {
+  const response = intlMiddleware(request) ?? NextResponse.next();
 
   if (!request.cookies.get(VISITOR_COOKIE)) {
-    const sid = crypto.randomUUID();
-    response.cookies.set(VISITOR_COOKIE, sid, {
+    response.cookies.set(VISITOR_COOKIE, crypto.randomUUID(), {
       httpOnly: true,
       sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',
@@ -27,5 +31,6 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|uploads|favicon.ico).*)'],
+  // Пропускаем мимо middleware статику, API и отдачу фотографий.
+  matcher: ['/((?!api|uploads|_next|_vercel|.*\\..*).*)'],
 };

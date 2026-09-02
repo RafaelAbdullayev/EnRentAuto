@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
+import { useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/format';
 
 /** Форма входа. Ошибки NextAuth преобразуются в понятный текст. */
@@ -13,13 +14,13 @@ export function LoginForm({
   callbackUrl: string;
   initialError?: string;
 }) {
+  const t = useTranslations('login');
   const router = useRouter();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [pending, setPending] = useState(false);
-  const [error, setError] = useState<string | null>(
-    initialError ? 'Не удалось войти. Проверьте данные.' : null,
-  );
+  const [error, setError] = useState<string | null>(initialError ? t('failed') : null);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -35,7 +36,7 @@ export function LoginForm({
     setPending(false);
 
     if (!res || res.error) {
-      setError('Неверный e-mail или пароль.');
+      setError(t('invalid'));
       return;
     }
     router.push(callbackUrl);
@@ -54,13 +55,14 @@ export function LoginForm({
       )}
 
       <div>
-        <label className="label" htmlFor="email">E-mail</label>
+        <label className="label" htmlFor="email">{t('email')}</label>
         <input
           id="email"
           type="email"
           autoComplete="username"
+          dir="ltr"
           className={cn('field', error && 'field-error')}
-          placeholder="admin@enrentauto.ru"
+          placeholder="admin@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -68,11 +70,12 @@ export function LoginForm({
       </div>
 
       <div>
-        <label className="label" htmlFor="password">Пароль</label>
+        <label className="label" htmlFor="password">{t('password')}</label>
         <input
           id="password"
           type="password"
           autoComplete="current-password"
+          dir="ltr"
           className={cn('field', error && 'field-error')}
           placeholder="••••••••"
           value={password}
@@ -82,7 +85,7 @@ export function LoginForm({
       </div>
 
       <button type="submit" disabled={pending} className="btn-primary w-full py-3">
-        {pending ? 'Проверяем…' : 'Войти'}
+        {pending ? t('submitting') : t('submit')}
       </button>
     </form>
   );
