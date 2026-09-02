@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    sans-serif;
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    @apply border-ink-700;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-ink-950 text-zinc-200 antialiased;
+    font-feature-settings: 'ss01', 'cv11';
+  }
+  ::selection {
+    @apply bg-accent/30 text-white;
+  }
+  /* Тонкий премиальный скроллбар */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-ink-950;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-ink-600;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-ink-500;
+  }
+  input[type='date']::-webkit-calendar-picker-indicator,
+  input[type='datetime-local']::-webkit-calendar-picker-indicator {
+    filter: invert(0.75);
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  /* ─── Поверхности ─────────────────────────────────────────────────── */
+  .surface {
+    @apply rounded-2xl border border-ink-700/80 bg-ink-850/70 shadow-card backdrop-blur-xl;
+  }
+  .surface-hover {
+    @apply transition-all duration-300 hover:border-accent/40 hover:shadow-glow;
+  }
+
+  /* ─── Кнопки ──────────────────────────────────────────────────────── */
+  .btn {
+    @apply inline-flex select-none items-center justify-center gap-2 rounded-xl px-5 py-2.5
+           text-sm font-medium transition-all duration-200 focus-visible:outline-none
+           focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2
+           focus-visible:ring-offset-ink-950 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn bg-gradient-to-b from-accent-soft to-accent text-ink-950 shadow-[0_8px_24px_-10px_rgba(200,169,106,.8)]
+           hover:-translate-y-0.5 hover:shadow-[0_14px_34px_-10px_rgba(200,169,106,.95)] active:translate-y-0;
+  }
+  .btn-ghost {
+    @apply btn border border-ink-600 bg-ink-800/60 text-zinc-200 hover:border-accent/50
+           hover:bg-ink-700/70 hover:text-white;
+  }
+  .btn-danger {
+    @apply btn border border-signal-cancel/40 bg-signal-cancel/10 text-signal-cancel
+           hover:bg-signal-cancel/20 hover:shadow-[0_10px_28px_-12px_rgba(224,85,97,.8)];
+  }
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+
+  /* ─── Формы ───────────────────────────────────────────────────────── */
+  .label {
+    @apply mb-1.5 block text-xs font-medium uppercase tracking-wider text-zinc-500;
+  }
+  .field {
+    @apply w-full rounded-xl border border-ink-600 bg-ink-900/80 px-4 py-2.5 text-sm text-zinc-100
+           placeholder:text-zinc-600 transition-colors duration-200
+           focus:border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent/20;
+  }
+  .field-error {
+    @apply border-signal-cancel/60 focus:border-signal-cancel focus:ring-signal-cancel/20;
+  }
+  .hint {
+    @apply mt-1 text-xs text-zinc-500;
+  }
+  .error-text {
+    @apply mt-1 text-xs text-signal-cancel;
+  }
+
+  /* ─── Бейджи и прочее ─────────────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1;
+  }
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.25em] text-accent;
+  }
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+}
