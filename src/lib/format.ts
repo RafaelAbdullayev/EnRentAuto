@@ -1,4 +1,4 @@
-import { INTL_LOCALE, type Locale } from '@/i18n/routing';
+import { INTL_LOCALE, routing, type Locale } from '@/i18n/routing';
 import { CURRENCY, MINOR_UNITS } from '@/lib/currency';
 
 /**
@@ -7,9 +7,18 @@ import { CURRENCY, MINOR_UNITS } from '@/lib/currency';
  * разделители разрядов и позиция символа валюты.
  */
 
+/**
+ * Код языка → тег для Intl.
+ *
+ * Берём только из белого списка: неизвестное значение уходит на язык по
+ * умолчанию. Пропускать чужую строку в Intl нельзя — на некорректном теге
+ * («123», пустая строка) конструктор бросает RangeError и роняет страницу.
+ * Это не гипотетический случай: layout отбрасывает неизвестный язык через
+ * notFound(), но страница в App Router рендерится параллельно с ним и
+ * успевает получить мусорный сегмент из URL.
+ */
 function intlTag(locale?: string): string {
-  if (!locale) return 'ru-RU';
-  return INTL_LOCALE[locale as Locale] ?? locale;
+  return INTL_LOCALE[locale as Locale] ?? INTL_LOCALE[routing.defaultLocale];
 }
 
 export function formatMoney(value: number, locale?: string): string {

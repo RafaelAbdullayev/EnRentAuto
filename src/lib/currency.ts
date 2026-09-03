@@ -8,7 +8,9 @@
  *   NEXT_PUBLIC_CURRENCY="TRY"
  * Код должен быть валидным ISO-4217; символ Intl подставит сам.
  */
-export const CURRENCY = (process.env.NEXT_PUBLIC_CURRENCY ?? 'AZN').toUpperCase();
+// || вместо ??: пустая строка в переменной окружения тоже должна уводить
+// на значение по умолчанию, иначе Intl бросит «Invalid currency code».
+export const CURRENCY = (process.env.NEXT_PUBLIC_CURRENCY || 'AZN').toUpperCase();
 
 /**
  * Сколько минорных единиц в одной основной: 1 ₼ = 100 гяпиков.
