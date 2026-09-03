@@ -368,9 +368,10 @@ After=network.target postgresql.service
 Type=simple
 WorkingDirectory=/var/www/enrentauto
 EnvironmentFile=/var/www/enrentauto/.env
-# -H localhost: слушать только loopback, наружу порт закрыт.
-# Именно localhost, а не 127.0.0.1 — см. раздел «Частые проблемы».
-ExecStart=/usr/bin/npm run start -- -H localhost
+# Без флага -H: Next слушает 0.0.0.0 и строит адреса по заголовку Host.
+# Порт закрывается от интернета правилом файрвола (см. ниже), а не привязкой —
+# любая привязка через -H ломает маршрутизацию языков, см. «Частые проблемы».
+ExecStart=/usr/bin/npm run start
 Restart=always
 RestartSec=5
 User=www-data
@@ -483,23 +484,31 @@ git config --global --add safe.directory /opt/enrentauto
 
 **Бесконечный редирект на `/` (307, «Maximum redirects followed»)**
 
-Возникает, когда сервер запущен как `next start -H 127.0.0.1`. Next считает
-своим origin `127.0.0.1`, а next-intl строит адрес переписывания на `localhost`;
-origin не совпадает, внутренний rewrite превращается во внешний редирект,
-middleware отрабатывает повторно уже на `/ru`, откуда `as-needed` уводит
-обратно на `/` — цикл. Языки с префиксом при этом работают, ломается только
-язык по умолчанию.
+Возникает, когда сервер запущен с привязкой к адресу: `next start -H 127.0.0.1`.
+Next считает своим origin `127.0.0.1`, а next-intl строит адрес переписывания
+на `localhost`; origin не совпадает, внутренний rewrite превращается во внешний
+редирект, middleware отрабатывает повторно уже на `/ru`, откуда `as-needed`
+уводит обратно на `/` — цикл. Языки с префиксом при этом работают, ломается
+только язык по умолчанию.
 
-Лечится заменой адреса привязки — `localhost` вместо `127.0.0.1`:
+Замена на `-H localhost` цикл убирает, но приносит другую проблему: на Ubuntu
+`localhost` резолвится в `::1`, и сервис слушает только IPv6-loopback — тогда
+`127.0.0.1:3000` недоступен, а на него смотрят и Nginx, и SSH-туннель.
+
+Рабочее решение — не привязывать адрес вообще, а закрыть порт файрволом:
 
 ```bash
-sed -i 's|^ExecStart=.*|ExecStart=/usr/bin/npm run start -- -H localhost|' \
+sed -i 's|^ExecStart=.*|ExecStart=/usr/bin/npm run start|' \
   /etc/systemd/system/enrentauto.service
 systemctl daemon-reload && systemctl restart enrentauto
 ```
 
-Порт при этом остаётся закрытым от интернета: `-H localhost` тоже слушает
-только `127.0.0.1`.
+Проверка привязки (`0BB8` — это 3000 в шестнадцатеричном виде):
+
+```bash
+awk 'NR>1 && $4=="0A"' /proc/net/tcp  | grep -i ':0BB8' && echo 'слушает IPv4'
+awk 'NR>1 && $4=="0A"' /proc/net/tcp6 | grep -i ':0BB8' && echo 'слушает IPv6'
+```
 
 **`psql: error: invalid URI query parameter: "schema"`**
 
@@ -523,6 +532,26 @@ psql "${DATABASE_URL%%\?*}" -c 'SELECT count(*) FROM "Car";'
 остаются прежними — их нужно обновить в админке или SQL-запросом из раздела
 «Валюта». Кроме того, `NEXT_PUBLIC_*` попадает в клиентский бандл на этапе
 сборки, поэтому переменную нужно задать **до** `npm run build`.
+
+### Закрытие порта приложения от интернета
+
+Next слушает `0.0.0.0:3000`, поэтому доступ снаружи нужно закрыть отдельно.
+Правило точечное — трогает только порт 3000 и не мешает Nginx и SSH:
+
+```bash
+iptables -I INPUT -p tcp --dport 3000 ! -i lo -j DROP
+apt install -y iptables-persistent && netfilter-persistent save
+```
+
+Проверка: `curl http://<внешний-IP>:3000` не отвечает, а
+`curl http://127.0.0.1:3000` с самого сервера — отвечает.
+
+Если предпочитаете `ufw`, обязательно сначала разрешите SSH, иначе потеряете
+доступ к серверу:
+
+```bash
+ufw allow 22/tcp && ufw deny 3000/tcp && ufw enable
+```
 
 ### Резервное копирование
 
