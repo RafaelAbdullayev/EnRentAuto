@@ -31,6 +31,12 @@ export default function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Пропускаем мимо middleware статику, API и отдачу фотографий.
-  matcher: ['/((?!api|uploads|_next|_vercel|.*\\..*).*)'],
+  matcher: [
+    // Корень указан отдельно: на нём строится язык по умолчанию, и если
+    // catch-all его не поймает, next-intl уйдёт в цикл редиректов.
+    '/',
+    // Всё остальное, кроме API, отдачи фотографий, служебных путей Next
+    // и файлов с расширением.
+    '/((?!api|uploads|_next|_vercel|.*\\..*).*)',
+  ],
 };
