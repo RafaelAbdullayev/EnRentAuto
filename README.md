@@ -435,6 +435,73 @@ sudo ln -s /etc/nginx/sites-available/enrentauto /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
+### Обновление кода на сервере
+
+```bash
+cd /opt/enrentauto
+
+# Бэкап БД перед миграциями
+sudo -u postgres pg_dump enrentauto | gzip > /var/backups/enrentauto-$(date +%F-%H%M).sql.gz
+
+git pull
+npm ci --include=dev
+npx prisma generate            # обязательно до сборки, если менялась схема
+npx prisma migrate deploy
+npm run build
+chown -R www-data:www-data /opt/enrentauto
+systemctl restart enrentauto
+```
+
+Порядок важен: `prisma generate` до `npm run build`, иначе сборка упадёт на
+полях, которых ещё нет в сгенерированном клиенте.
+
+Что смотреть в выводе, чтобы убедиться, что обновление реально произошло:
+
+* `git pull` → `Updating <старый>..<новый>`, а не `Already up to date` при
+  наличии новых коммитов;
+* `migrate deploy` → `Applying migration …` при новых миграциях;
+* `npm run build` → список маршрутов должен соответствовать текущей версии
+  (например, после добавления языков они выглядят как `/[locale]/…`).
+
+### Частые проблемы при обновлении
+
+**`fatal: detected dubious ownership in repository`**
+
+`chown -R www-data:www-data` меняет владельца в том числе у `.git`, после чего
+git, запущенный от root, отказывается работать с репозиторием. Разовое
+исправление:
+
+```bash
+git config --global --add safe.directory /opt/enrentauto
+```
+
+Опасность в том, что `git pull` при этом завершается с ошибкой, а следующие
+команды в той же вставке отрабатывают на старом коде — сборка проходит успешно,
+но собирает прежнюю версию. Всегда проверяйте вывод `git pull` отдельно.
+
+**`psql: error: invalid URI query parameter: "schema"`**
+
+`DATABASE_URL` содержит `?schema=public` — это параметр Prisma, libpq его не
+понимает. Отрежьте query-строку:
+
+```bash
+set -a; . /opt/enrentauto/.env; set +a
+psql "${DATABASE_URL%%\?*}" -c 'SELECT count(*) FROM "Car";'
+```
+
+**Вход в админку перестал работать после правки `.env`**
+
+Пароль попадает в БД только через сид. Изменили `ADMIN_PASSWORD` — выполните
+`npm run db:seed`, иначе в базе останется старый хеш. Проверка соответствия —
+командой из раздела «База данных и первый администратор».
+
+**Смена валюты не изменила цены**
+
+`NEXT_PUBLIC_CURRENCY` меняет только символ рядом с числом. Значения в БД
+остаются прежними — их нужно обновить в админке или SQL-запросом из раздела
+«Валюта». Кроме того, `NEXT_PUBLIC_*` попадает в клиентский бандл на этапе
+сборки, поэтому переменную нужно задать **до** `npm run build`.
+
 ### Резервное копирование
 
 ```bash
