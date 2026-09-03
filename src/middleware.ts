@@ -1,13 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import NextAuth from 'next-auth';
+import { getToken } from 'next-auth/jwt';
 import createIntlMiddleware from 'next-intl/middleware';
 import { routing } from '@/i18n/routing';
-import { authConfig, isStaff } from '@/lib/auth.config';
+import { isStaff } from '@/lib/auth.config';
 import { VISITOR_COOKIE } from '@/lib/constants';
 
 const intlMiddleware = createIntlMiddleware(routing);
-// Конфигурация без провайдеров — пригодна для Edge Runtime.
-const { auth } = NextAuth(authConfig);
 
 /** Путь без языкового префикса: /az/admin/cars → /admin/cars */
 function stripLocale(pathname: string): string {
@@ -19,29 +17,64 @@ function stripLocale(pathname: string): string {
 }
 
 /**
+ * Читает сессию прямо из JWT-cookie.
+ *
+ * Обёртку auth() из NextAuth здесь использовать нельзя: она подменяет объект
+ * запроса, после чего next-intl строит АБСОЛЮТНЫЙ адрес переписывания, Next
+ * считает его внешним и пытается проксировать запрос сам на себя — страницы
+ * языка по умолчанию отдают 500.
+ *
+ * Имя cookie зависит от протокола, поэтому пробуем оба варианта: за Nginx
+ * с сертификатом это «__Secure-…», при доступе по http — без префикса.
+ */
+async function readRole(request: NextRequest): Promise<string | null> {
+  const secret = process.env.AUTH_SECRET;
+  if (!secret) return null;
+
+  for (const cookieName of ['authjs.session-token', '__Secure-authjs.session-token']) {
+    if (!request.cookies.get(cookieName)) continue;
+    try {
+      const token = await getToken({
+        req: request,
+        secret,
+        salt: cookieName,
+        cookieName,
+        secureCookie: cookieName.startsWith('__Secure-'),
+      });
+      if (token?.role) return token.role as string;
+    } catch {
+      // Повреждённая или чужая cookie — просто считаем, что сессии нет.
+    }
+  }
+  return null;
+}
+
+/**
  * Middleware решает три задачи:
  *
- *  1. Защищает /admin ДО рендеринга. Раньше проверка стояла в серверном
- *     layout, но App Router рендерит страницу параллельно с layout и успевает
- *     отдать часть разметки в теле ответа-редиректа — вместе с данными
- *     заказов. Здесь запрос отсекается раньше, чем что-либо отрисуется.
+ *  1. Защищает /admin ДО рендеринга. Проверка в серверном layout для этого
+ *     не годится: App Router рендерит страницу параллельно с layout и успевает
+ *     отдать часть разметки — вместе с данными заказов — в теле
+ *     ответа-редиректа.
  *  2. Маршрутизация языков (next-intl).
  *  3. Выдаёт анонимный идентификатор посетителя для модуля «Онлайн сейчас».
  */
-export default auth((request) => {
+export default async function middleware(request: NextRequest) {
   const path = stripLocale(request.nextUrl.pathname);
 
   if (path === '/admin' || path.startsWith('/admin/')) {
-    const session = request.auth;
-    if (!session?.user || !isStaff(session.user.role)) {
-      const url = new URL('/login', request.nextUrl.origin);
+    const role = await readRole(request);
+    if (!isStaff(role)) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/login';
+      url.search = '';
       url.searchParams.set('from', path);
-      if (session?.user) url.searchParams.set('error', 'forbidden');
+      if (role) url.searchParams.set('error', 'forbidden');
       return NextResponse.redirect(url);
     }
   }
 
-  const response = intlMiddleware(request as NextRequest) ?? NextResponse.next();
+  const response = intlMiddleware(request) ?? NextResponse.next();
 
   if (!request.cookies.get(VISITOR_COOKIE)) {
     response.cookies.set(VISITOR_COOKIE, crypto.randomUUID(), {
@@ -54,7 +87,7 @@ export default auth((request) => {
   }
 
   return response;
-});
+}
 
 export const config = {
   matcher: [
