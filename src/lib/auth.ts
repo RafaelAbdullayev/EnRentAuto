@@ -1,56 +1,43 @@
-import NextAuth, { type DefaultSession } from 'next-auth';
+import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
+import { authConfig, isStaff } from '@/lib/auth.config';
+import { normalizeLogin } from '@/lib/login';
 
 /**
- * NextAuth v5 (Auth.js). Стратегия — JWT, чтобы не держать таблицу сессий
- * и не ходить в БД на каждый запрос админки.
+ * Auth.js — полная конфигурация с провайдером, который ходит в БД.
+ * Работает в Node.js (нужны Prisma и bcrypt). Проверка сессии в middleware
+ * использует src/lib/auth.config.ts, где провайдеров нет.
  *
- * Роль пользователя кладётся в токен и пробрасывается в session.user.role,
- * по ней работает вся авторизация раздела /admin.
+ * Логином служит e-mail ИЛИ номер телефона — оба хранятся в User.email
+ * в каноническом виде (см. src/lib/login.ts).
  */
 
-declare module 'next-auth' {
-  interface Session {
-    user: {
-      id: string;
-      role: 'ADMIN' | 'MANAGER' | 'USER';
-    } & DefaultSession['user'];
-  }
-  interface User {
-    role?: 'ADMIN' | 'MANAGER' | 'USER';
-  }
-}
-
 const credentialsSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
+  login: z.string().min(3).max(120),
+  password: z.string().min(6).max(200),
 });
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  trustHost: true,
-  session: { strategy: 'jwt', maxAge: 60 * 60 * 12 },
-  pages: { signIn: '/login', error: '/login' },
+  ...authConfig,
   providers: [
     Credentials({
       name: 'credentials',
       credentials: {
-        email: { label: 'E-mail', type: 'email' },
+        login: { label: 'E-mail или телефон', type: 'text' },
         password: { label: 'Пароль', type: 'password' },
       },
       async authorize(raw) {
         const parsed = credentialsSchema.safeParse(raw);
         if (!parsed.success) return null;
 
-        const { email, password } = parsed.data;
-        const user = await prisma.user.findUnique({
-          where: { email: email.toLowerCase().trim() },
-        });
+        const login = normalizeLogin(parsed.data.login);
+        const user = await prisma.user.findUnique({ where: { email: login } });
         if (!user || !user.isActive) return null;
 
-        const ok = await bcrypt.compare(password, user.passwordHash);
+        const ok = await bcrypt.compare(parsed.data.password, user.passwordHash);
         if (!ok) return null;
 
         // Отметка о входе — видно в админке «последний вход».
@@ -62,32 +49,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id as string;
-        token.role = (user.role ?? 'USER') as string;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
-        session.user.role = (token.role as 'ADMIN' | 'MANAGER' | 'USER') ?? 'USER';
-      }
-      return session;
-    },
-  },
 });
 
-/** true, если у сессии есть доступ в админку. */
-export function isStaff(role?: string | null): boolean {
-  return role === 'ADMIN' || role === 'MANAGER';
-}
+export { isStaff };
 
 /**
- * Требует администратора. Возвращает сессию либо null.
- * Использовать в API-роутах; в серверных компонентах — requireAdminPage().
+ * Требует сотрудника. Возвращает сессию либо null.
+ * Использовать в API-роутах; страницы защищены в middleware.
  */
 export async function requireStaff() {
   const session = await auth();

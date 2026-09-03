@@ -31,14 +31,16 @@ enrentauto/
 │   └── seed.ts                # Супер-админ + демо-автопарк
 ├── data/uploads/              # Фотографии авто (вне репозитория)
 ├── src/
-│   ├── middleware.ts          # Маршрутизация языков + cookie для счётчика онлайна
+│   ├── middleware.ts          # Защита /admin, языки, cookie счётчика онлайна
 │   ├── i18n/
 │   │   ├── routing.ts         # Список языков, RTL, теги Intl
 │   │   ├── navigation.ts      # Локале-осведомлённые Link / useRouter / redirect
 │   │   └── request.ts         # Загрузка словаря для запроса
 │   ├── lib/
 │   │   ├── prisma.ts          # Singleton PrismaClient
-│   │   ├── auth.ts            # NextAuth: провайдер, колбэки, requireStaff()
+│   │   ├── auth.ts            # NextAuth: провайдер, requireStaff()
+│   │   ├── auth.config.ts     # Конфигурация без провайдеров, для middleware
+│   │   ├── login.ts           # Логин: e-mail или телефон, нормализация
 │   │   ├── availability.ts    # Защита от двойного бронирования
 │   │   ├── pricing.ts         # Расчёт суток, скидок и итоговой суммы
 │   │   ├── stats.ts           # Аналитика дашборда
@@ -121,6 +123,7 @@ AUTH_SECRET="<результат openssl rand -base64 32>"
 AUTH_TRUST_HOST="true"
 NEXTAUTH_URL="https://ваш-домен.ru"
 
+# Логином может быть e-mail или телефон
 ADMIN_EMAIL="admin@enrentauto.ru"
 ADMIN_PASSWORD="СильныйПароль_2024!"
 ADMIN_NAME="Супер-администратор"

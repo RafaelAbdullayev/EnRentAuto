@@ -17,7 +17,7 @@ export function LoginForm({
   const t = useTranslations('login');
   const router = useRouter();
 
-  const [email, setEmail] = useState('');
+  const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(initialError ? t('failed') : null);
@@ -27,8 +27,9 @@ export function LoginForm({
     setPending(true);
     setError(null);
 
+    // Логином может быть e-mail или телефон — нормализацию делает сервер.
     const res = await signIn('credentials', {
-      email: email.trim().toLowerCase(),
+      login: login.trim(),
       password,
       redirect: false,
     });
@@ -55,16 +56,16 @@ export function LoginForm({
       )}
 
       <div>
-        <label className="label" htmlFor="email">{t('email')}</label>
+        <label className="label" htmlFor="login">{t('email')}</label>
         <input
-          id="email"
-          type="email"
+          id="login"
+          type="text"
           autoComplete="username"
           dir="ltr"
           className={cn('field', error && 'field-error')}
-          placeholder="admin@example.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          placeholder="+994 70 000 00 00"
+          value={login}
+          onChange={(e) => setLogin(e.target.value)}
           required
         />
       </div>

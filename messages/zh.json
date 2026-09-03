@@ -131,7 +131,7 @@
   "login": {
     "title": "管理后台",
     "subtitle": "仅限公司员工登录。",
-    "email": "电子邮箱",
+    "email": "邮箱或手机号",
     "password": "密码",
     "submit": "登录",
     "submitting": "验证中……",

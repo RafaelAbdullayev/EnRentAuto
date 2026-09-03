@@ -131,7 +131,7 @@
   "login": {
     "title": "İdarəetmə paneli",
     "subtitle": "Giriş yalnız şirkət əməkdaşları üçündür.",
-    "email": "E-poçt",
+    "email": "E-poçt və ya telefon",
     "password": "Şifrə",
     "submit": "Daxil ol",
     "submitting": "Yoxlanılır…",

@@ -131,7 +131,7 @@
   "login": {
     "title": "Dashboard",
     "subtitle": "Staff access only.",
-    "email": "Email",
+    "email": "Email or phone",
     "password": "Password",
     "submit": "Sign in",
     "submitting": "Checking…",

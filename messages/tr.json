@@ -131,7 +131,7 @@
   "login": {
     "title": "Yönetim paneli",
     "subtitle": "Yalnızca çalışanlar için giriş.",
-    "email": "E-posta",
+    "email": "E-posta veya telefon",
     "password": "Parola",
     "submit": "Giriş yap",
     "submitting": "Kontrol ediliyor…",

@@ -9,6 +9,7 @@
  */
 import { PrismaClient, type BodyType, type FuelType, type Transmission } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import { normalizeLogin, isValidLogin } from '../src/lib/login';
 
 const prisma = new PrismaClient();
 
@@ -152,20 +153,20 @@ function readEnv(name: string, fallback: string): string {
   return raw.trim().replace(/^['"]+/, '').replace(/['"]+$/, '').trim();
 }
 
-const EMAIL_RE = /^[^\s@"']+@[^\s@"']+\.[^\s@"']{2,}$/;
+// Логином может быть e-mail или телефон — правила в src/lib/login.ts.
 
 async function main() {
   // ─── 1. Супер-администратор ─────────────────────────────────────────
-  const email = readEnv('ADMIN_EMAIL', 'admin@enrentauto.ru').toLowerCase();
+  const email = normalizeLogin(readEnv('ADMIN_EMAIL', 'admin@enrentauto.ru'));
   const password = readEnv('ADMIN_PASSWORD', 'ChangeMe_Str0ng!');
   const name = readEnv('ADMIN_NAME', 'Супер-администратор');
 
   // Без этой проверки опечатка в .env создаёт учётку, под которой
-  // невозможно войти: форма входа отправляет корректный адрес, а в БД
-  // лежит адрес с лишним символом.
-  if (!EMAIL_RE.test(email)) {
+  // невозможно войти: форма отправляет корректное значение, а в БД лежит
+  // строка с лишним символом.
+  if (!isValidLogin(email)) {
     throw new Error(
-      `ADMIN_EMAIL="${email}" не похож на корректный адрес. ` +
+      `ADMIN_EMAIL="${email}" не похож ни на e-mail, ни на телефон. ` +
         'Проверьте кавычки и пробелы в .env',
     );
   }
