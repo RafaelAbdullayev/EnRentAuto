@@ -4,7 +4,9 @@ import { Link } from '@/i18n/navigation';
 export function SiteFooter() {
   const t = useTranslations('footer');
   const nav = useTranslations('nav');
-  const phone = process.env.NEXT_PUBLIC_SITE_PHONE ?? '+7 (999) 000-00-00';
+  // Контакты редактируются в админке («Тексты сайта» → «Контакты и подвал»).
+  const phone = t('phone');
+  const email = t('email');
 
   return (
     <footer id="contacts" className="border-t border-ink-800 bg-ink-950">
@@ -56,6 +58,11 @@ export function SiteFooter() {
                 className="transition-colors hover:text-accent"
               >
                 {phone}
+              </a>
+            </li>
+            <li>
+              <a href={`mailto:${email}`} dir="ltr" className="transition-colors hover:text-accent">
+                {email}
               </a>
             </li>
             <li>{t('address')}</li>

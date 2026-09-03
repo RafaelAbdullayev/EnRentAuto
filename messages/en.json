@@ -144,9 +144,11 @@
     "serviceTitle": "Service",
     "contactsTitle": "Contacts",
     "hours": "Open 24/7, seven days a week",
-    "address": "Moscow, Presnenskaya emb. 12",
+    "address": "Baku, Nizami street 203",
     "staff": "Staff sign-in",
-    "rights": "© {year} EnRentAuto. All rights reserved."
+    "rights": "© {year} EnRentAuto. All rights reserved.",
+    "phone": "+994 50 123 45 67",
+    "email": "hello@enrentauto.az"
   },
   "enums": {
     "body": {

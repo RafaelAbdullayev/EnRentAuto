@@ -144,9 +144,11 @@
     "serviceTitle": "الخدمة",
     "contactsTitle": "اتصل بنا",
     "hours": "على مدار الساعة، 7 أيام في الأسبوع",
-    "address": "موسكو، ضفة بريسنينسكايا 12",
+    "address": "باكو، شارع نظامي 203",
     "staff": "دخول الموظفين",
-    "rights": "© {year} EnRentAuto. جميع الحقوق محفوظة."
+    "rights": "© {year} EnRentAuto. جميع الحقوق محفوظة.",
+    "phone": "+994 50 123 45 67",
+    "email": "hello@enrentauto.az"
   },
   "enums": {
     "body": {

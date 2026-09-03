@@ -144,9 +144,11 @@
     "serviceTitle": "Сервис",
     "contactsTitle": "Контакты",
     "hours": "Круглосуточно, 7 дней в неделю",
-    "address": "Москва, Пресненская наб., 12",
+    "address": "Баку, ул. Низами, 203",
     "staff": "Вход для сотрудников",
-    "rights": "© {year} EnRentAuto. Все права защищены."
+    "rights": "© {year} EnRentAuto. Все права защищены.",
+    "phone": "+994 50 123 45 67",
+    "email": "hello@enrentauto.az"
   },
   "enums": {
     "body": {

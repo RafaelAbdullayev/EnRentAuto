@@ -144,9 +144,11 @@
     "serviceTitle": "Xidmət",
     "contactsTitle": "Əlaqə",
     "hours": "Həftənin 7 günü, 24 saat",
-    "address": "Moskva, Presnenskaya sahil küç. 12",
+    "address": "Bakı, Nizami küçəsi 203",
     "staff": "Əməkdaşlar üçün giriş",
-    "rights": "© {year} EnRentAuto. Bütün hüquqlar qorunur."
+    "rights": "© {year} EnRentAuto. Bütün hüquqlar qorunur.",
+    "phone": "+994 50 123 45 67",
+    "email": "hello@enrentauto.az"
   },
   "enums": {
     "body": {

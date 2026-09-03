@@ -144,9 +144,11 @@
     "serviceTitle": "服务",
     "contactsTitle": "联系我们",
     "hours": "全年无休，24 小时服务",
-    "address": "莫斯科，普列斯尼亚河岸街 12 号",
+    "address": "巴库，尼扎米大街 203 号",
     "staff": "员工登录",
-    "rights": "© {year} EnRentAuto. 保留所有权利。"
+    "rights": "© {year} EnRentAuto. 保留所有权利。",
+    "phone": "+994 50 123 45 67",
+    "email": "hello@enrentauto.az"
   },
   "enums": {
     "body": {

@@ -10,6 +10,7 @@ const NAV = [
   { href: '/admin', label: 'Дашборд', icon: '◈', exact: true },
   { href: '/admin/cars', label: 'Автопарк', icon: '⬢' },
   { href: '/admin/bookings', label: 'Заказы', icon: '▤' },
+  { href: '/admin/content', label: 'Тексты сайта', icon: '✎' },
   { href: '/admin/online', label: 'Онлайн', icon: '◉' },
 ];
 

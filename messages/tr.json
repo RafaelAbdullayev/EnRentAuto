@@ -144,9 +144,11 @@
     "serviceTitle": "Hizmet",
     "contactsTitle": "İletişim",
     "hours": "Haftanın 7 günü, 24 saat",
-    "address": "Moskova, Presnenskaya rıhtımı 12",
+    "address": "Bakü, Nizami caddesi 203",
     "staff": "Çalışan girişi",
-    "rights": "© {year} EnRentAuto. Tüm hakları saklıdır."
+    "rights": "© {year} EnRentAuto. Tüm hakları saklıdır.",
+    "phone": "+994 50 123 45 67",
+    "email": "hello@enrentauto.az"
   },
   "enums": {
     "body": {
