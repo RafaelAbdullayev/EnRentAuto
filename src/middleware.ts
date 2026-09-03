@@ -80,7 +80,10 @@ export default async function middleware(request: NextRequest) {
     response.cookies.set(VISITOR_COOKIE, crypto.randomUUID(), {
       httpOnly: true,
       sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
+      // Флаг по фактическому протоколу запроса, а не по NODE_ENV: cookie с
+      // Secure браузер отбрасывает на http-адресах, и учёт посетителей молча
+      // перестаёт работать до перехода на HTTPS.
+      secure: request.nextUrl.protocol === 'https:',
       path: '/',
       maxAge: 60 * 60 * 24 * 180, // 180 дней
     });

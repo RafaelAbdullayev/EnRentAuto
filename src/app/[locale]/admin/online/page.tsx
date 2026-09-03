@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import { StatCard } from '@/components/admin/StatCard';
+import { AutoRefresh } from '@/components/admin/AutoRefresh';
 import { ONLINE_WINDOW_MS } from '@/lib/constants';
 import { formatDateTime, formatNumber } from '@/lib/format';
 import { startOfDay } from '@/lib/stats';
@@ -43,12 +44,15 @@ export default async function AdminOnlinePage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight text-white">Онлайн-пользователи</h1>
-        <p className="mt-1 text-sm text-zinc-500">
-          Анонимный учёт посещений: сессия создаётся при первом заходе, «онлайн» — активность за
-          последние 5 минут. Страница обновляется при перезагрузке.
-        </p>
+      <header className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-white">Онлайн-пользователи</h1>
+          <p className="mt-1 max-w-2xl text-sm text-zinc-500">
+            Анонимный учёт посещений: сессия заводится при первом заходе на сайт, «онлайн» —
+            активность за последние 5 минут. Ваши собственные заходы тоже попадают в список.
+          </p>
+        </div>
+        <AutoRefresh seconds={20} />
       </header>
 
       <div className="grid gap-4 sm:grid-cols-3">
