@@ -368,7 +368,9 @@ After=network.target postgresql.service
 Type=simple
 WorkingDirectory=/var/www/enrentauto
 EnvironmentFile=/var/www/enrentauto/.env
-ExecStart=/usr/bin/npm run start
+# -H localhost: слушать только loopback, наружу порт закрыт.
+# Именно localhost, а не 127.0.0.1 — см. раздел «Частые проблемы».
+ExecStart=/usr/bin/npm run start -- -H localhost
 Restart=always
 RestartSec=5
 User=www-data
@@ -478,6 +480,26 @@ git config --global --add safe.directory /opt/enrentauto
 Опасность в том, что `git pull` при этом завершается с ошибкой, а следующие
 команды в той же вставке отрабатывают на старом коде — сборка проходит успешно,
 но собирает прежнюю версию. Всегда проверяйте вывод `git pull` отдельно.
+
+**Бесконечный редирект на `/` (307, «Maximum redirects followed»)**
+
+Возникает, когда сервер запущен как `next start -H 127.0.0.1`. Next считает
+своим origin `127.0.0.1`, а next-intl строит адрес переписывания на `localhost`;
+origin не совпадает, внутренний rewrite превращается во внешний редирект,
+middleware отрабатывает повторно уже на `/ru`, откуда `as-needed` уводит
+обратно на `/` — цикл. Языки с префиксом при этом работают, ломается только
+язык по умолчанию.
+
+Лечится заменой адреса привязки — `localhost` вместо `127.0.0.1`:
+
+```bash
+sed -i 's|^ExecStart=.*|ExecStart=/usr/bin/npm run start -- -H localhost|' \
+  /etc/systemd/system/enrentauto.service
+systemctl daemon-reload && systemctl restart enrentauto
+```
+
+Порт при этом остаётся закрытым от интернета: `-H localhost` тоже слушает
+только `127.0.0.1`.
 
 **`psql: error: invalid URI query parameter: "schema"`**
 
