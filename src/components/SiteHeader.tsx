@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { Logo } from '@/components/Logo';
 import { cn } from '@/lib/format';
 
 export function SiteHeader() {
@@ -36,12 +37,7 @@ export function SiteHeader() {
     >
       <div className="container-page flex h-16 items-center justify-between gap-4">
         <Link href="/" className="group flex items-center gap-2.5">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-accent-soft to-accent-deep text-sm font-bold text-ink-950 transition-transform duration-300 group-hover:scale-105">
-            ER
-          </span>
-          <span className="text-[15px] font-semibold tracking-tight text-white">
-            EnRent<span className="text-accent">Auto</span>
-          </span>
+          <Logo size="md" hover />
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex">

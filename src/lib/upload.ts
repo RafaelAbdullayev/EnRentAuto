@@ -21,7 +21,7 @@ export const UPLOAD_DIR =
 export const PUBLIC_PREFIX = '/uploads';
 
 /** Разрешённые типы → расширение файла. */
-const ALLOWED_MIME: Record<string, string> = {
+export const ALLOWED_MIME: Record<string, string> = {
   'image/jpeg': '.jpg',
   'image/png': '.png',
   'image/webp': '.webp',

@@ -2,8 +2,10 @@ import type { Metadata } from 'next';
 import { routing } from '@/i18n/routing';
 import { loadDefaults, loadOverrides } from '@/lib/siteText';
 import { ContentEditor, type LocaleContent } from '@/components/admin/ContentEditor';
+import { LogoUploader } from '@/components/admin/LogoUploader';
+import { findLogo } from '@/lib/brand';
 
-export const metadata: Metadata = { title: 'Тексты сайта' };
+export const metadata: Metadata = { title: 'Логотип и тексты сайта' };
 export const dynamic = 'force-dynamic';
 
 export default async function AdminContentPage() {
@@ -18,13 +20,14 @@ export default async function AdminContentPage() {
     }),
   );
   const content = Object.fromEntries(entries);
+  const hasLogo = (await findLogo()) !== null;
 
   const totalEdits = entries.reduce((sum, [, c]) => sum + Object.keys(c.overrides).length, 0);
 
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold tracking-tight text-white">Тексты сайта</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-white">Логотип и тексты сайта</h1>
         <p className="mt-1 max-w-3xl text-sm text-zinc-500">
           Здесь правится всё, что видит посетитель: телефон, адрес, режим работы, заголовки,
           описания преимуществ, подписи кнопок и полей формы — на каждом из шести языков.
@@ -37,6 +40,8 @@ export default async function AdminContentPage() {
           </p>
         )}
       </header>
+
+      <LogoUploader hasLogo={hasLogo} />
 
       <ContentEditor content={content} />
     </div>

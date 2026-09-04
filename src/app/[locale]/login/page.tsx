@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { auth, isStaff } from '@/lib/auth';
 import { redirect, Link } from '@/i18n/navigation';
 import { LoginForm } from '@/components/LoginForm';
+import { Logo } from '@/components/Logo';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,12 +40,7 @@ export default async function LoginPage({
 
       <div className="relative w-full max-w-md">
         <Link href="/" className="mb-8 flex items-center justify-center gap-2.5">
-          <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-accent-soft to-accent-deep text-sm font-bold text-ink-950">
-            ER
-          </span>
-          <span className="text-base font-semibold text-white">
-            EnRent<span className="text-accent">Auto</span>
-          </span>
+          <Logo size="lg" />
         </Link>
 
         <div className="surface p-8">

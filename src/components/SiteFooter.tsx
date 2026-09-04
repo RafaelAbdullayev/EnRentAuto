@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import { Logo } from '@/components/Logo';
 
 export function SiteFooter() {
   const t = useTranslations('footer');
@@ -12,14 +13,7 @@ export function SiteFooter() {
     <footer id="contacts" className="border-t border-ink-800 bg-ink-950">
       <div className="container-page grid gap-10 py-14 md:grid-cols-4">
         <div className="md:col-span-2">
-          <div className="flex items-center gap-2.5">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-accent-soft to-accent-deep text-sm font-bold text-ink-950">
-              ER
-            </span>
-            <span className="text-[15px] font-semibold text-white">
-              EnRent<span className="text-accent">Auto</span>
-            </span>
-          </div>
+          <Logo size="md" />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-zinc-500">{t('about')}</p>
         </div>
 

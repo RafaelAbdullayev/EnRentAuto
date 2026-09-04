@@ -45,6 +45,7 @@ enrentauto/
 │   │   ├── pricing.ts         # Расчёт суток, скидок и итоговой суммы
 │   │   ├── stats.ts           # Аналитика дашборда
 │   │   ├── upload.ts          # Сохранение/удаление фото, защита от path traversal
+│   │   ├── brand.ts           # Логотип сайта: поиск, сохранение, удаление файла
 │   │   ├── siteText.ts        # Словарь + правки администратора, разделы админки
 │   │   ├── validation.ts      # Zod-схемы
 │   │   ├── constants.ts       # Справочники и подписи
@@ -52,6 +53,7 @@ enrentauto/
 │   │   └── audit.ts           # Журнал действий администратора
 │   ├── components/
 │   │   ├── SiteHeader.tsx  SiteFooter.tsx  SearchForm.tsx  LanguageSwitcher.tsx
+│   │   ├── Logo.tsx                  # Загруженный логотип или текстовый знак
 │   │   ├── CarCard.tsx  CarGallery.tsx  BookingForm.tsx  LoginForm.tsx
 │   │   ├── PresenceTracker.tsx
 │   │   └── admin/
@@ -63,10 +65,12 @@ enrentauto/
 │   │       ├── ImageUploader.tsx     # Drag-and-drop загрузка фото
 │   │       ├── CarRowActions.tsx
 │   │       ├── ContentEditor.tsx     # Правка текстов по языкам и разделам
+│   │       ├── LogoUploader.tsx      # Загрузка и удаление логотипа
 │   │       └── BookingActions.tsx    # Выдать / принять / отменить
 │   └── app/
 │       ├── globals.css
 │       ├── uploads/[...path]/route.ts # Отдача загруженных фото
+│       ├── brand/logo/route.ts       # Отдача логотипа (ETag, без пересборки)
 │       ├── [locale]/                 # Весь UI живёт внутри языкового сегмента
 │       ├── [locale]/layout.tsx       # <html lang dir> + провайдер переводов
 │       ├── [locale]/page.tsx         # Лендинг с поиском по датам
@@ -80,7 +84,7 @@ enrentauto/
 │       │   ├── page.tsx              # Дашборд
 │       │   ├── cars/page.tsx  cars/new/page.tsx  cars/[id]/page.tsx
 │       │   ├── bookings/page.tsx
-│       │   ├── content/page.tsx      # Редактор текстов сайта
+│       │   ├── content/page.tsx      # Логотип и редактор текстов сайта
 │       │   └── online/page.tsx       # (интерфейс админки — на русском)
 │       └── api/
 │           ├── auth/[...nextauth]/route.ts
@@ -90,6 +94,7 @@ enrentauto/
 │           ├── cars/[id]/restore/route.ts    POST — вернуть из архива
 │           ├── admin/bookings/[id]/route.ts  PATCH — смена статуса
 │           ├── admin/content/route.ts        PUT — сохранение текстов
+│           ├── admin/logo/route.ts           POST / DELETE — логотип
 │           ├── admin/stats/route.ts          GET — отчёт по периоду
 │           ├── upload/route.ts               POST / DELETE — фото
 │           └── presence/route.ts             POST — пинг онлайна
@@ -323,6 +328,44 @@ zod-схема, обратный перевод — форма редактир�
 
 Такой подход держит все денежные поля целочисленными: float в расчётах
 аренды не появляется нигде.
+
+## Логотип
+
+Логотип загружается из админки: **Логотип и тексты → Логотип** —
+перетащите файл (PNG, JPG, WEBP, AVIF, до 8 МБ) в поле загрузки.
+Картинка сразу заменяет текстовый знак «EnRentAuto» в шапке сайта,
+в подвале, на странице входа и в сайдбаре админки. Надпись обычно
+уже входит в изображение, поэтому отдельного текста рядом нет.
+
+Рекомендации к файлу: PNG с прозрачным фоном, высота от 200 пикселей
+(в шапке логотип показывается высотой 40 px, ширина подстраивается сама,
+но не больше 200 px).
+
+Как это устроено:
+
+- файл лежит в `data/uploads/brand/logo.<ext>` — рядом с фотографиями машин,
+  а не в `/public`: список `/public` Next.js составляет на старте, и файл,
+  загруженный после `next start`, отдавался бы как 404;
+- отдаётся роутом `GET /brand/logo` с ETag по времени изменения, поэтому
+  после замены браузер подхватывает новый файл без пересборки и рестарта;
+- если файла нет (или он не открылся), `src/components/Logo.tsx` показывает
+  прежний текстовый знак — шапка не остаётся пустой;
+- кнопка «Удалить логотип» возвращает текстовый вариант.
+
+Загрузить файл можно и напрямую с сервера, без браузера:
+
+```bash
+# с локальной машины: положить файл на сервер
+scp ~/Downloads/logo.png root@178.209.127.144:/opt/enrentauto/data/uploads/brand/logo.png
+
+# на сервере: создать каталог, если его ещё нет, и выставить владельца
+mkdir -p /opt/enrentauto/data/uploads/brand
+chown -R www-data:www-data /opt/enrentauto/data/uploads
+```
+
+Перезапуск сервиса при этом не нужен — файл читается с диска на каждый запрос.
+Одновременно хранится только один логотип: при загрузке из админки прежний
+файл удаляется, в том числе с другим расширением.
 
 ## Ключевая бизнес-логика
 

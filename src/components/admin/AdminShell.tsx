@@ -5,12 +5,13 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { signOut } from 'next-auth/react';
 import { cn } from '@/lib/format';
+import { Logo } from '@/components/Logo';
 
 const NAV = [
   { href: '/admin', label: 'Дашборд', icon: '◈', exact: true },
   { href: '/admin/cars', label: 'Автопарк', icon: '⬢' },
   { href: '/admin/bookings', label: 'Заказы', icon: '▤' },
-  { href: '/admin/content', label: 'Тексты сайта', icon: '✎' },
+  { href: '/admin/content', label: 'Логотип и тексты', icon: '✎' },
   { href: '/admin/online', label: 'Онлайн', icon: '◉' },
 ];
 
@@ -37,14 +38,9 @@ export function AdminShell({
 
   const sidebar = (
     <div className="flex h-full flex-col">
-      <Link href="/admin" className="flex items-center gap-2.5 px-5 py-5">
-        <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-accent-soft to-accent-deep text-sm font-bold text-ink-950">
-          ER
-        </span>
-        <div className="leading-tight">
-          <div className="text-sm font-semibold text-white">EnRentAuto</div>
-          <div className="text-[11px] text-zinc-500">Панель управления</div>
-        </div>
+      <Link href="/admin" className="flex flex-col items-start gap-1.5 px-5 py-5">
+        <Logo size="sm" />
+        <span className="text-[11px] leading-tight text-zinc-500">Панель управления</span>
       </Link>
 
       <nav className="flex-1 space-y-1 px-3 py-2">
