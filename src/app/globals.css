@@ -91,8 +91,12 @@
   /* Фон первого экрана: фотография, GIF или видео — стиль общий. */
   .hero-photo {
     @apply absolute inset-0 -z-10 h-full w-full object-cover object-center;
-    /* Едва заметное приближение: кадр «дышит», без ощущения анимации. */
-    animation: hero-zoom 28s ease-out both;
+    /*
+     * Медленное приближение и обратно, по кругу: фотография всё время
+     * «дышит». Раньше анимация шла один раз и замирала — через полминуты
+     * фон переставал двигаться, и это выглядело как поломка.
+     */
+    animation: hero-zoom 40s ease-in-out infinite alternate;
   }
   /* У видео своё движение — приближение только сбило бы кадрирование. */
   video.hero-photo {
@@ -237,10 +241,10 @@
 
 @keyframes hero-zoom {
   from {
-    transform: scale(1.08);
+    transform: scale(1) translate3d(0, 0, 0);
   }
   to {
-    transform: scale(1);
+    transform: scale(1.1) translate3d(-1%, -1%, 0);
   }
 }
 

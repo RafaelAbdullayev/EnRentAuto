@@ -18,18 +18,39 @@ export function HeroVideo({ mime }: { mime: string }) {
     if (!video) return;
 
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    // Браузер может отклонить автозапуск: экономия трафика, режим энергосбережения
+    // на телефоне, строгие настройки. Тогда пробуем ещё раз при первом действии
+    // посетителя — к этому моменту запуск уже разрешён.
+    const retryEvents = ['pointerdown', 'touchstart', 'keydown', 'scroll'] as const;
+    const play = () => {
+      // muted выставляем и свойством: без него автозапуск запрещён везде.
+      video.muted = true;
+      return video.play();
+    };
+    const retry = () => {
+      void play().catch(() => undefined);
+    };
+
     const apply = () => {
       if (media.matches) {
         video.pause();
         video.currentTime = 0; // остаётся статичный первый кадр
-      } else {
-        void video.play().catch(() => undefined);
+        return;
       }
+      void play().catch(() => {
+        retryEvents.forEach((event) =>
+          window.addEventListener(event, retry, { once: true, passive: true }),
+        );
+      });
     };
 
     apply();
     media.addEventListener('change', apply);
-    return () => media.removeEventListener('change', apply);
+    return () => {
+      media.removeEventListener('change', apply);
+      retryEvents.forEach((event) => window.removeEventListener(event, retry));
+    };
   }, []);
 
   return (
@@ -40,8 +61,8 @@ export function HeroVideo({ mime }: { mime: string }) {
       muted
       loop
       playsInline
-      // Первый кадр нужен сразу, остальное подгрузится по ходу.
-      preload="metadata"
+      // Фон — главный элемент экрана, грузим сразу, не только метаданные.
+      preload="auto"
       aria-hidden="true"
       tabIndex={-1}
     >
