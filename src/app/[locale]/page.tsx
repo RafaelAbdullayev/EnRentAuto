@@ -5,7 +5,9 @@ import { SiteHeader } from '@/components/SiteHeader';
 import { SiteFooter } from '@/components/SiteFooter';
 import { SearchForm } from '@/components/SearchForm';
 import { CarCard } from '@/components/CarCard';
-import { formatNumber } from '@/lib/format';
+import { cn, formatNumber } from '@/lib/format';
+import { brandUrl } from '@/lib/brand.client';
+import { findBrandImage } from '@/lib/brand';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +16,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   setRequestLocale(locale);
   const t = await getTranslations('home');
 
-  const [cars, carCount, completedCount] = await Promise.all([
+  const [cars, carCount, completedCount, hero] = await Promise.all([
     prisma.car.findMany({
       where: { isArchived: false, status: 'AVAILABLE' },
       include: { images: { orderBy: { position: 'asc' }, take: 1 } },
@@ -23,7 +25,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     }),
     prisma.car.count({ where: { isArchived: false } }),
     prisma.booking.count({ where: { status: 'COMPLETED' } }),
+    // Фотография первого экрана, загруженная в админке («Оформление»).
+    findBrandImage('hero'),
   ]);
+  const hasHero = hero !== null;
 
   const advantages = [
     { title: t('advFastT'), text: t('advFastD'), icon: '⚡' },
@@ -44,11 +49,26 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
       <main>
         {/* ─── Hero ───────────────────────────────────────────────────── */}
-        <section className="relative overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28">
-          <div className="pointer-events-none absolute inset-0 bg-grid-fade" />
+        <section
+          className={cn(
+            'relative isolate overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28',
+            // С фотографией первый экран занимает почти всю высоту окна.
+            hasHero && 'flex min-h-[88vh] items-center',
+          )}
+        >
+          {hasHero ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={brandUrl('hero')} alt="" className="hero-photo" />
+              <div className="hero-scrim-x" />
+              <div className="hero-scrim-y" />
+            </>
+          ) : (
+            <div className="pointer-events-none absolute inset-0 -z-10 bg-grid-fade" />
+          )}
           <div className="pointer-events-none absolute left-1/2 top-0 h-px w-[80%] -translate-x-1/2 bg-gradient-to-r from-transparent via-accent/50 to-transparent" />
 
-          <div className="container-page relative">
+          <div className="container-page relative w-full">
             <p className="eyebrow animate-fade-up">{t('eyebrow')}</p>
             <h1 className="mt-5 max-w-3xl animate-fade-up text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-6xl lg:text-7xl">
               {t('title1')}
@@ -56,7 +76,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                 {t('title2')}
               </span>
             </h1>
-            <p className="mt-6 max-w-xl animate-fade-up text-base leading-relaxed text-zinc-400 sm:text-lg">
+            <p
+              className={cn(
+                'mt-6 max-w-xl animate-fade-up text-base leading-relaxed sm:text-lg',
+                hasHero ? 'text-zinc-300' : 'text-zinc-400',
+              )}
+            >
               {t('subtitle')}
             </p>
 
@@ -72,7 +97,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               ].map((s) => (
                 <div key={s.v}>
                   <dt className="text-2xl font-semibold text-white sm:text-3xl">{s.k}</dt>
-                  <dd className="mt-1 text-xs text-zinc-500 sm:text-sm">{s.v}</dd>
+                  <dd className={cn('mt-1 text-xs sm:text-sm', hasHero ? 'text-zinc-400' : 'text-zinc-500')}>
+                    {s.v}
+                  </dd>
                 </div>
               ))}
             </dl>

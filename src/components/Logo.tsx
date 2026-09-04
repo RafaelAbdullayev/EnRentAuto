@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/format';
-import { LOGO_URL } from '@/lib/brand.client';
+import { brandUrl } from '@/lib/brand.client';
 
 const SIZES = {
   sm: { img: 'h-8', mark: 'h-8 w-8 text-xs', text: 'text-sm' },
@@ -45,7 +45,7 @@ export function Logo({
       /* eslint-disable-next-line @next/next/no-img-element */
       <img
         ref={ref}
-        src={LOGO_URL}
+        src={brandUrl('logo')}
         alt="EnRentAuto"
         onError={() => setFailed(true)}
         className={cn(

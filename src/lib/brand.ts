@@ -1,32 +1,30 @@
 import { mkdir, readdir, stat, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { ALLOWED_MIME, EXT_TO_MIME, MAX_BYTES, UPLOAD_DIR, UploadError } from '@/lib/upload';
+import type { BrandKind } from '@/lib/brand.client';
 
 /**
- * Логотип сайта.
+ * Оформление сайта: логотип и фотография для первого экрана.
  *
- * Файл лежит рядом с фотографиями (data/uploads/brand/logo.<ext>), а не в /public:
- * Next.js составляет список /public на старте, поэтому загруженный после
- * `next start` файл отдавался бы как 404. Отдача идёт роутом /brand/logo,
- * так что заменить логотип можно из админки без пересборки проекта.
+ * Файлы лежат рядом с фотографиями машин (data/uploads/brand/<вид>.<ext>),
+ * а не в /public: Next.js составляет список /public на старте, поэтому
+ * загруженный после `next start` файл отдавался бы как 404. Отдача идёт
+ * роутом /brand/<вид>, так что оформление меняется из админки без пересборки.
  */
 export const BRAND_DIR = path.join(UPLOAD_DIR, 'brand');
 
-// Публичный адрес логотипа один и тот же при любом расширении файла.
-export { LOGO_URL } from '@/lib/brand.client';
+export { BRAND_KINDS, isBrandKind, brandUrl } from '@/lib/brand.client';
+export type { BrandKind } from '@/lib/brand.client';
 
-/** Имя файла всегда «logo.<ext>»: одновременно хранится только один логотип. */
-const BASENAME = 'logo';
-
-export type LogoFile = {
+export type BrandFile = {
   filePath: string;
   mime: string;
   size: number;
   mtimeMs: number;
 };
 
-/** Находит загруженный логотип. null — логотип не загружен. */
-export async function findLogo(): Promise<LogoFile | null> {
+/** Находит загруженную картинку. null — она не загружена. */
+export async function findBrandImage(kind: BrandKind): Promise<BrandFile | null> {
   let entries: string[];
   try {
     entries = await readdir(BRAND_DIR);
@@ -36,7 +34,7 @@ export async function findLogo(): Promise<LogoFile | null> {
 
   for (const name of entries) {
     const ext = path.extname(name).toLowerCase();
-    if (path.basename(name, ext) !== BASENAME) continue;
+    if (path.basename(name, ext) !== kind) continue;
     const mime = EXT_TO_MIME[ext];
     if (!mime) continue;
 
@@ -52,8 +50,8 @@ export async function findLogo(): Promise<LogoFile | null> {
   return null;
 }
 
-/** Сохраняет новый логотип, удаляя предыдущий (в том числе с другим расширением). */
-export async function saveLogo(file: File): Promise<void> {
+/** Сохраняет картинку, удаляя предыдущую (в том числе с другим расширением). */
+export async function saveBrandImage(kind: BrandKind, file: File): Promise<void> {
   if (!(file instanceof File) || file.size === 0) {
     throw new UploadError('Пустой файл');
   }
@@ -69,12 +67,12 @@ export async function saveLogo(file: File): Promise<void> {
 
   const buffer = Buffer.from(await file.arrayBuffer());
   await mkdir(BRAND_DIR, { recursive: true });
-  await removeLogo();
-  await writeFile(path.join(BRAND_DIR, `${BASENAME}${ext}`), buffer);
+  await removeBrandImage(kind);
+  await writeFile(path.join(BRAND_DIR, `${kind}${ext}`), buffer);
 }
 
-/** Удаляет логотип — сайт возвращается к текстовому знаку «EnRentAuto». */
-export async function removeLogo(): Promise<void> {
-  const existing = await findLogo();
+/** Удаляет картинку — сайт возвращается к оформлению по умолчанию. */
+export async function removeBrandImage(kind: BrandKind): Promise<void> {
+  const existing = await findBrandImage(kind);
   if (existing) await unlink(existing.filePath).catch(() => undefined);
 }
