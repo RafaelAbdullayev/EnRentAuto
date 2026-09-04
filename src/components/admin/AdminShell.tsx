@@ -13,6 +13,7 @@ const NAV = [
   { href: '/admin/bookings', label: 'Заказы', icon: '▤' },
   { href: '/admin/content', label: 'Оформление и тексты', icon: '✎' },
   { href: '/admin/online', label: 'Онлайн', icon: '◉' },
+  { href: '/admin/profile', label: 'Профиль', icon: '◍' },
 ];
 
 /**
