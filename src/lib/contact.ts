@@ -23,3 +23,16 @@ export function whatsappLink(phone: string, text?: string): string {
   const query = text ? `?text=${encodeURIComponent(text)}` : '';
   return `https://wa.me/${digits}${query}`;
 }
+
+/**
+ * Ссылка на карту для адреса.
+ *
+ * Если администратор указал свою ссылку (Google Maps, Yandex Карты, 2ГИС —
+ * любая), берём её. Иначе собираем поиск по тексту адреса: на телефоне такая
+ * ссылка открывает приложение карт, на компьютере — сайт.
+ */
+export function mapLink(address: string, customUrl?: string): string {
+  const url = (customUrl ?? '').trim();
+  if (url.startsWith('https://') || url.startsWith('http://')) return url;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+}

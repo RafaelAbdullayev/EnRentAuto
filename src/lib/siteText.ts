@@ -114,6 +114,8 @@ export const KEY_LABELS: Record<string, string> = {
   'footer.phone': 'Телефон',
   'footer.email': 'E-mail',
   'footer.address': 'Адрес',
+  'footer.mapUrl': 'Ссылка на карту (Google, Яндекс, 2ГИС) — открывается по клику на адрес',
+  'footer.waText': 'Первое сообщение, которое подставится в WhatsApp',
   'footer.hours': 'Режим работы',
   'footer.about': 'Описание компании в подвале',
   'footer.serviceTitle': 'Заголовок колонки «Сервис»',

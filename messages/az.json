@@ -144,12 +144,13 @@
     "serviceTitle": "Xidmət",
     "contactsTitle": "Əlaqə",
     "hours": "Həftənin 7 günü, 24 saat",
-    "address": "Bakı, Nizami küçəsi 203",
+    "address": "1054 Şəfayət Mehdiyev küçəsi, Bakı",
     "staff": "Əməkdaşlar üçün giriş",
     "rights": "© {year} EnRentAuto. Bütün hüquqlar qorunur.",
     "phone": "+994 50 123 45 67",
     "email": "hello@enrentauto.az",
-    "waText": "Salam! Avtomobil icarəyə götürmək istəyirəm."
+    "waText": "Salam! Avtomobil icarəyə götürmək istəyirəm.",
+    "mapUrl": "https://maps.google.com/?cid=5428542692223396213"
   },
   "enums": {
     "body": {

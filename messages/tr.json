@@ -144,12 +144,13 @@
     "serviceTitle": "Hizmet",
     "contactsTitle": "İletişim",
     "hours": "Haftanın 7 günü, 24 saat",
-    "address": "Bakü, Nizami caddesi 203",
+    "address": "1054 Şəfayət Mehdiyev sokak, Bakü",
     "staff": "Çalışan girişi",
     "rights": "© {year} EnRentAuto. Tüm hakları saklıdır.",
     "phone": "+994 50 123 45 67",
     "email": "hello@enrentauto.az",
-    "waText": "Merhaba! Araç kiralamak istiyorum."
+    "waText": "Merhaba! Araç kiralamak istiyorum.",
+    "mapUrl": "https://maps.google.com/?cid=5428542692223396213"
   },
   "enums": {
     "body": {

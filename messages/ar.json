@@ -144,12 +144,13 @@
     "serviceTitle": "الخدمة",
     "contactsTitle": "اتصل بنا",
     "hours": "على مدار الساعة، 7 أيام في الأسبوع",
-    "address": "باكو، شارع نظامي 203",
+    "address": "1054 شارع شفاعت مهدييف، باكو",
     "staff": "دخول الموظفين",
     "rights": "© {year} EnRentAuto. جميع الحقوق محفوظة.",
     "phone": "+994 50 123 45 67",
     "email": "hello@enrentauto.az",
-    "waText": "مرحباً! أرغب في استئجار سيارة."
+    "waText": "مرحباً! أرغب في استئجار سيارة.",
+    "mapUrl": "https://maps.google.com/?cid=5428542692223396213"
   },
   "enums": {
     "body": {

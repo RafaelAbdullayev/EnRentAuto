@@ -144,12 +144,13 @@
     "serviceTitle": "服务",
     "contactsTitle": "联系我们",
     "hours": "全年无休，24 小时服务",
-    "address": "巴库，尼扎米大街 203 号",
+    "address": "巴库，沙法亚特·迈赫季耶夫街 1054 号",
     "staff": "员工登录",
     "rights": "© {year} EnRentAuto. 保留所有权利。",
     "phone": "+994 50 123 45 67",
     "email": "hello@enrentauto.az",
-    "waText": "您好！我想租一辆车。"
+    "waText": "您好！我想租一辆车。",
+    "mapUrl": "https://maps.google.com/?cid=5428542692223396213"
   },
   "enums": {
     "body": {
