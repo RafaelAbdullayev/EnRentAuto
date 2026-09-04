@@ -73,6 +73,7 @@ enrentauto/
 │   │       └── BookingActions.tsx    # Выдать / принять / отменить
 │   └── app/
 │       ├── globals.css
+│       ├── icon.tsx                    # Иконка вкладки: монограмма ER в цветах бренда
 │       ├── uploads/[...path]/route.ts # Отдача загруженных фото и видео
 │       ├── brand/[kind]/route.ts     # Отдача логотипа и фона (ETag, Range для видео)
 │       ├── [locale]/                 # Весь UI живёт внутри языкового сегмента
