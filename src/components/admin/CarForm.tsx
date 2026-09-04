@@ -377,11 +377,13 @@ export function CarForm({
         </div>
       </section>
 
-      {/* ─── Фото ────────────────────────────────────────────────────── */}
+      {/* ─── Фото и видео ────────────────────────────────────────────── */}
       <section className="surface p-6">
-        <h2 className="text-base font-semibold text-white">Фотографии</h2>
+        <h2 className="text-base font-semibold text-white">Фото и видео</h2>
         <p className="mt-1 text-xs text-zinc-500">
-          Первое фото используется как обложка в каталоге. Порядок можно менять стрелками.
+          Первый файл — обложка в каталоге, порядок меняется стрелками. Короткий ролик
+          (проезд, круговой обзор, салон) оживляет карточку: в каталоге он запускается
+          при наведении, на странице автомобиля играет сразу.
         </p>
         <div className="mt-5">
           <ImageUploader value={values.images} onChange={(urls) => set('images', urls)} />

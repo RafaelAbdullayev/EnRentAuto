@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import { CarRowActions } from '@/components/admin/CarRowActions';
+import { MediaThumb } from '@/components/CarMedia';
 import { BODY_TYPE_LABELS, TRANSMISSION_LABELS, CAR_STATUS_LABELS } from '@/lib/constants';
 import { formatMoney, cn } from '@/lib/format';
 import { effectivePricePerDay } from '@/lib/pricing';
@@ -121,10 +122,9 @@ export default async function AdminCarsPage({
                     <tr key={car.id} className="transition-colors hover:bg-ink-800/40">
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-3">
-                          <div className="h-12 w-16 shrink-0 overflow-hidden rounded-lg bg-ink-800">
+                          <div className="relative h-12 w-16 shrink-0 overflow-hidden rounded-lg bg-ink-800">
                             {car.images[0] ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img src={car.images[0].url} alt="" className="h-full w-full object-cover" />
+                              <MediaThumb url={car.images[0].url} />
                             ) : (
                               <div className="grid h-full w-full place-items-center text-lg text-ink-600">🚗</div>
                             )}

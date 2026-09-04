@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { StatCard } from '@/components/admin/StatCard';
+import { MediaThumb } from '@/components/CarMedia';
 import { OrdersChart, RevenueChart } from '@/components/admin/DashboardCharts';
 import { RevenueReport } from '@/components/admin/RevenueReport';
 import { dashboardSummary, dailySeries, topCars } from '@/lib/stats';
@@ -118,10 +119,9 @@ export default async function AdminDashboardPage() {
                   <span className="w-5 shrink-0 text-center text-sm font-semibold text-zinc-600">
                     {i + 1}
                   </span>
-                  <div className="h-12 w-16 shrink-0 overflow-hidden rounded-lg bg-ink-800">
+                  <div className="relative h-12 w-16 shrink-0 overflow-hidden rounded-lg bg-ink-800">
                     {car.cover ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={car.cover} alt="" className="h-full w-full object-cover" />
+                      <MediaThumb url={car.cover} />
                     ) : (
                       <div className="grid h-full w-full place-items-center text-lg text-ink-600">🚗</div>
                     )}

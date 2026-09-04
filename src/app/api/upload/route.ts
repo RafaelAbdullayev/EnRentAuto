@@ -5,7 +5,8 @@ import { saveUploadedFile, removeUploadedFile, UploadError } from '@/lib/upload'
 export const runtime = 'nodejs';
 
 /**
- * POST /api/upload — загрузка фотографий автомобиля (multipart/form-data, поле "files").
+ * POST /api/upload — загрузка фото и коротких видео автомобиля
+ * (multipart/form-data, поле "files").
  * Возвращает { urls: string[] }. Доступно только сотрудникам.
  */
 export async function POST(request: NextRequest) {
@@ -22,12 +23,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Файлы не переданы' }, { status: 400 });
     }
     if (files.length > 12) {
-      return NextResponse.json({ error: 'За раз можно загрузить не более 12 фото' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'За раз можно загрузить не более 12 файлов' },
+        { status: 400 },
+      );
     }
 
     const urls: string[] = [];
     try {
-      for (const file of files) urls.push(await saveUploadedFile(file));
+      // Для карточек автомобилей разрешаем и короткие ролики.
+      for (const file of files) urls.push(await saveUploadedFile(file, { allowVideo: true }));
     } catch (error) {
       // Откатываем частично загруженные файлы, чтобы не оставлять мусор.
       await Promise.all(urls.map(removeUploadedFile));

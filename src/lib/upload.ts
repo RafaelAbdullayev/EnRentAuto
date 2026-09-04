@@ -20,13 +20,22 @@ export const UPLOAD_DIR =
 
 export const PUBLIC_PREFIX = '/uploads';
 
-/** Разрешённые типы → расширение файла. */
+/** Разрешённые типы картинок → расширение файла. */
 export const ALLOWED_MIME: Record<string, string> = {
   'image/jpeg': '.jpg',
   'image/png': '.png',
   'image/webp': '.webp',
   'image/avif': '.avif',
   'image/gif': '.gif',
+};
+
+/**
+ * Видео: короткие ролики автомобилей и «живой фон» первого экрана.
+ * MP4 (H.264) понимают все браузеры, WEBM — вариант поменьше.
+ */
+export const VIDEO_MIME: Record<string, string> = {
+  'video/mp4': '.mp4',
+  'video/webm': '.webm',
 };
 
 /** Обратное соответствие для отдачи файла. */
@@ -39,24 +48,55 @@ export const EXT_TO_MIME: Record<string, string> = {
   '.gif': 'image/gif',
 };
 
+export const VIDEO_EXT_TO_MIME: Record<string, string> = {
+  '.mp4': 'video/mp4',
+  '.webm': 'video/webm',
+};
+
+/** Всё, что вообще может лежать в хранилище. */
+export const ALL_EXT_TO_MIME: Record<string, string> = {
+  ...EXT_TO_MIME,
+  ...VIDEO_EXT_TO_MIME,
+};
+
 export const MAX_BYTES = Number(process.env.UPLOAD_MAX_BYTES ?? 8 * 1024 * 1024);
+
+/** Видео тяжелее картинок, поэтому у него свой лимит. */
+export const MAX_VIDEO_BYTES = Number(
+  // BRAND_VIDEO_MAX_BYTES — прежнее имя, когда видео было только у фона.
+  process.env.VIDEO_MAX_BYTES ?? process.env.BRAND_VIDEO_MAX_BYTES ?? 40 * 1024 * 1024,
+);
 
 export class UploadError extends Error {}
 
-/** Сохраняет один файл и возвращает публичный путь вида /uploads/<имя>. */
-export async function saveUploadedFile(file: File): Promise<string> {
+/**
+ * Сохраняет один файл и возвращает публичный путь вида /uploads/<имя>.
+ * `allowVideo` включает приём коротких роликов (карточки автомобилей).
+ */
+export async function saveUploadedFile(
+  file: File,
+  { allowVideo = false }: { allowVideo?: boolean } = {},
+): Promise<string> {
   if (!(file instanceof File) || file.size === 0) {
     throw new UploadError('Пустой файл');
   }
-  if (file.size > MAX_BYTES) {
-    throw new UploadError(
-      `Файл «${file.name}» больше ${Math.round(MAX_BYTES / 1024 / 1024)} МБ`,
-    );
-  }
-  const ext = ALLOWED_MIME[file.type];
+
+  const allowed = allowVideo ? { ...ALLOWED_MIME, ...VIDEO_MIME } : ALLOWED_MIME;
+  const ext = allowed[file.type];
   if (!ext) {
     throw new UploadError(
-      `Недопустимый формат: ${file.type || 'неизвестно'}. Разрешены JPG, PNG, WEBP, AVIF, GIF`,
+      allowVideo
+        ? `Недопустимый формат: ${file.type || 'неизвестно'}. Разрешены JPG, PNG, WEBP, AVIF, GIF и видео MP4, WEBM`
+        : `Недопустимый формат: ${file.type || 'неизвестно'}. Разрешены JPG, PNG, WEBP, AVIF, GIF`,
+    );
+  }
+
+  const isVideo = file.type in VIDEO_MIME;
+  const limit = isVideo ? MAX_VIDEO_BYTES : MAX_BYTES;
+  if (file.size > limit) {
+    throw new UploadError(
+      `Файл «${file.name}» больше ${Math.round(limit / 1024 / 1024)} МБ` +
+        (isVideo ? '. Сожмите ролик или сократите его до 10–15 секунд' : ''),
     );
   }
 
@@ -76,7 +116,7 @@ export async function saveUploadedFile(file: File): Promise<string> {
 export function resolveUploadPath(publicPathOrName: string): string | null {
   const base = path.basename(publicPathOrName);
   if (!base || base.startsWith('.')) return null;
-  if (!EXT_TO_MIME[path.extname(base).toLowerCase()]) return null;
+  if (!ALL_EXT_TO_MIME[path.extname(base).toLowerCase()]) return null;
   const target = path.join(UPLOAD_DIR, base);
   if (!target.startsWith(UPLOAD_DIR + path.sep)) return null;
   return target;

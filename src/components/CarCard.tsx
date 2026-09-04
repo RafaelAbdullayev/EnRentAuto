@@ -2,6 +2,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { effectivePricePerDay } from '@/lib/pricing';
 import { formatMoney } from '@/lib/format';
+import { CarCover } from '@/components/CarMedia';
 import type { BodyType, FuelType, Transmission } from '@prisma/client';
 
 export interface CarCardData {
@@ -44,13 +45,7 @@ export function CarCard({
       <Link href={href} className="block">
         <div className="relative aspect-[16/10] overflow-hidden bg-ink-800">
           {cover ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={cover}
-              alt={`${car.brand} ${car.model}`}
-              loading="lazy"
-              className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
-            />
+            <CarCover url={cover} alt={`${car.brand} ${car.model}`} />
           ) : (
             <div className="grid h-full w-full place-items-center text-4xl text-ink-600">🚗</div>
           )}

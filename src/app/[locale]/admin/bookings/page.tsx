@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import type { BookingStatus, Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { BookingActions } from '@/components/admin/BookingActions';
+import { MediaThumb } from '@/components/CarMedia';
 import { BOOKING_STATUS_LABELS, BOOKING_STATUS_STYLES } from '@/lib/constants';
 import { formatDateTime, formatMoney, cn } from '@/lib/format';
 
@@ -134,10 +135,9 @@ export default async function AdminBookingsPage({
 
                 {/* Автомобиль */}
                 <div className="flex items-start gap-3">
-                  <div className="h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-ink-800">
+                  <div className="relative h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-ink-800">
                     {b.car.images[0] ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={b.car.images[0].url} alt="" className="h-full w-full object-cover" />
+                      <MediaThumb url={b.car.images[0].url} />
                     ) : (
                       <div className="grid h-full w-full place-items-center text-lg text-ink-600">🚗</div>
                     )}

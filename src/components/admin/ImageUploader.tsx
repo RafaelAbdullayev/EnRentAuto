@@ -2,11 +2,12 @@
 
 import { useRef, useState } from 'react';
 import { cn } from '@/lib/format';
+import { MediaThumb } from '@/components/CarMedia';
 
 /**
- * Загрузчик фотографий: drag-and-drop + выбор файлов.
+ * Загрузчик фото и коротких видео: drag-and-drop + выбор файлов.
  * Файлы сразу уходят на /api/upload, компонент хранит массив публичных URL.
- * Порядок можно менять — первое фото становится главным.
+ * Порядок можно менять — первый файл становится обложкой в каталоге.
  */
 export function ImageUploader({
   value,
@@ -27,7 +28,7 @@ export function ImageUploader({
     if (list.length === 0) return;
 
     if (value.length + list.length > max) {
-      setError(`Максимум ${max} фотографий на автомобиль`);
+      setError(`Максимум ${max} файлов на автомобиль`);
       return;
     }
 
@@ -39,7 +40,7 @@ export function ImageUploader({
       const res = await fetch('/api/upload', { method: 'POST', body: form });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? 'Не удалось загрузить фото');
+        setError(data.error ?? 'Не удалось загрузить файлы');
         return;
       }
       onChange([...value, ...data.urls]);
@@ -84,15 +85,16 @@ export function ImageUploader({
       >
         <span className="text-3xl text-zinc-600">{uploading ? '⏳' : '⇪'}</span>
         <p className="mt-3 text-sm text-zinc-300">
-          {uploading ? 'Загружаем…' : 'Перетащите фото сюда или нажмите для выбора'}
+          {uploading ? 'Загружаем…' : 'Перетащите фото или видео сюда или нажмите для выбора'}
         </p>
         <p className="mt-1 text-xs text-zinc-600">
-          JPG, PNG, WEBP, AVIF · до 8 МБ · максимум {max} шт.
+          Фото: JPG, PNG, WEBP, AVIF, GIF · до 8 МБ. Видео: MP4, WEBM · до 40 МБ.
+          Максимум {max} файлов, первый — обложка в каталоге.
         </p>
         <input
           ref={inputRef}
           type="file"
-          accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
+          accept="image/jpeg,image/png,image/webp,image/avif,image/gif,video/mp4,video/webm"
           multiple
           hidden
           onChange={(e) => e.target.files && void upload(e.target.files)}
@@ -108,12 +110,11 @@ export function ImageUploader({
               key={url}
               className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-ink-600 bg-ink-800"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={url} alt="" className="h-full w-full object-cover" />
+              <MediaThumb url={url} />
 
               {i === 0 && (
                 <span className="absolute left-2 top-2 rounded-md bg-accent px-2 py-0.5 text-[10px] font-semibold text-ink-950">
-                  Главное
+                  Обложка
                 </span>
               )}
 

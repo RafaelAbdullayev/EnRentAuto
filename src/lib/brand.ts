@@ -1,6 +1,14 @@
 import { mkdir, readdir, stat, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { ALLOWED_MIME, EXT_TO_MIME, MAX_BYTES, UPLOAD_DIR, UploadError } from '@/lib/upload';
+import {
+  ALLOWED_MIME,
+  ALL_EXT_TO_MIME,
+  MAX_BYTES,
+  MAX_VIDEO_BYTES,
+  UPLOAD_DIR,
+  UploadError,
+  VIDEO_MIME,
+} from '@/lib/upload';
 import { isVideoMime, type BrandKind } from '@/lib/brand.client';
 
 /**
@@ -16,32 +24,12 @@ export const BRAND_DIR = path.join(UPLOAD_DIR, 'brand');
 export { BRAND_KINDS, isBrandKind, brandUrl, isVideoMime, BRAND_ACCEPT } from '@/lib/brand.client';
 export type { BrandKind } from '@/lib/brand.client';
 
-/**
- * Видео допустимо только для фона: это «живой фон» первого экрана.
- * MP4 (H.264) понимают все браузеры, WebM — запасной вариант поменьше.
- */
-const VIDEO_MIME: Record<string, string> = {
-  'video/mp4': '.mp4',
-  'video/webm': '.webm',
-};
-
-const VIDEO_EXT_TO_MIME: Record<string, string> = {
-  '.mp4': 'video/mp4',
-  '.webm': 'video/webm',
-};
-
-/** Видео тяжелее картинок, поэтому у него свой лимит. */
-export const MAX_VIDEO_BYTES = Number(
-  process.env.BRAND_VIDEO_MAX_BYTES ?? 40 * 1024 * 1024,
-);
-
 /** Что разрешено загружать для каждого вида. */
 function allowedMime(kind: BrandKind): Record<string, string> {
   return kind === 'hero' ? { ...ALLOWED_MIME, ...VIDEO_MIME } : ALLOWED_MIME;
 }
 
-/** Обратное соответствие «расширение → тип» для отдачи файла. */
-const BRAND_EXT_TO_MIME: Record<string, string> = { ...EXT_TO_MIME, ...VIDEO_EXT_TO_MIME };
+
 
 export type BrandFile = {
   filePath: string;
@@ -62,7 +50,7 @@ export async function findBrandImage(kind: BrandKind): Promise<BrandFile | null>
   for (const name of entries) {
     const ext = path.extname(name).toLowerCase();
     if (path.basename(name, ext) !== kind) continue;
-    const mime = BRAND_EXT_TO_MIME[ext];
+    const mime = ALL_EXT_TO_MIME[ext];
     if (!mime) continue;
 
     const filePath = path.join(BRAND_DIR, name);
