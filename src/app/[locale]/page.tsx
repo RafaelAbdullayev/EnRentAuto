@@ -6,8 +6,9 @@ import { SiteFooter } from '@/components/SiteFooter';
 import { SearchForm } from '@/components/SearchForm';
 import { CarCard } from '@/components/CarCard';
 import { cn, formatNumber } from '@/lib/format';
-import { brandUrl } from '@/lib/brand.client';
+import { brandUrl, isVideoMime } from '@/lib/brand.client';
 import { findBrandImage } from '@/lib/brand';
+import { HeroVideo } from '@/components/HeroVideo';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,7 +26,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     }),
     prisma.car.count({ where: { isArchived: false } }),
     prisma.booking.count({ where: { status: 'COMPLETED' } }),
-    // Фотография первого экрана, загруженная в админке («Оформление»).
+    // Фон первого экрана, загруженный в админке («Оформление»):
+    // фотография, GIF или видео.
     findBrandImage('hero'),
   ]);
   const hasHero = hero !== null;
@@ -56,10 +58,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             hasHero && 'flex min-h-[88vh] items-center',
           )}
         >
-          {hasHero ? (
+          {hero ? (
             <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={brandUrl('hero')} alt="" className="hero-photo" />
+              {isVideoMime(hero.mime) ? (
+                <HeroVideo mime={hero.mime} />
+              ) : (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={brandUrl('hero')} alt="" className="hero-photo" />
+              )}
               <div className="hero-scrim-x" />
               <div className="hero-scrim-y" />
             </>

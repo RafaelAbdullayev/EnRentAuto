@@ -3,12 +3,12 @@
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/format';
-import { brandUrl, type BrandKind } from '@/lib/brand.client';
+import { BRAND_ACCEPT, brandUrl, isVideoMime, type BrandKind } from '@/lib/brand.client';
 
 /**
- * Загрузка картинок оформления: логотипа и фона первого экрана.
- * Файл сразу уходит на /api/admin/brand/<вид> и появляется на сайте —
- * пересобирать проект не нужно.
+ * Загрузка оформления: логотипа и фона первого экрана.
+ * Фоном может быть фотография, GIF или видео. Файл сразу уходит
+ * на /api/admin/brand/<вид> и появляется на сайте — пересобирать не нужно.
  */
 export function BrandImageUploader({
   kind,
@@ -16,6 +16,7 @@ export function BrandImageUploader({
   description,
   hint,
   hasImage,
+  mime,
   previewClassName = 'h-24 w-56',
   previewFit = 'contain',
 }: {
@@ -24,6 +25,8 @@ export function BrandImageUploader({
   description: string;
   hint: string;
   hasImage: boolean;
+  /** Тип уже загруженного файла — нужен, чтобы показать видео, а не картинку. */
+  mime?: string;
   /** Размер окошка предпросмотра. */
   previewClassName?: string;
   /** Логотип вписываем целиком, фон — кадрируем, как на сайте. */
@@ -35,12 +38,18 @@ export function BrandImageUploader({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [present, setPresent] = useState(hasImage);
+  // Тип текущего файла: обновляем сразу после загрузки, до router.refresh().
+  const [currentMime, setCurrentMime] = useState(mime ?? '');
   // Метка времени в адресе: браузер не показывает старую картинку из кэша.
   const [version, setVersion] = useState(0);
 
   const url = brandUrl(kind);
 
-  async function send(request: () => Promise<Response>, nextPresent: boolean) {
+  async function send(
+    request: () => Promise<Response>,
+    nextPresent: boolean,
+    nextMime = '',
+  ) {
     setError(null);
     setBusy(true);
     try {
@@ -51,6 +60,7 @@ export function BrandImageUploader({
         return;
       }
       setPresent(nextPresent);
+      setCurrentMime(nextMime);
       setVersion(Date.now());
       router.refresh();
     } catch {
@@ -67,7 +77,11 @@ export function BrandImageUploader({
 
     const form = new FormData();
     form.append('file', file);
-    await send(() => fetch(`/api/admin/brand/${kind}`, { method: 'POST', body: form }), true);
+    await send(
+      () => fetch(`/api/admin/brand/${kind}`, { method: 'POST', body: form }),
+      true,
+      file.type,
+    );
   }
 
   async function remove() {
@@ -89,16 +103,27 @@ export function BrandImageUploader({
           )}
         >
           {present ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={version ? `${url}?v=${version}` : url}
-              alt={`Текущее изображение: ${title}`}
-              className={cn(
-                previewFit === 'cover'
-                  ? 'h-full w-full object-cover'
-                  : 'max-h-full max-w-full object-contain',
-              )}
-            />
+            isVideoMime(currentMime) ? (
+              <video
+                src={version ? `${url}?v=${version}` : url}
+                className="h-full w-full object-cover"
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
+            ) : (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={version ? `${url}?v=${version}` : url}
+                alt={`Текущее оформление: ${title}`}
+                className={cn(
+                  previewFit === 'cover'
+                    ? 'h-full w-full object-cover'
+                    : 'max-h-full max-w-full object-contain',
+                )}
+              />
+            )
           ) : (
             <span className="px-3 text-center text-xs text-zinc-600">Не загружено</span>
           )}
@@ -131,7 +156,7 @@ export function BrandImageUploader({
           <input
             ref={inputRef}
             type="file"
-            accept="image/png,image/jpeg,image/webp,image/avif,image/gif"
+            accept={BRAND_ACCEPT[kind]}
             hidden
             onChange={(e) => e.target.files && void upload(e.target.files)}
           />
