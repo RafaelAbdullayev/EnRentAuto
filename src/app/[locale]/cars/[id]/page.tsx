@@ -92,10 +92,10 @@ export default async function CarPage({
 
       <main className="pt-28 pb-20">
         <div className="container-page">
-          <nav className="text-sm text-zinc-600">
-            <Link href="/" className="transition-colors hover:text-accent">{nav('home')}</Link>
+          <nav className="flex flex-wrap items-center text-sm text-zinc-600">
+            <Link href="/" className="link-row">{nav('home')}</Link>
             <span className="mx-2">/</span>
-            <Link href="/cars" className="transition-colors hover:text-accent">{nav('fleet')}</Link>
+            <Link href="/cars" className="link-row">{nav('fleet')}</Link>
             <span className="mx-2">/</span>
             <span className="text-zinc-400">{car.brand} {car.model}</span>
           </nav>

@@ -55,7 +55,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           className={cn(
             'relative isolate overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28',
             // С фотографией первый экран занимает почти всю высоту окна.
-            hasHero && 'flex min-h-[88vh] items-center',
+            hasHero && 'hero-tall flex items-center',
           )}
         >
           {hero ? (

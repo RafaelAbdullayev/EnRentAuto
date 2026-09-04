@@ -118,7 +118,7 @@ export function ImageUploader({
                 </span>
               )}
 
-              <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-1 bg-ink-950/85 p-1.5 opacity-0 backdrop-blur transition-opacity duration-200 group-hover:opacity-100">
+              <div className="hover-reveal absolute inset-x-0 bottom-0 flex items-center justify-between gap-1 bg-ink-950/85 p-1.5 backdrop-blur">
                 <div className="flex gap-1">
                   <button
                     type="button"

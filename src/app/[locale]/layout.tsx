@@ -36,6 +36,9 @@ export const viewport: Viewport = {
   themeColor: '#050506',
   width: 'device-width',
   initialScale: 1,
+  // Страница занимает весь экран, включая область «чёлки»;
+  // отступы под неё расставлены в globals.css через env(safe-area-inset-*).
+  viewportFit: 'cover',
 };
 
 export default async function LocaleLayout({

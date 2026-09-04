@@ -148,7 +148,8 @@
     "staff": "دخول الموظفين",
     "rights": "© {year} EnRentAuto. جميع الحقوق محفوظة.",
     "phone": "+994 50 123 45 67",
-    "email": "hello@enrentauto.az"
+    "email": "hello@enrentauto.az",
+    "waText": "مرحباً! أرغب في استئجار سيارة."
   },
   "enums": {
     "body": {

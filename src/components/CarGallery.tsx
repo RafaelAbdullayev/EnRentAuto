@@ -122,7 +122,7 @@ export function CarGallery({ images, alt }: { images: { url: string }[]; alt: st
           type="button"
           onClick={() => setFullscreen(true)}
           aria-label="Открыть на весь экран"
-          className="absolute end-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-ink-950/70 text-white opacity-0 backdrop-blur transition-all duration-200 hover:bg-ink-950 focus-visible:opacity-100 group-hover:opacity-100"
+          className="hover-reveal absolute end-3 top-3 grid h-11 w-11 place-items-center rounded-full bg-ink-950/70 text-white backdrop-blur hover:bg-ink-950"
         >
           ⤢
         </button>
@@ -133,7 +133,7 @@ export function CarGallery({ images, alt }: { images: { url: string }[]; alt: st
               type="button"
               aria-label="Предыдущий кадр"
               onClick={() => go(-1)}
-              className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-ink-950/70 px-3 py-2 text-white opacity-0 backdrop-blur transition-all duration-200 hover:bg-ink-950 focus-visible:opacity-100 group-hover:opacity-100"
+              className="hover-reveal absolute left-2 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-ink-950/70 text-xl text-white backdrop-blur hover:bg-ink-950 sm:left-3"
             >
               ‹
             </button>
@@ -141,7 +141,7 @@ export function CarGallery({ images, alt }: { images: { url: string }[]; alt: st
               type="button"
               aria-label="Следующий кадр"
               onClick={() => go(1)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-ink-950/70 px-3 py-2 text-white opacity-0 backdrop-blur transition-all duration-200 hover:bg-ink-950 focus-visible:opacity-100 group-hover:opacity-100"
+              className="hover-reveal absolute right-2 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-ink-950/70 text-xl text-white backdrop-blur hover:bg-ink-950 sm:right-3"
             >
               ›
             </button>
@@ -223,7 +223,7 @@ export function CarGallery({ images, alt }: { images: { url: string }[]; alt: st
                   event.stopPropagation();
                   go(-1);
                 }}
-                className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-ink-800/80 px-4 py-3 text-2xl text-white transition-colors duration-200 hover:bg-ink-700 sm:left-6"
+                className="absolute left-2 top-1/2 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-ink-800/80 text-2xl text-white transition-colors duration-200 hover:bg-ink-700 sm:left-6"
               >
                 ‹
               </button>
@@ -234,7 +234,7 @@ export function CarGallery({ images, alt }: { images: { url: string }[]; alt: st
                   event.stopPropagation();
                   go(1);
                 }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-ink-800/80 px-4 py-3 text-2xl text-white transition-colors duration-200 hover:bg-ink-700 sm:right-6"
+                className="absolute right-2 top-1/2 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-ink-800/80 text-2xl text-white transition-colors duration-200 hover:bg-ink-700 sm:right-6"
               >
                 ›
               </button>

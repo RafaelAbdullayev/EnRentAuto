@@ -61,7 +61,7 @@ export function SiteHeader() {
             type="button"
             aria-label={t('menu')}
             onClick={() => setOpen((v) => !v)}
-            className="btn-ghost btn-sm lg:hidden"
+            className="btn-ghost btn-sm w-11 lg:hidden"
           >
             {open ? '✕' : '☰'}
           </button>
@@ -76,7 +76,7 @@ export function SiteHeader() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="rounded-lg px-3 py-2.5 text-sm text-zinc-300 hover:bg-ink-800 hover:text-white"
+                className="flex min-h-11 items-center rounded-lg px-3 text-sm text-zinc-300 hover:bg-ink-800 hover:text-white"
               >
                 {item.label}
               </Link>
