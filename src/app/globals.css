@@ -1,0 +1,256 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    sans-serif;
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    @apply border-ink-700;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-ink-950 text-zinc-200 antialiased;
+    font-feature-settings: 'ss01', 'cv11';
+    /* Серая вспышка при тапе в Android-браузерах — выглядит дёшево. */
+    -webkit-tap-highlight-color: transparent;
+    /* Убирает задержку 300 мс перед реакцией на тап. */
+    touch-action: manipulation;
+    /* Учитываем «чёлку» и скруглённые углы (viewport-fit=cover). */
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  ::selection {
+    @apply bg-accent/30 text-white;
+  }
+  /* Тонкий премиальный скроллбар */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-ink-950;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-ink-600;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-ink-500;
+  }
+  input[type='date']::-webkit-calendar-picker-indicator,
+  input[type='datetime-local']::-webkit-calendar-picker-indicator {
+    filter: invert(0.75);
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  /* ─── Поверхности ─────────────────────────────────────────────────── */
+  .surface {
+    @apply rounded-2xl border border-ink-700/80 bg-ink-850/70 shadow-card backdrop-blur-xl;
+  }
+  .surface-hover {
+    @apply transition-all duration-300 hover:border-accent/40 hover:shadow-glow;
+  }
+
+  /*
+   * Управление, появляющееся при наведении (стрелки галереи, кнопка
+   * «на весь экран»). На телефоне и планшете наведения не существует,
+   * поэтому там элементы видны всегда — иначе ими невозможно пользоваться.
+   */
+  .hover-reveal {
+    @apply opacity-100 transition-opacity duration-200;
+  }
+  @media (hover: hover) {
+    .hover-reveal {
+      @apply opacity-0;
+    }
+    .group:hover .hover-reveal,
+    .hover-reveal:focus-visible {
+      @apply opacity-100;
+    }
+  }
+
+  /*
+   * Высота первого экрана. 100vh на iOS считается вместе с адресной
+   * строкой, из-за чего блок «прыгает» при прокрутке; svh считает
+   * видимую часть. Первая строка — запасная для старых браузеров.
+   */
+  .hero-tall {
+    min-height: 88vh;
+    min-height: 88svh;
+  }
+
+  /* ─── Первый экран ────────────────────────────────────────────────── */
+  /* Фон первого экрана: фотография, GIF или видео — стиль общий. */
+  .hero-photo {
+    @apply absolute inset-0 -z-10 h-full w-full object-cover object-center;
+    /*
+     * Медленное приближение и обратно, по кругу: фотография всё время
+     * «дышит». Раньше анимация шла один раз и замирала — через полминуты
+     * фон переставал двигаться, и это выглядело как поломка.
+     */
+    animation: hero-zoom 40s ease-in-out infinite alternate;
+  }
+  /* У видео своё движение — приближение только сбило бы кадрирование. */
+  video.hero-photo {
+    animation: none;
+  }
+
+  /*
+   * Затемнение поверх фотографии. Плотное со стороны текста и почти
+   * прозрачное с противоположной: заголовок и форма читаются на любом снимке,
+   * а сам кадр остаётся виден. В арабской версии стороны меняются местами.
+   */
+  .hero-scrim-x {
+    @apply pointer-events-none absolute inset-0 -z-10;
+    background: linear-gradient(
+      90deg,
+      #050506 0%,
+      rgba(5, 5, 6, 0.92) 26%,
+      rgba(5, 5, 6, 0.6) 52%,
+      rgba(5, 5, 6, 0.18) 78%,
+      rgba(5, 5, 6, 0) 100%
+    );
+  }
+  [dir='rtl'] .hero-scrim-x {
+    background: linear-gradient(
+      270deg,
+      #050506 0%,
+      rgba(5, 5, 6, 0.92) 26%,
+      rgba(5, 5, 6, 0.6) 52%,
+      rgba(5, 5, 6, 0.18) 78%,
+      rgba(5, 5, 6, 0) 100%
+    );
+  }
+  /*
+   * На телефоне текст занимает всю ширину, поэтому боковое затемнение
+   * заменяем сплошным: фотография остаётся фоном, читаемость важнее.
+   */
+  @media (max-width: 640px) {
+    .hero-scrim-x,
+    [dir='rtl'] .hero-scrim-x {
+      background: linear-gradient(
+        180deg,
+        rgba(5, 5, 6, 0.94) 0%,
+        rgba(5, 5, 6, 0.78) 42%,
+        rgba(5, 5, 6, 0.62) 68%,
+        rgba(5, 5, 6, 0.92) 100%
+      );
+    }
+  }
+
+  /* Мягкие края: сверху под шапкой, снизу — стык со следующим блоком. */
+  .hero-scrim-y {
+    @apply pointer-events-none absolute inset-0 -z-10;
+    background: linear-gradient(
+      180deg,
+      rgba(5, 5, 6, 0.8) 0%,
+      rgba(5, 5, 6, 0) 24%,
+      rgba(5, 5, 6, 0) 58%,
+      #050506 100%
+    );
+  }
+
+  /* ─── Кнопки ──────────────────────────────────────────────────────── */
+  .btn {
+    /* min-h-11 = 44px: минимальный размер цели нажатия пальцем.
+       Ограничение снимается ниже — только там, где есть мышь. */
+    @apply inline-flex min-h-11 select-none items-center justify-center gap-2 rounded-xl px-5 py-2.5
+           text-sm font-medium transition-all duration-200 focus-visible:outline-none
+           focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2
+           focus-visible:ring-offset-ink-950 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn bg-gradient-to-b from-accent-soft to-accent text-ink-950 shadow-[0_8px_24px_-10px_rgba(200,169,106,.8)]
+           hover:-translate-y-0.5 hover:shadow-[0_14px_34px_-10px_rgba(200,169,106,.95)] active:translate-y-0;
+  }
+  .btn-ghost {
+    @apply btn border border-ink-600 bg-ink-800/60 text-zinc-200 hover:border-accent/50
+           hover:bg-ink-700/70 hover:text-white;
+  }
+  .btn-danger {
+    @apply btn border border-signal-cancel/40 bg-signal-cancel/10 text-signal-cancel
+           hover:bg-signal-cancel/20 hover:shadow-[0_10px_28px_-12px_rgba(224,85,97,.8)];
+  }
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+
+  /* Строка-ссылка в подвале: пальцем это должна быть цель в 44 px. */
+  .link-row {
+    @apply inline-flex min-h-11 items-center transition-colors hover:text-accent;
+  }
+
+  /*
+   * Компактный вид — только для устройств с мышью. Проверяем не ширину
+   * экрана, а тип указателя: планшет шире телефона, но палец у него
+   * такой же, и на iPad Safari поле мельче 16px тоже приводит к зуму.
+   */
+  @media (pointer: fine) {
+    .btn,
+    .link-row {
+      @apply min-h-0;
+    }
+    .link-row {
+      @apply py-0.5;
+    }
+    .field {
+      @apply py-2.5 text-sm;
+    }
+  }
+
+  /* ─── Формы ───────────────────────────────────────────────────────── */
+  .label {
+    @apply mb-1.5 block text-xs font-medium uppercase tracking-wider text-zinc-500;
+  }
+  .field {
+    /* text-base (16px) на сенсорном экране обязателен: при меньшем размере
+       Safari на iOS и iPadOS приближает страницу при фокусе на поле. */
+    @apply w-full rounded-xl border border-ink-600 bg-ink-900/80 px-4 py-3 text-base text-zinc-100
+           placeholder:text-zinc-600 transition-colors duration-200
+           focus:border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent/20;
+  }
+  .field-error {
+    @apply border-signal-cancel/60 focus:border-signal-cancel focus:ring-signal-cancel/20;
+  }
+  .hint {
+    @apply mt-1 text-xs text-zinc-500;
+  }
+  .error-text {
+    @apply mt-1 text-xs text-signal-cancel;
+  }
+
+  /* ─── Бейджи и прочее ─────────────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1;
+  }
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.25em] text-accent;
+  }
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+}
+
+@keyframes hero-zoom {
+  from {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.1) translate3d(-1%, -1%, 0);
+  }
+}
+
+/* Уважаем системную настройку «уменьшить движение». */
+@media (prefers-reduced-motion: reduce) {
+  .hero-photo {
+    animation: none;
+  }
+}

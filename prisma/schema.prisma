@@ -1,0 +1,259 @@
+// ═══════════════════════════════════════════════════════════════════════════
+//  EnRentAuto — схема БД (PostgreSQL)
+//  Все денежные значения хранятся в МАНАТАХ (AZN), целым числом (Int) —
+//  без float, чтобы исключить ошибки округления при расчёте аренды.
+//  Код валюты задаётся в NEXT_PUBLIC_CURRENCY (см. src/lib/currency.ts).
+// ═══════════════════════════════════════════════════════════════════════════
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Роли и пользователи ──────────────────────────────────────────────────
+
+enum Role {
+  ADMIN
+  MANAGER
+  USER
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String
+  passwordHash String
+  role         Role      @default(USER)
+  phone        String?
+  isActive     Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  bookings  Booking[]
+  auditLogs AuditLog[]
+
+  @@index([role])
+}
+
+// ─── Автопарк ─────────────────────────────────────────────────────────────
+
+enum BodyType {
+  SEDAN
+  HATCHBACK
+  SUV
+  CROSSOVER
+  COUPE
+  CABRIO
+  MINIVAN
+  PICKUP
+  WAGON
+}
+
+enum Transmission {
+  AUTOMATIC
+  MANUAL
+  ROBOT
+  CVT
+}
+
+enum FuelType {
+  PETROL
+  DIESEL
+  HYBRID
+  ELECTRIC
+  GAS
+}
+
+enum CarStatus {
+  AVAILABLE // в строю, можно бронировать
+  MAINTENANCE // на ТО / ремонте — из выдачи исключена
+  RETIRED // выведена из парка
+}
+
+model Car {
+  id                  String       @id @default(cuid())
+  brand               String
+  model               String
+  year                Int
+  bodyType            BodyType
+  transmission        Transmission
+  fuelType            FuelType     @default(PETROL)
+  seats               Int          @default(5)
+  color               String?
+  plateNumber         String?      @unique
+  /// Базовая цена за сутки, ₼
+  pricePerDay         Int
+  /// Скидка (спецпредложение) в процентах, 0–90
+  discount            Int          @default(0)
+  /// Залог, ₼
+  deposit             Int          @default(0)
+  /// Включённый лимит пробега в сутки, км (0 = без ограничений)
+  mileageLimit        Int          @default(0)
+  /// Стоимость километра сверх лимита — в МИНОРНЫХ единицах (гяпиках).
+  /// 30 = 0,30 ₼/км. Дробная ставка хранится целым числом, чтобы не
+  /// заводить float в денежных расчётах.
+  overMileageFeeMinor Int          @default(0)
+  description         String       @default("")
+  /// Опции: «Климат-контроль», «Камера 360», … (массив строк PostgreSQL)
+  features            String[]     @default([])
+  status              CarStatus    @default(AVAILABLE)
+  /// Мягкое удаление — авто уходит в архив, история заказов сохраняется
+  isArchived          Boolean      @default(false)
+  archivedAt          DateTime?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  images   CarImage[]
+  bookings Booking[]
+
+  @@index([isArchived, status])
+  @@index([brand, model])
+}
+
+model CarImage {
+  id        String   @id @default(cuid())
+  carId     String
+  /// Публичный путь вида /uploads/xxx.webp
+  url       String
+  /// Порядок в карусели; 0 — главное фото
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  car Car @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+  @@index([carId, position])
+}
+
+// ─── Бронирования ─────────────────────────────────────────────────────────
+
+enum BookingStatus {
+  NEW // Новый — только что оставлена заявка
+  CONFIRMED // Подтверждён менеджером
+  ACTIVE // Машина выдана клиенту
+  COMPLETED // Завершён, машина принята
+  CANCELLED // Отменён
+}
+
+model Booking {
+  id   String @id @default(cuid())
+  /// Человекочитаемый номер заказа, напр. ER-8H3K2Q
+  code String @unique
+
+  carId  String
+  userId String?
+
+  // Данные клиента (бронь возможна без регистрации)
+  customerName String
+  phone        String
+  email        String
+  /// Паспорт / водительское удостоверение
+  documentInfo String
+  comment      String?
+
+  // Плановые даты аренды
+  startAt DateTime
+  endAt   DateTime
+  /// Количество расчётных суток (округление вверх)
+  days    Int
+
+  // Финансы (фиксируются в момент создания — цена не «плывёт» задним числом)
+  pricePerDay Int
+  discount    Int     @default(0)
+  /// Плановая сумма к оплате, ₼
+  totalPrice  Int
+  /// Доплаты при возврате: штрафы, перерасход топлива, переработка часов
+  extraCharge Int     @default(0)
+  extraNote   String?
+  /// Итог по факту возврата (заполняется при приёме машины)
+  finalPrice  Int?
+
+  status BookingStatus @default(NEW)
+
+  // Фактические отметки
+  issuedAt     DateTime? // машина выдана
+  returnedAt   DateTime? // машина принята
+  cancelledAt  DateTime?
+  cancelReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  car  Car   @relation(fields: [carId], references: [id])
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([carId, startAt, endAt])
+  @@index([createdAt])
+}
+
+// ─── Онлайн-присутствие (счётчик посетителей без регистрации) ─────────────
+
+model VisitorSession {
+  id        String   @id @default(cuid())
+  /// Анонимный идентификатор из httpOnly-cookie
+  sid       String   @unique
+  ip        String   @default("")
+  userAgent String   @default("")
+  country   String?
+  lastPath  String   @default("/")
+  referrer  String?
+  pageViews Int      @default(1)
+  firstSeen DateTime @default(now())
+  lastSeen  DateTime @default(now())
+
+  @@index([lastSeen])
+}
+
+// ─── Журнал действий администратора ───────────────────────────────────────
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String // CAR_CREATE, BOOKING_ISSUE, …
+  entity    String // Car / Booking
+  entityId  String
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+}
+
+// ─── Редактируемые тексты сайта ───────────────────────────────────────────
+
+/// Переопределение строки интерфейса, заданное администратором.
+///
+/// Работает поверх словарей messages/<locale>.json: если для пары
+/// (язык, ключ) есть запись — показывается она, иначе значение из файла.
+/// Пустая строка означает «показывать пусто», отсутствие записи —
+/// «взять значение по умолчанию».
+model SiteText {
+  id        String   @id @default(cuid())
+  /// Код языка: ru, en, az, tr, ar, zh
+  locale    String
+  /// Точечный путь ключа, напр. footer.phone или home.title1
+  key       String
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@unique([locale, key])
+  @@index([locale])
+}
+
+// ─── Настройки площадки (единственная строка id = "singleton") ────────────
+
+model Settings {
+  id           String   @id @default("singleton")
+  siteName     String   @default("EnRentAuto")
+  phone        String   @default("+7 (999) 000-00-00")
+  email        String   @default("hello@enrentauto.ru")
+  address      String   @default("Москва, Пресненская наб., 12")
+  workingHours String   @default("Круглосуточно, 7 дней в неделю")
+  updatedAt    DateTime @updatedAt
+}
