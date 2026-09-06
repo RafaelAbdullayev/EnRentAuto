@@ -150,6 +150,9 @@ model Booking {
   // Данные клиента (бронь возможна без регистрации)
   customerName String
   phone        String
+  /// Тот же номер, только цифры: по нему клиент находит свои брони.
+  /// Хранится отдельно, потому что в phone номер лежит как его ввёл человек.
+  phoneDigits  String @default("")
   email        String
   /// Паспорт / водительское удостоверение
   documentInfo String
@@ -189,6 +192,7 @@ model Booking {
   @@index([status])
   @@index([carId, startAt, endAt])
   @@index([createdAt])
+  @@index([phoneDigits])
 }
 
 // ─── Онлайн-присутствие (счётчик посетителей без регистрации) ─────────────

@@ -5,7 +5,8 @@
     "fleetTitle": "车队",
     "successTitle": "预订申请已收到",
     "loginTitle": "登录管理后台",
-    "carTitle": "{brand} {model} {year} — 租赁"
+    "carTitle": "{brand} {model} {year} — 租赁",
+    "myTitle": "我的预订 — EnRentAuto"
   },
   "nav": {
     "home": "首页",
@@ -14,7 +15,8 @@
     "contacts": "联系我们",
     "book": "立即预订",
     "menu": "菜单",
-    "language": "语言"
+    "language": "语言",
+    "my": "我的预订"
   },
   "home": {
     "eyebrow": "高端租车服务",
@@ -196,5 +198,27 @@
     "retry": "刷新",
     "notFoundToCatalog": "前往车型目录",
     "notFoundToHome": "返回首页"
+  },
+  "my": {
+    "title": "我的预订",
+    "subtitle": "输入您的电话号码和任意一笔订单的编号，我们将显示该号码下的所有预订。",
+    "phone": "电话",
+    "phonePh": "+994 70 123 45 67",
+    "code": "订单编号",
+    "codePh": "ER-A1B2C3",
+    "hint": "订单编号在预订完成后已显示，并随确认信息发送给您。",
+    "submit": "查看预订",
+    "submitting": "查询中…",
+    "notFound": "未找到与该编号和电话号码匹配的订单，请检查信息。",
+    "networkError": "网络不可用，请重试。",
+    "found": "找到预订：{count}",
+    "reset": "换一个号码",
+    "period": "租期",
+    "days": "天数",
+    "price": "金额",
+    "status": "状态",
+    "created": "下单时间",
+    "extra": "归还时补收",
+    "total": "合计"
   }
 }

@@ -5,7 +5,8 @@
     "fleetTitle": "Avtopark",
     "successTitle": "Sorğu qəbul edildi",
     "loginTitle": "İdarəetmə panelinə giriş",
-    "carTitle": "{brand} {model} {year} — icarə"
+    "carTitle": "{brand} {model} {year} — icarə",
+    "myTitle": "Rezervasiyalarım — EnRentAuto"
   },
   "nav": {
     "home": "Ana səhifə",
@@ -14,7 +15,8 @@
     "contacts": "Əlaqə",
     "book": "Rezerv et",
     "menu": "Menyu",
-    "language": "Dil"
+    "language": "Dil",
+    "my": "Rezervasiyalarım"
   },
   "home": {
     "eyebrow": "Premium avtomobil icarəsi",
@@ -196,5 +198,27 @@
     "retry": "Yenilə",
     "notFoundToCatalog": "Kataloqa",
     "notFoundToHome": "Ana səhifəyə"
+  },
+  "my": {
+    "title": "Rezervasiyalarım",
+    "subtitle": "Telefon nömrənizi və istənilən sifarişinizin kodunu daxil edin — bu nömrə ilə edilmiş bütün rezervasiyaları göstərəcəyik.",
+    "phone": "Telefon",
+    "phonePh": "+994 70 123 45 67",
+    "code": "Sifariş kodu",
+    "codePh": "ER-A1B2C3",
+    "hint": "Sifariş kodunu rezervasiyadan dərhal sonra göstərdik və təsdiqdə göndərdik.",
+    "submit": "Rezervasiyaları göstər",
+    "submitting": "Axtarırıq…",
+    "notFound": "Bu kod və telefon nömrəsi ilə sifariş tapılmadı. Məlumatları yoxlayın.",
+    "networkError": "Şəbəkə əlçatan deyil. Yenidən cəhd edin.",
+    "found": "Tapılan rezervasiya: {count}",
+    "reset": "Başqa nömrə",
+    "period": "İcarə müddəti",
+    "days": "Gün",
+    "price": "Məbləğ",
+    "status": "Status",
+    "created": "Rəsmiləşdirilib",
+    "extra": "Qaytararkən əlavə ödəniş",
+    "total": "Yekun"
   }
 }

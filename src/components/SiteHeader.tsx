@@ -23,6 +23,7 @@ export function SiteHeader() {
     { href: '/', label: t('home') },
     { href: '/cars', label: t('fleet') },
     { href: '/#how', label: t('how') },
+    { href: '/my', label: t('my') },
     { href: '/#contacts', label: t('contacts') },
   ];
 

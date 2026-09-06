@@ -5,7 +5,8 @@
     "fleetTitle": "Araç filosu",
     "successTitle": "Talebiniz alındı",
     "loginTitle": "Yönetim paneline giriş",
-    "carTitle": "{brand} {model} {year} — kiralama"
+    "carTitle": "{brand} {model} {year} — kiralama",
+    "myTitle": "Rezervasyonlarım — EnRentAuto"
   },
   "nav": {
     "home": "Ana sayfa",
@@ -14,7 +15,8 @@
     "contacts": "İletişim",
     "book": "Rezervasyon",
     "menu": "Menü",
-    "language": "Dil"
+    "language": "Dil",
+    "my": "Rezervasyonlarım"
   },
   "home": {
     "eyebrow": "Premium araç kiralama",
@@ -196,5 +198,27 @@
     "retry": "Yenile",
     "notFoundToCatalog": "Kataloğa",
     "notFoundToHome": "Ana sayfaya"
+  },
+  "my": {
+    "title": "Rezervasyonlarım",
+    "subtitle": "Telefon numaranızı ve herhangi bir siparişinizin kodunu girin — bu numarayla yapılan tüm rezervasyonları gösterelim.",
+    "phone": "Telefon",
+    "phonePh": "+994 70 123 45 67",
+    "code": "Sipariş kodu",
+    "codePh": "ER-A1B2C3",
+    "hint": "Sipariş kodunu rezervasyondan hemen sonra gösterdik ve onayda gönderdik.",
+    "submit": "Rezervasyonları göster",
+    "submitting": "Aranıyor…",
+    "notFound": "Bu kod ve telefon numarasıyla sipariş bulunamadı. Bilgileri kontrol edin.",
+    "networkError": "Ağ kullanılamıyor. Lütfen tekrar deneyin.",
+    "found": "Bulunan rezervasyon: {count}",
+    "reset": "Başka numara",
+    "period": "Kiralama dönemi",
+    "days": "Gün",
+    "price": "Tutar",
+    "status": "Durum",
+    "created": "Oluşturuldu",
+    "extra": "İade sırasında ek ücret",
+    "total": "Toplam"
   }
 }

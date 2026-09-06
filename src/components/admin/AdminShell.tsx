@@ -14,6 +14,7 @@ const NAV = [
   { href: '/admin/content', label: 'Оформление и тексты', icon: '✎' },
   { href: '/admin/online', label: 'Онлайн', icon: '◉' },
   { href: '/admin/profile', label: 'Профиль', icon: '◍' },
+  { href: '/admin/about', label: 'О программе', icon: 'ⓘ' },
 ];
 
 /**

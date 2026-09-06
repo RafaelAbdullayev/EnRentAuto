@@ -5,7 +5,8 @@
     "fleetTitle": "Fleet",
     "successTitle": "Request received",
     "loginTitle": "Sign in to the dashboard",
-    "carTitle": "{brand} {model} {year} — rental"
+    "carTitle": "{brand} {model} {year} — rental",
+    "myTitle": "My bookings — EnRentAuto"
   },
   "nav": {
     "home": "Home",
@@ -14,7 +15,8 @@
     "contacts": "Contacts",
     "book": "Book now",
     "menu": "Menu",
-    "language": "Language"
+    "language": "Language",
+    "my": "My bookings"
   },
   "home": {
     "eyebrow": "Premium car rental",
@@ -196,5 +198,27 @@
     "retry": "Refresh",
     "notFoundToCatalog": "To the catalogue",
     "notFoundToHome": "To the home page"
+  },
+  "my": {
+    "title": "My bookings",
+    "subtitle": "Enter your phone number and the code of any of your orders — we will show every booking made with that number.",
+    "phone": "Phone",
+    "phonePh": "+994 70 123 45 67",
+    "code": "Order code",
+    "codePh": "ER-A1B2C3",
+    "hint": "We showed the order code right after booking and sent it in the confirmation.",
+    "submit": "Show bookings",
+    "submitting": "Searching…",
+    "notFound": "No order found with this code and phone number. Please check the details.",
+    "networkError": "Network unavailable. Please try again.",
+    "found": "Bookings found: {count}",
+    "reset": "Another number",
+    "period": "Rental period",
+    "days": "Days",
+    "price": "Amount",
+    "status": "Status",
+    "created": "Placed",
+    "extra": "Extra charge on return",
+    "total": "Total"
   }
 }

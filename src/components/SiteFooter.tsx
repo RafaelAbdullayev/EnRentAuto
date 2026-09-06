@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Logo } from '@/components/Logo';
+import { WhatsAppButton } from '@/components/WhatsAppButton';
 import { isHttpUrl, mapLink, mapServiceName, whatsappLink } from '@/lib/contact';
 
 /** Логотип WhatsApp. Инлайн-SVG: без сторонних запросов и лишних файлов. */
@@ -43,7 +44,10 @@ export function SiteFooter() {
   const email = t('email');
 
   return (
-    <footer id="contacts" className="border-t border-ink-800 bg-ink-950">
+    <>
+      <WhatsAppButton />
+
+      <footer id="contacts" className="border-t border-ink-800 bg-ink-950">
       <div className="container-page grid gap-10 py-14 md:grid-cols-4">
         <div className="md:col-span-2">
           <Logo size="md" />
@@ -63,6 +67,11 @@ export function SiteFooter() {
             <li>
               <Link href="/#how" className="link-row">
                 {nav('how')}
+              </Link>
+            </li>
+            <li>
+              <Link href="/my" className="link-row">
+                {nav('my')}
               </Link>
             </li>
           </ul>
@@ -133,6 +142,7 @@ export function SiteFooter() {
           </Link>
         </div>
       </div>
-    </footer>
+      </footer>
+    </>
   );
 }

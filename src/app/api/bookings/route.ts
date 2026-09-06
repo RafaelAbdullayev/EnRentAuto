@@ -4,6 +4,7 @@ import { bookingInputSchema, zodErrors } from '@/lib/validation';
 import { checkCarAvailability, generateBookingCode } from '@/lib/availability';
 import { calculatePrice } from '@/lib/pricing';
 import { logAction } from '@/lib/audit';
+import { phoneDigits } from '@/lib/contact';
 
 export const runtime = 'nodejs';
 
@@ -72,6 +73,8 @@ export async function POST(request: NextRequest) {
         carId: car.id,
         customerName: input.customerName,
         phone: input.phone,
+        // Только цифры — по ним клиент находит свои брони в «Мои брони».
+        phoneDigits: phoneDigits(input.phone),
         email: input.email.toLowerCase(),
         documentInfo: input.documentInfo,
         comment: input.comment || null,
