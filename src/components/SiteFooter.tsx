@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Logo } from '@/components/Logo';
-import { mapLink, whatsappLink } from '@/lib/contact';
+import { isHttpUrl, mapLink, mapServiceName, whatsappLink } from '@/lib/contact';
 
 /** Логотип WhatsApp. Инлайн-SVG: без сторонних запросов и лишних файлов. */
 function WhatsAppIcon() {
@@ -93,10 +93,10 @@ export function SiteFooter() {
                 {email}
               </a>
             </li>
-            <li>
+            <li className="flex flex-wrap items-center gap-x-3">
               {/* Адрес открывает карту: на телефоне — приложение, на
-                  компьютере — сайт. Ссылку можно заменить в админке
-                  («Оформление и тексты» → mapUrl) на Яндекс или 2ГИС. */}
+                  компьютере — сайт. Обе ссылки правятся в админке
+                  («Оформление и тексты» → mapUrl и mapUrlAlt). */}
               <a
                 href={mapLink(t('address'), t('mapUrl'))}
                 target="_blank"
@@ -106,6 +106,19 @@ export function SiteFooter() {
                 <PinIcon />
                 {t('address')}
               </a>
+
+              {/* Вторая карта: одна ссылка не может открыть два приложения,
+                  поэтому альтернативный сервис вынесен отдельной кнопкой. */}
+              {isHttpUrl(t('mapUrlAlt')) && (
+                <a
+                  href={t('mapUrlAlt')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="link-row rounded-md border border-ink-700 px-2 text-xs text-zinc-500 hover:border-accent/50"
+                >
+                  {mapServiceName(t('mapUrlAlt'))}
+                </a>
+              )}
             </li>
             <li className="py-1.5">{t('hours')}</li>
           </ul>

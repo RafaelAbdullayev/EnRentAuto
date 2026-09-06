@@ -36,3 +36,29 @@ export function mapLink(address: string, customUrl?: string): string {
   if (url.startsWith('https://') || url.startsWith('http://')) return url;
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 }
+
+/**
+ * Название картографического сервиса по адресу ссылки — для подписи
+ * второй кнопки рядом с адресом. Разбираем host, а не заводим отдельный
+ * ключ перевода: названия сервисов на всех языках пишутся одинаково.
+ */
+export function mapServiceName(url: string): string {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, '').toLowerCase();
+    if (host.includes('yandex')) return 'Yandex';
+    if (host.includes('google')) return 'Google';
+    if (host.includes('2gis')) return '2GIS';
+    if (host.includes('apple')) return 'Apple Maps';
+    if (host.includes('waze')) return 'Waze';
+    if (host.includes('openstreetmap') || host.includes('osm.org')) return 'OpenStreetMap';
+    return host;
+  } catch {
+    return '';
+  }
+}
+
+/** Ссылка годится, только если это настоящий http(s)-адрес. */
+export function isHttpUrl(value: string): boolean {
+  const v = value.trim();
+  return v.startsWith('https://') || v.startsWith('http://');
+}
