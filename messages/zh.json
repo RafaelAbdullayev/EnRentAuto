@@ -219,6 +219,22 @@
     "status": "状态",
     "created": "下单时间",
     "extra": "归还时补收",
-    "total": "合计"
+    "total": "合计",
+    "forgot": "我不记得订单编号",
+    "byCode": "使用订单编号",
+    "byEmail": "使用邮件验证码",
+    "email": "电子邮箱",
+    "emailPh": "you@email.com",
+    "emailHint": "与您预订时填写的邮箱相同。",
+    "sendCode": "发送验证码",
+    "sending": "发送中…",
+    "sentTitle": "验证码已发送",
+    "sentText": "六位验证码已发送至 {email}，15 分钟内有效，请同时查看垃圾邮件文件夹。",
+    "otp": "邮件验证码",
+    "otpPh": "123456",
+    "otpSubmit": "登录",
+    "resend": "重新发送",
+    "mailDisabled": "邮件发送尚未配置。请通过 WhatsApp 联系我们，客服会为您查找预订。",
+    "back": "返回"
   }
 }

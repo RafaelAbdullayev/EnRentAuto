@@ -219,6 +219,22 @@
     "status": "Status",
     "created": "Placed",
     "extra": "Extra charge on return",
-    "total": "Total"
+    "total": "Total",
+    "forgot": "I don't remember the order code",
+    "byCode": "By order code",
+    "byEmail": "By code from e-mail",
+    "email": "E-mail",
+    "emailPh": "you@email.com",
+    "emailHint": "The same address you provided when booking.",
+    "sendCode": "Send the code",
+    "sending": "Sending…",
+    "sentTitle": "Code sent",
+    "sentText": "A six-digit code has been sent to {email}. It is valid for 15 minutes — check the spam folder too.",
+    "otp": "Code from e-mail",
+    "otpPh": "123456",
+    "otpSubmit": "Sign in",
+    "resend": "Send again",
+    "mailDisabled": "E-mail sending is not configured. Message us on WhatsApp and the manager will find your booking.",
+    "back": "Back"
   }
 }

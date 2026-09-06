@@ -219,6 +219,22 @@
     "status": "Durum",
     "created": "Oluşturuldu",
     "extra": "İade sırasında ek ücret",
-    "total": "Toplam"
+    "total": "Toplam",
+    "forgot": "Sipariş kodunu hatırlamıyorum",
+    "byCode": "Sipariş koduyla",
+    "byEmail": "E-postadaki kodla",
+    "email": "E-posta",
+    "emailPh": "siz@email.com",
+    "emailHint": "Rezervasyon sırasında verdiğiniz adresin aynısı.",
+    "sendCode": "Kod gönder",
+    "sending": "Gönderiliyor…",
+    "sentTitle": "Kod gönderildi",
+    "sentText": "Altı haneli kod {email} adresine gönderildi. Kod 15 dakika geçerlidir — spam klasörünü de kontrol edin.",
+    "otp": "E-postadaki kod",
+    "otpPh": "123456",
+    "otpSubmit": "Giriş yap",
+    "resend": "Tekrar gönder",
+    "mailDisabled": "E-posta gönderimi yapılandırılmamış. WhatsApp’tan yazın, yönetici rezervasyonunuzu bulsun.",
+    "back": "Geri"
   }
 }

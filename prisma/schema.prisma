@@ -261,3 +261,24 @@ model Settings {
   workingHours String   @default("Круглосуточно, 7 дней в неделю")
   updatedAt    DateTime @updatedAt
 }
+
+/// Одноразовый код для входа в «Мои брони», когда клиент забыл номер заказа.
+/// Отправляется на e-mail, указанный при бронировании. Живёт 15 минут.
+model AccessCode {
+  id String @id @default(cuid())
+
+  /// Кому выдан: номер телефона клиента, только цифры.
+  phoneDigits String
+  /// Куда отправлен. Храним, чтобы показать в интерфейсе «код ушёл на a***@mail.ru».
+  email       String
+  /// Сам код не храним — только хеш, как и пароли.
+  codeHash    String
+  /// Сколько раз пробовали ввести: после пяти попыток код сгорает.
+  attempts    Int      @default(0)
+  usedAt      DateTime?
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([phoneDigits])
+  @@index([expiresAt])
+}

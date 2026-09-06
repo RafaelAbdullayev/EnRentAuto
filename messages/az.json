@@ -219,6 +219,22 @@
     "status": "Status",
     "created": "Rəsmiləşdirilib",
     "extra": "Qaytararkən əlavə ödəniş",
-    "total": "Yekun"
+    "total": "Yekun",
+    "forgot": "Sifariş kodunu xatırlamıram",
+    "byCode": "Sifariş kodu ilə",
+    "byEmail": "E-poçtdakı kodla",
+    "email": "E-poçt",
+    "emailPh": "siz@email.com",
+    "emailHint": "Rezervasiya zamanı göstərdiyiniz eyni ünvan.",
+    "sendCode": "Kod göndər",
+    "sending": "Göndərilir…",
+    "sentTitle": "Kod göndərildi",
+    "sentText": "Altırəqəmli kod {email} ünvanına göndərildi. Kod 15 dəqiqə etibarlıdır — «Spam» qovluğunu da yoxlayın.",
+    "otp": "E-poçtdakı kod",
+    "otpPh": "123456",
+    "otpSubmit": "Daxil ol",
+    "resend": "Yenidən göndər",
+    "mailDisabled": "E-poçt göndərişi qurulmayıb. WhatsApp-a yazın — menecer rezervasiyanızı tapacaq.",
+    "back": "Geri"
   }
 }

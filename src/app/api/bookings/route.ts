@@ -5,6 +5,7 @@ import { checkCarAvailability, generateBookingCode } from '@/lib/availability';
 import { calculatePrice } from '@/lib/pricing';
 import { logAction } from '@/lib/audit';
 import { phoneDigits } from '@/lib/contact';
+import { sendMail } from '@/lib/mail';
 
 export const runtime = 'nodejs';
 
@@ -87,6 +88,25 @@ export async function POST(request: NextRequest) {
         status: 'NEW',
       },
       select: { id: true, code: true, totalPrice: true, days: true, status: true },
+    });
+
+    // Письмо с номером заказа: без него клиент потом не найдёт свою бронь.
+    // Отправка не блокирует ответ и не может уронить бронирование.
+    void sendMail({
+      to: input.email,
+      subject: `EnRentAuto — заявка ${booking.code}`,
+      text: [
+        `Здравствуйте, ${input.customerName}!`,
+        '',
+        `Ваша заявка принята. Номер заказа: ${booking.code}`,
+        `Автомобиль: ${car.brand} ${car.model}`,
+        `Период: ${input.startAt.toLocaleString('ru-RU')} — ${input.endAt.toLocaleString('ru-RU')}`,
+        `Суток: ${price.days}`,
+        `Сумма: ${price.total}`,
+        '',
+        'Сохраните номер заказа — по нему вы найдёте бронь в разделе «Мои брони».',
+        'Менеджер свяжется с вами для подтверждения.',
+      ].join('\n'),
     });
 
     await logAction({
