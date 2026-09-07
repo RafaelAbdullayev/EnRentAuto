@@ -53,9 +53,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         {/* ─── Hero ───────────────────────────────────────────────────── */}
         <section
           className={cn(
-            'relative isolate overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28',
-            // С фотографией первый экран занимает почти всю высоту окна.
-            hasHero && 'hero-tall flex items-center',
+            // Отступ сверху ровно под фиксированную шапку (64 px) плюс воздух.
+            'relative isolate overflow-hidden pt-24 pb-12 sm:pt-40 sm:pb-28',
+            // Высоту в целый экран задаём только там, где содержимое в него
+            // помещается: на телефоне оно выше окна, и лишняя высота уводила
+            // форму поиска под нижний край.
+            hasHero && 'sm:hero-tall sm:flex sm:items-center',
           )}
         >
           {hero ? (
@@ -76,7 +79,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
           <div className="container-page relative w-full">
             <p className="eyebrow animate-fade-up">{t('eyebrow')}</p>
-            <h1 className="mt-5 max-w-3xl animate-fade-up text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-6xl lg:text-7xl">
+            <h1 className="mt-4 max-w-3xl animate-fade-up text-[28px] font-semibold leading-[1.12] tracking-tight text-white sm:mt-5 sm:text-6xl sm:leading-[1.08] lg:text-7xl">
               {t('title1')}
               <span className="block bg-gradient-to-r from-accent-soft via-accent to-accent-deep bg-clip-text text-transparent">
                 {t('title2')}
@@ -84,25 +87,25 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             </h1>
             <p
               className={cn(
-                'mt-6 max-w-xl animate-fade-up text-base leading-relaxed sm:text-lg',
+                'mt-4 max-w-xl animate-fade-up text-sm leading-relaxed sm:mt-6 sm:text-lg',
                 hasHero ? 'text-zinc-300' : 'text-zinc-400',
               )}
             >
               {t('subtitle')}
             </p>
 
-            <div className="mt-10 max-w-3xl animate-fade-up">
+            <div className="mt-6 max-w-3xl animate-fade-up sm:mt-10">
               <SearchForm />
             </div>
 
-            <dl className="mt-14 grid max-w-2xl grid-cols-3 gap-6 border-t border-ink-800 pt-8">
+            <dl className="mt-8 grid max-w-2xl grid-cols-3 gap-4 border-t border-ink-800 pt-6 sm:mt-14 sm:gap-6 sm:pt-8">
               {[
                 { k: `${formatNumber(carCount, locale)}+`, v: t('statCars') },
                 { k: `${formatNumber(completedCount, locale)}+`, v: t('statRentals') },
                 { k: '24/7', v: t('statSupport') },
               ].map((s) => (
                 <div key={s.v}>
-                  <dt className="text-2xl font-semibold text-white sm:text-3xl">{s.k}</dt>
+                  <dt className="text-xl font-semibold text-white sm:text-3xl">{s.k}</dt>
                   <dd className={cn('mt-1 text-xs sm:text-sm', hasHero ? 'text-zinc-400' : 'text-zinc-500')}>
                     {s.v}
                   </dd>
