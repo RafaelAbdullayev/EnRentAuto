@@ -17,7 +17,8 @@ export function BrandImageUploader({
   hint,
   hasImage,
   mime,
-  heroFit,
+  heroSettings,
+  carsWithPhoto = 0,
   previewClassName = 'h-24 w-56',
   previewFit = 'contain',
 }: {
@@ -28,8 +29,10 @@ export function BrandImageUploader({
   hasImage: boolean;
   /** Тип уже загруженного файла — нужен, чтобы показать видео, а не картинку. */
   mime?: string;
-  /** Только для фона: как он показывается на сайте. */
-  heroFit?: 'cover' | 'contain';
+  /** Только для фона: что показывать и как. */
+  heroSettings?: { mode: 'media' | 'cars'; fit: 'cover' | 'contain' };
+  /** Сколько автомобилей с фотографиями — из них собирается слайдшоу. */
+  carsWithPhoto?: number;
   /** Размер окошка предпросмотра. */
   previewClassName?: string;
   /** Логотип вписываем целиком, фон — кадрируем, как на сайте. */
@@ -45,7 +48,8 @@ export function BrandImageUploader({
   const [currentMime, setCurrentMime] = useState(mime ?? '');
   // Метка времени в адресе: браузер не показывает старую картинку из кэша.
   const [version, setVersion] = useState(0);
-  const [fit, setFit] = useState<'cover' | 'contain'>(heroFit ?? 'cover');
+  const [fit, setFit] = useState<'cover' | 'contain'>(heroSettings?.fit ?? 'cover');
+  const [mode, setMode] = useState<'media' | 'cars'>(heroSettings?.mode ?? 'media');
 
   const url = brandUrl(kind);
 
@@ -93,15 +97,16 @@ export function BrandImageUploader({
     await send(() => fetch(`/api/admin/brand/${kind}`, { method: 'DELETE' }), false);
   }
 
-  /** Как вписывать фон: заполнить экран или показать целиком. */
-  async function changeFit(next: 'cover' | 'contain') {
-    setFit(next);
+  /** Сохраняет настройки фона: источник и способ кадрирования. */
+  async function saveHero(patch: { mode?: 'media' | 'cars'; fit?: 'cover' | 'contain' }) {
+    if (patch.mode) setMode(patch.mode);
+    if (patch.fit) setFit(patch.fit);
     setError(null);
     try {
-      const res = await fetch('/api/admin/hero-fit', {
+      const res = await fetch('/api/admin/hero', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fit: next }),
+        body: JSON.stringify(patch),
       });
       if (!res.ok) {
         setError('Не удалось сохранить настройку');
@@ -187,8 +192,63 @@ export function BrandImageUploader({
         </div>
       </div>
 
+      {/* Источник фона: загруженный файл или фотографии автопарка. */}
+      {heroSettings && (
+        <fieldset className="mt-5 border-t border-ink-700/70 pt-4">
+          <legend className="sr-only">Что показывать фоном</legend>
+          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+            Что показывать фоном
+          </p>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            {([
+              {
+                value: 'media' as const,
+                title: 'Загруженный файл',
+                note: 'Фотография, GIF или видео, которое вы загрузили выше.',
+                disabled: false,
+              },
+              {
+                value: 'cars' as const,
+                title: 'Слайдшоу автопарка',
+                note:
+                  carsWithPhoto > 0
+                    ? `Фотографии ваших машин сменяют друг друга каждые 6 секунд. Сейчас с фото: ${carsWithPhoto}.`
+                    : 'Недоступно: ни у одного автомобиля нет фотографии.',
+                disabled: carsWithPhoto === 0,
+              },
+            ]).map((option) => (
+              <label
+                key={option.value}
+                className={cn(
+                  'rounded-xl border p-3 transition-colors duration-200',
+                  option.disabled
+                    ? 'cursor-not-allowed border-ink-700 opacity-50'
+                    : 'cursor-pointer',
+                  !option.disabled && mode === option.value
+                    ? 'border-accent/60 bg-accent/5'
+                    : !option.disabled && 'border-ink-600 hover:border-accent/40',
+                )}
+              >
+                <input
+                  type="radio"
+                  name="heroMode"
+                  className="sr-only"
+                  disabled={option.disabled}
+                  checked={mode === option.value}
+                  onChange={() => void saveHero({ mode: option.value })}
+                />
+                <span className="block text-sm font-medium text-zinc-200">{option.title}</span>
+                <span className="mt-1 block text-xs leading-relaxed text-zinc-500">
+                  {option.note}
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      )}
+
       {/* Эмблему или логотип нельзя обрезать — для них нужен режим «целиком». */}
-      {heroFit && (
+      {heroSettings && (
         <fieldset className="mt-5 border-t border-ink-700/70 pt-4">
           <legend className="sr-only">Как показывать фон</legend>
           <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
@@ -221,7 +281,7 @@ export function BrandImageUploader({
                   name="heroFit"
                   className="sr-only"
                   checked={fit === option.value}
-                  onChange={() => void changeFit(option.value)}
+                  onChange={() => void saveHero({ fit: option.value })}
                 />
                 <span className="block text-sm font-medium text-zinc-200">{option.title}</span>
                 <span className="mt-1 block text-xs leading-relaxed text-zinc-500">

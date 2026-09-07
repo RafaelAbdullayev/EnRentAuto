@@ -7,8 +7,10 @@ import { SearchForm } from '@/components/SearchForm';
 import { CarCard } from '@/components/CarCard';
 import { cn, formatNumber } from '@/lib/format';
 import { brandUrl, isVideoMime } from '@/lib/brand.client';
+import { isVideoUrl } from '@/lib/media';
 import { findBrandImage } from '@/lib/brand';
-import { getHeroFit } from '@/lib/settings';
+import { getHeroSettings } from '@/lib/settings';
+import { HeroSlideshow, type HeroSlide } from '@/components/HeroSlideshow';
 import { HeroVideo } from '@/components/HeroVideo';
 
 export const dynamic = 'force-dynamic';
@@ -18,7 +20,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   setRequestLocale(locale);
   const t = await getTranslations('home');
 
-  const [cars, carCount, completedCount, hero, heroFit] = await Promise.all([
+  const [cars, carCount, completedCount, hero, heroSettings] = await Promise.all([
     prisma.car.findMany({
       where: { isArchived: false, status: 'AVAILABLE' },
       include: { images: { orderBy: { position: 'asc' }, take: 1 } },
@@ -30,10 +32,24 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     // Фон первого экрана, загруженный в админке («Оформление»):
     // фотография, GIF или видео.
     findBrandImage('hero'),
-    // Заполнять им экран или вписывать целиком.
-    getHeroFit(),
+    // Что показывать фоном и как его вписывать.
+    getHeroSettings(),
   ]);
-  const hasHero = hero !== null;
+
+  // Слайдшоу собираем из тех же автомобилей, что и каталог ниже: у них уже
+  // загружена обложка, лишний запрос к базе не нужен.
+  const slides: HeroSlide[] =
+    heroSettings.mode === 'cars'
+      ? cars
+          .filter((car) => car.images[0] && !isVideoUrl(car.images[0].url))
+          .slice(0, 6)
+          .map((car) => ({ url: car.images[0].url, title: `${car.brand} ${car.model}` }))
+      : [];
+
+  // Слайдшоу включается, только если фотографии действительно есть —
+  // иначе показываем загруженный фон или обычный градиент.
+  const showSlideshow = slides.length > 0;
+  const hasHero = showSlideshow || hero !== null;
 
   const advantages = [
     { title: t('advFastT'), text: t('advFastD'), icon: '⚡' },
@@ -64,16 +80,21 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             hasHero && 'sm:hero-tall sm:flex sm:items-center',
           )}
         >
-          {hero ? (
+          {hasHero ? (
             <>
-              {isVideoMime(hero.mime) ? (
-                <HeroVideo mime={hero.mime} fit={heroFit} />
+              {showSlideshow ? (
+                <HeroSlideshow slides={slides} fit={heroSettings.fit} />
+              ) : isVideoMime(hero!.mime) ? (
+                <HeroVideo mime={hero!.mime} fit={heroSettings.fit} />
               ) : (
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img
                   src={brandUrl('hero')}
                   alt=""
-                  className={cn('hero-photo', heroFit === 'contain' && 'hero-photo-contain')}
+                  className={cn(
+                    'hero-photo',
+                    heroSettings.fit === 'contain' && 'hero-photo-contain',
+                  )}
                 />
               )}
               <div className="hero-scrim-x" />

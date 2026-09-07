@@ -11,24 +11,41 @@ export function isHeroFit(value: string): value is HeroFit {
   return (HERO_FITS as readonly string[]).includes(value);
 }
 
-/** Как показывать фон первого экрана. */
-export async function getHeroFit(): Promise<HeroFit> {
+/** media — загруженный фон, cars — слайдшоу из фотографий автопарка. */
+export const HERO_MODES = ['media', 'cars'] as const;
+export type HeroMode = (typeof HERO_MODES)[number];
+
+export function isHeroMode(value: string): value is HeroMode {
+  return (HERO_MODES as readonly string[]).includes(value);
+}
+
+export type HeroSettings = { mode: HeroMode; fit: HeroFit };
+
+/** Настройки фона первого экрана. */
+export async function getHeroSettings(): Promise<HeroSettings> {
   try {
     const settings = await prisma.settings.findUnique({
       where: { id: 'singleton' },
-      select: { heroFit: true },
+      select: { heroMode: true, heroFit: true },
     });
-    return settings && isHeroFit(settings.heroFit) ? settings.heroFit : 'cover';
+    return {
+      mode: settings && isHeroMode(settings.heroMode) ? settings.heroMode : 'media',
+      fit: settings && isHeroFit(settings.heroFit) ? settings.heroFit : 'cover',
+    };
   } catch (error) {
     console.error('[settings] не удалось прочитать настройки:', error);
-    return 'cover';
+    return { mode: 'media', fit: 'cover' };
   }
 }
 
-export async function setHeroFit(fit: HeroFit): Promise<void> {
+export async function saveHeroSettings(patch: Partial<HeroSettings>): Promise<void> {
+  const data = {
+    ...(patch.mode ? { heroMode: patch.mode } : {}),
+    ...(patch.fit ? { heroFit: patch.fit } : {}),
+  };
   await prisma.settings.upsert({
     where: { id: 'singleton' },
-    update: { heroFit: fit },
-    create: { id: 'singleton', heroFit: fit },
+    update: data,
+    create: { id: 'singleton', ...data },
   });
 }

@@ -259,8 +259,11 @@ model Settings {
   email        String   @default("hello@enrentauto.ru")
   address      String   @default("Москва, Пресненская наб., 12")
   workingHours String   @default("Круглосуточно, 7 дней в неделю")
-  /// Как показывать фон первого экрана: cover — заполнить экран, обрезав
-  /// лишнее; contain — показать целиком, не обрезая (для эмблем и логотипов).
+  /// Что показывать фоном первого экрана: media — загруженные фото или
+  /// видео; cars — слайдшоу из фотографий автопарка.
+  heroMode     String   @default("media")
+  /// Как показывать фон: cover — заполнить экран, обрезав лишнее;
+  /// contain — показать целиком, не обрезая (для эмблем и логотипов).
   heroFit      String   @default("cover")
   updatedAt    DateTime @updatedAt
 }
