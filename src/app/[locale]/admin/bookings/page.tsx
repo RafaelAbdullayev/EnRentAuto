@@ -17,6 +17,7 @@ const STATUS_TABS: { key: string; label: string }[] = [
   { key: 'ACTIVE', label: 'Активные' },
   { key: 'COMPLETED', label: 'Завершённые' },
   { key: 'CANCELLED', label: 'Отменённые' },
+  { key: 'test', label: 'Тестовые' },
 ];
 
 export default async function AdminBookingsPage({
@@ -26,8 +27,12 @@ export default async function AdminBookingsPage({
 }) {
   const { status = 'all', q } = await searchParams;
 
+  // Вкладка «Тестовые» показывает только проверочные заказы, все остальные —
+  // только рабочие: иначе суммы из тестов мешались бы в общей ленте.
   const where: Prisma.BookingWhereInput = {
-    ...(status !== 'all' ? { status: status as BookingStatus } : {}),
+    ...(status === 'test'
+      ? { isTest: true }
+      : { isTest: false, ...(status !== 'all' ? { status: status as BookingStatus } : {}) }),
     ...(q
       ? {
           OR: [
@@ -40,7 +45,7 @@ export default async function AdminBookingsPage({
       : {}),
   };
 
-  const [bookings, counts] = await Promise.all([
+  const [bookings, counts, testCount] = await Promise.all([
     prisma.booking.findMany({
       where,
       include: {
@@ -57,7 +62,12 @@ export default async function AdminBookingsPage({
       orderBy: { createdAt: 'desc' },
       take: 200,
     }),
-    prisma.booking.groupBy({ by: ['status'], _count: { _all: true } }),
+    prisma.booking.groupBy({
+      by: ['status'],
+      where: { isTest: false },
+      _count: { _all: true },
+    }),
+    prisma.booking.count({ where: { isTest: true } }),
   ]);
 
   const countByStatus = Object.fromEntries(counts.map((c) => [c.status, c._count._all]));
@@ -69,13 +79,16 @@ export default async function AdminBookingsPage({
         <h1 className="text-2xl font-semibold tracking-tight text-white">Заказы</h1>
         <p className="mt-1 text-sm text-zinc-500">
           Лента бронирований: подтверждение, выдача и приём автомобилей.
+          Проверочные заказы помечайте кнопкой «Это тестовый заказ» — их суммы
+          не попадут в выручку.
         </p>
       </header>
 
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex flex-wrap gap-1.5">
           {STATUS_TABS.map((tab) => {
-            const n = tab.key === 'all' ? total : (countByStatus[tab.key] ?? 0);
+            const n =
+              tab.key === 'all' ? total : tab.key === 'test' ? testCount : (countByStatus[tab.key] ?? 0);
             return (
               <Link
                 key={tab.key}
@@ -119,6 +132,14 @@ export default async function AdminBookingsPage({
                     <span className={`badge ${BOOKING_STATUS_STYLES[b.status]}`}>
                       {BOOKING_STATUS_LABELS[b.status]}
                     </span>
+                    {b.isTest && (
+                      <span
+                        className="badge border-ink-600 text-zinc-400"
+                        title="Не учитывается в выручке и не занимает машину"
+                      >
+                        тестовый
+                      </span>
+                    )}
                   </div>
                   <h3 className="mt-2 text-base font-semibold text-white">{b.customerName}</h3>
                   <dl className="mt-2 space-y-1 text-xs text-zinc-500">
@@ -184,7 +205,13 @@ export default async function AdminBookingsPage({
 
                 {/* Действия */}
                 <div className="lg:w-64">
-                  <BookingActions bookingId={b.id} status={b.status} totalPrice={b.totalPrice} />
+                  <BookingActions
+                    bookingId={b.id}
+                    status={b.status}
+                    totalPrice={b.totalPrice}
+                    isTest={b.isTest}
+                    code={b.code}
+                  />
                 </div>
               </div>
             </li>

@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
   const booking =
     tail.length >= 7
       ? await prisma.booking.findFirst({
-          where: { phoneDigits: { endsWith: tail }, email },
+          where: { isTest: false, phoneDigits: { endsWith: tail }, email },
           select: { id: true },
         })
       : null;

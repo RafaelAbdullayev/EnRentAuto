@@ -54,7 +54,12 @@ export default async function CarPage({
 
   // Ближайшие занятые периоды — показываем клиенту заранее.
   const busy = await prisma.booking.findMany({
-    where: { carId: car.id, status: { in: BLOCKING_STATUSES }, endAt: { gte: new Date() } },
+    where: {
+      carId: car.id,
+      isTest: false,
+      status: { in: BLOCKING_STATUSES },
+      endAt: { gte: new Date() },
+    },
     select: { startAt: true, endAt: true },
     orderBy: { startAt: 'asc' },
     take: 5,

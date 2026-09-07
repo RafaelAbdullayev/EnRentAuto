@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { requireStaff } from '@/lib/auth';
 import { bookingActionSchema, zodErrors } from '@/lib/validation';
 import { checkCarAvailability } from '@/lib/availability';
+import { BLOCKING_STATUSES } from '@/lib/constants';
 import { rentalDays } from '@/lib/pricing';
 import { logAction } from '@/lib/audit';
 import type { BookingStatus } from '@prisma/client';
@@ -21,6 +22,9 @@ const TRANSITIONS: Record<string, BookingStatus[]> = {
   reopen: ['CANCELLED'],
 };
 
+/** Пометка «тестовый» не зависит от статуса заказа. */
+const FLAG_ACTIONS = new Set(['test', 'untest']);
+
 const ACTION_LABELS: Record<string, string> = {
   confirm: 'подтвердить',
   issue: 'выдать машину',
@@ -28,6 +32,8 @@ const ACTION_LABELS: Record<string, string> = {
   complete: 'завершить',
   cancel: 'отменить',
   reopen: 'вернуть в работу',
+  test: 'пометить тестовым',
+  untest: 'вернуть в отчёты',
 };
 
 /**
@@ -37,6 +43,10 @@ const ACTION_LABELS: Record<string, string> = {
  * «Принять машину» дополнительно считает переработку:
  * если фактический возврат позже плановой даты, каждые начатые сутки
  * добавляются к сумме по тарифу заказа.
+ *
+ * Отдельно стоят действия test / untest: они не меняют статус, а помечают
+ * заказ проверочным. Такой заказ выпадает из выручки, графиков и занятости
+ * автомобиля — так убирают суммы, накопившиеся при тестировании сайта.
  */
 export async function PATCH(request: NextRequest, { params }: Ctx) {
   const session = await requireStaff();
@@ -59,6 +69,48 @@ export async function PATCH(request: NextRequest, { params }: Ctx) {
 
     const booking = await prisma.booking.findUnique({ where: { id } });
     if (!booking) return NextResponse.json({ error: 'Заказ не найден' }, { status: 404 });
+
+    // ─── Пометка «тестовый» / снятие пометки ─────────────────────────────
+    if (FLAG_ACTIONS.has(action)) {
+      const isTest = action === 'test';
+
+      // Тестовый заказ дат не занимает. Возвращая его в работу, убеждаемся,
+      // что за это время машину не забронировали на те же дни.
+      if (!isTest && (BLOCKING_STATUSES as readonly string[]).includes(booking.status)) {
+        const availability = await checkCarAvailability(
+          booking.carId,
+          booking.startAt,
+          booking.endAt,
+          { excludeBookingId: booking.id },
+        );
+        if (!availability.available) {
+          return NextResponse.json(
+            {
+              error:
+                'Нельзя вернуть в отчёты: даты уже заняты другим заказом. ' +
+                'Сначала отмените заказ или измените даты.',
+            },
+            { status: 409 },
+          );
+        }
+      }
+
+      const updated = await prisma.booking.update({
+        where: { id },
+        data: { isTest },
+        include: { car: { select: { brand: true, model: true } } },
+      });
+
+      await logAction({
+        userId: session.user.id,
+        action: isTest ? 'BOOKING_MARK_TEST' : 'BOOKING_UNMARK_TEST',
+        entity: 'Booking',
+        entityId: id,
+        meta: { code: booking.code, amount: booking.finalPrice ?? booking.totalPrice },
+      });
+
+      return NextResponse.json({ ok: true, booking: updated, summary: { isTest } });
+    }
 
     if (!TRANSITIONS[action].includes(booking.status)) {
       return NextResponse.json(
@@ -159,5 +211,51 @@ export async function PATCH(request: NextRequest, { params }: Ctx) {
   } catch (error) {
     console.error('[admin/bookings:PATCH] ошибка:', error);
     return NextResponse.json({ error: 'Не удалось обновить заказ' }, { status: 500 });
+  }
+}
+
+/**
+ * DELETE /api/admin/bookings/[id] — удалить заказ насовсем.
+ *
+ * Доступно только для заказов с пометкой «тестовый»: реальную бронь удалить
+ * нельзя ни случайно, ни намеренно — это история компании. Чтобы стереть
+ * запись, её сначала помечают тестовой (PATCH action=test).
+ */
+export async function DELETE(_request: NextRequest, { params }: Ctx) {
+  const session = await requireStaff();
+  if (!session) {
+    return NextResponse.json({ error: 'Требуется авторизация администратора' }, { status: 401 });
+  }
+
+  const { id } = await params;
+
+  try {
+    const booking = await prisma.booking.findUnique({
+      where: { id },
+      select: { id: true, code: true, isTest: true, totalPrice: true, finalPrice: true },
+    });
+    if (!booking) return NextResponse.json({ error: 'Заказ не найден' }, { status: 404 });
+
+    if (!booking.isTest) {
+      return NextResponse.json(
+        { error: 'Удалить можно только заказ, помеченный тестовым' },
+        { status: 409 },
+      );
+    }
+
+    await prisma.booking.delete({ where: { id } });
+
+    await logAction({
+      userId: session.user.id,
+      action: 'BOOKING_DELETE',
+      entity: 'Booking',
+      entityId: id,
+      meta: { code: booking.code, amount: booking.finalPrice ?? booking.totalPrice },
+    });
+
+    return NextResponse.json({ ok: true, deleted: booking.code });
+  } catch (error) {
+    console.error('[admin/bookings:DELETE] ошибка:', error);
+    return NextResponse.json({ error: 'Не удалось удалить заказ' }, { status: 500 });
   }
 }

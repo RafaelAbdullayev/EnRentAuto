@@ -20,7 +20,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!isStaff(session.user.role)) redirect('/login?from=/admin&error=forbidden');
 
   const [newBookings, onlineNow] = await Promise.all([
-    prisma.booking.count({ where: { status: 'NEW' } }),
+    prisma.booking.count({ where: { isTest: false, status: 'NEW' } }),
     prisma.visitorSession.count({
       where: { lastSeen: { gte: new Date(Date.now() - ONLINE_WINDOW_MS) } },
     }),

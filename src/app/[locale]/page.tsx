@@ -28,7 +28,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       take: 6,
     }),
     prisma.car.count({ where: { isArchived: false } }),
-    prisma.booking.count({ where: { status: 'COMPLETED' } }),
+    prisma.booking.count({ where: { isTest: false, status: 'COMPLETED' } }),
     // Фон первого экрана, загруженный в админке («Оформление»):
     // фотография, GIF или видео.
     findBrandImage('hero'),

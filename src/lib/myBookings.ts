@@ -13,10 +13,13 @@ export function phoneTail(phone: string): string {
   return phoneDigits(phone).slice(-PHONE_TAIL);
 }
 
-/** Список броней клиента — в том виде, в каком его показывает страница. */
+/**
+ * Список броней клиента — в том виде, в каком его показывает страница.
+ * Тестовые заказы клиенту не показываем: их создавали для проверки сайта.
+ */
 export async function bookingsForPhone(tail: string) {
   return prisma.booking.findMany({
-    where: { phoneDigits: { endsWith: tail } },
+    where: { isTest: false, phoneDigits: { endsWith: tail } },
     orderBy: { createdAt: 'desc' },
     take: 50,
     select: {

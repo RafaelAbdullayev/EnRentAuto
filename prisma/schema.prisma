@@ -177,6 +177,11 @@ model Booking {
 
   status BookingStatus @default(NEW)
 
+  /// Тестовый заказ: создан для проверки работы сайта. Не попадает в выручку,
+  /// графики и счётчики, не занимает даты автомобиля и не виден клиенту в
+  /// «Моих бронях». Такой заказ можно удалить насовсем.
+  isTest Boolean @default(false)
+
   // Фактические отметки
   issuedAt     DateTime? // машина выдана
   returnedAt   DateTime? // машина принята
@@ -193,6 +198,7 @@ model Booking {
   @@index([carId, startAt, endAt])
   @@index([createdAt])
   @@index([phoneDigits])
+  @@index([isTest, status])
 }
 
 // ─── Онлайн-присутствие (счётчик посетителей без регистрации) ─────────────

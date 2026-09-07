@@ -6,21 +6,38 @@ import type { BookingStatus } from '@prisma/client';
 import { formatMoney } from '@/lib/format';
 import { currencySymbol } from '@/lib/currency';
 
-type Action = 'confirm' | 'issue' | 'return' | 'cancel' | 'complete' | 'reopen';
+type Action =
+  | 'confirm'
+  | 'issue'
+  | 'return'
+  | 'cancel'
+  | 'complete'
+  | 'reopen'
+  | 'test'
+  | 'untest'
+  | 'delete';
 
 /**
  * Кнопки управления заказом.
  * «Принять машину» открывает мини-форму доплат (штрафы, топливо),
  * переработка по времени считается сервером автоматически.
+ *
+ * Отдельный блок — пометка «тестовый»: заказ остаётся в списке, но выпадает
+ * из выручки и не занимает машину. Удалить запись можно только после этой
+ * пометки, чтобы реальную бронь нельзя было стереть одним нажатием.
  */
 export function BookingActions({
   bookingId,
   status,
   totalPrice,
+  isTest,
+  code,
 }: {
   bookingId: string;
   status: BookingStatus;
   totalPrice: number;
+  isTest: boolean;
+  code: string;
 }) {
   const router = useRouter();
   const [pending, setPending] = useState<Action | null>(null);
@@ -34,11 +51,16 @@ export function BookingActions({
     setPending(action);
     setError(null);
     try {
-      const res = await fetch(`/api/admin/bookings/${bookingId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, ...extra }),
-      });
+      const res = await fetch(
+        `/api/admin/bookings/${bookingId}`,
+        action === 'delete'
+          ? { method: 'DELETE' }
+          : {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action, ...extra }),
+            },
+      );
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setError(data.error ?? 'Не удалось выполнить действие');
@@ -106,6 +128,43 @@ export function BookingActions({
         {status === 'CANCELLED' && (
           <button type="button" disabled={busy} onClick={() => run('reopen')} className="btn-ghost btn-sm">
             Вернуть в работу
+          </button>
+        )}
+      </div>
+
+      {/* Тестовый заказ: убрать из отчётов или удалить насовсем */}
+      <div className="flex flex-wrap gap-1.5 border-t border-ink-700 pt-2">
+        {isTest ? (
+          <>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => run('untest')}
+              className="btn-ghost btn-sm"
+            >
+              {pending === 'untest' ? 'Возвращаем…' : 'Вернуть в отчёты'}
+            </button>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => {
+                if (!window.confirm(`Удалить заказ ${code} насовсем? Это действие необратимо.`)) return;
+                void run('delete');
+              }}
+              className="btn-danger btn-sm"
+            >
+              {pending === 'delete' ? 'Удаляем…' : 'Удалить насовсем'}
+            </button>
+          </>
+        ) : (
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => run('test')}
+            className="btn-ghost btn-sm"
+            title="Сумма перестанет учитываться в выручке, машина освободится"
+          >
+            {pending === 'test' ? 'Помечаем…' : 'Это тестовый заказ'}
           </button>
         )}
       </div>

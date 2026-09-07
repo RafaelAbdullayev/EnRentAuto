@@ -8,7 +8,8 @@ import { BLOCKING_STATUSES } from '@/lib/constants';
  *   aStart < bEnd && aEnd > bStart
  *
  * Учитываются только «блокирующие» статусы: NEW, CONFIRMED, ACTIVE.
- * COMPLETED и CANCELLED машину не занимают.
+ * COMPLETED и CANCELLED машину не занимают. Тестовые заказы (isTest)
+ * тоже не занимают — иначе проверочная бронь закрыла бы реальные даты.
  */
 
 export interface AvailabilityResult {
@@ -41,6 +42,7 @@ export async function checkCarAvailability(
   const conflicts = await prisma.booking.findMany({
     where: {
       carId,
+      isTest: false,
       status: { in: BLOCKING_STATUSES },
       ...(options.excludeBookingId ? { id: { not: options.excludeBookingId } } : {}),
       startAt: { lt: endAt },
@@ -63,6 +65,7 @@ export async function checkCarAvailability(
 export async function busyCarIds(startAt: Date, endAt: Date): Promise<string[]> {
   const rows = await prisma.booking.findMany({
     where: {
+      isTest: false,
       status: { in: BLOCKING_STATUSES },
       startAt: { lt: endAt },
       endAt: { gt: startAt },

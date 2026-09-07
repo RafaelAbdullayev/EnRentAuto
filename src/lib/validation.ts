@@ -68,7 +68,17 @@ export type BookingInput = z.infer<typeof bookingInputSchema>;
 
 /** Смена статуса заказа администратором. */
 export const bookingActionSchema = z.object({
-  action: z.enum(['confirm', 'issue', 'return', 'cancel', 'complete', 'reopen']),
+  action: z.enum([
+    'confirm',
+    'issue',
+    'return',
+    'cancel',
+    'complete',
+    'reopen',
+    // Пометка «тестовый заказ» и снятие пометки — вне цепочки статусов.
+    'test',
+    'untest',
+  ]),
   extraCharge: z.coerce.number().int().min(0).max(10_000_000).optional(),
   extraNote: z.string().trim().max(500).optional(),
   cancelReason: z.string().trim().max(500).optional(),

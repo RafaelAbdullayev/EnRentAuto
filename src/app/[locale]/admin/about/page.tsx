@@ -31,7 +31,7 @@ export default async function AdminAboutPage() {
 
   const [cars, bookings, texts, admins] = await Promise.all([
     prisma.car.count(),
-    prisma.booking.count(),
+    prisma.booking.count({ where: { isTest: false } }),
     prisma.siteText.count(),
     prisma.user.count(),
   ]);

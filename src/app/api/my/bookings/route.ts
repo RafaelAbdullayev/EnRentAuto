@@ -47,12 +47,13 @@ export async function POST(request: NextRequest) {
     const code = parsed.data.code.toUpperCase().replace(/\s+/g, '');
     const booking = await prisma.booking.findUnique({
       where: { code },
-      select: { phoneDigits: true },
+      select: { phoneDigits: true, isTest: true },
     });
 
     // Один и тот же ответ и на неизвестный номер заказа, и на чужой телефон:
     // иначе по коду можно было бы проверять, существует ли заказ.
-    if (!booking || !booking.phoneDigits || !booking.phoneDigits.endsWith(tail)) {
+    // Тестовые заказы отвечают так же, как несуществующие.
+    if (!booking || booking.isTest || !booking.phoneDigits || !booking.phoneDigits.endsWith(tail)) {
       return notFound();
     }
 

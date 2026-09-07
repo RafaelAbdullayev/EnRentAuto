@@ -16,6 +16,7 @@ export default async function AdminDashboardPage() {
     dailySeries(14),
     topCars(5),
     prisma.booking.findMany({
+      where: { isTest: false },
       orderBy: { createdAt: 'desc' },
       take: 6,
       include: { car: { select: { brand: true, model: true } } },

@@ -115,7 +115,7 @@ export async function DELETE(request: NextRequest, { params }: Ctx) {
     if (!car) return NextResponse.json({ error: 'Автомобиль не найден' }, { status: 404 });
 
     const active = await prisma.booking.count({
-      where: { carId: id, status: { in: BLOCKING_STATUSES } },
+      where: { carId: id, isTest: false, status: { in: BLOCKING_STATUSES } },
     });
     if (active > 0) {
       return NextResponse.json(

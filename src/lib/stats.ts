@@ -5,6 +5,9 @@ import { ONLINE_WINDOW_MS, BLOCKING_STATUSES } from '@/lib/constants';
  * Аналитика для дашборда.
  * Выручка считается по заказам, которые не отменены:
  *   finalPrice (если машина уже принята) либо плановая сумма + доплаты.
+ *
+ * Заказы с пометкой «тестовый» (isTest) в отчёты не попадают — ими проверяют
+ * работу сайта, и их суммы исказили бы выручку.
  */
 
 export const REVENUE_STATUSES = ['CONFIRMED', 'ACTIVE', 'COMPLETED'] as const;
@@ -42,6 +45,7 @@ function sumRevenue(rows: RevenueRow[]): number {
 export async function revenueForRange(from: Date, to: Date) {
   const rows = await prisma.booking.findMany({
     where: {
+      isTest: false,
       status: { in: [...REVENUE_STATUSES] },
       createdAt: { gte: from, lte: to },
     },
@@ -54,7 +58,7 @@ export async function revenueForRange(from: Date, to: Date) {
 export async function dailySeries(days = 14) {
   const from = daysAgo(days - 1);
   const rows = await prisma.booking.findMany({
-    where: { createdAt: { gte: from } },
+    where: { isTest: false, createdAt: { gte: from } },
     select: {
       createdAt: true,
       status: true,
@@ -92,7 +96,7 @@ export async function dailySeries(days = 14) {
 export async function topCars(limit = 5) {
   const grouped = await prisma.booking.groupBy({
     by: ['carId'],
-    where: { status: { in: [...REVENUE_STATUSES] } },
+    where: { isTest: false, status: { in: [...REVENUE_STATUSES] } },
     _count: { _all: true },
     _sum: { totalPrice: true, extraCharge: true },
     orderBy: { _count: { carId: 'desc' } },
@@ -144,10 +148,15 @@ export async function dashboardSummary() {
   ] = await Promise.all([
     prisma.car.count({ where: { isArchived: false } }),
     prisma.car.count({ where: { isArchived: false, status: 'MAINTENANCE' } }),
-    prisma.booking.count({ where: { status: 'ACTIVE' } }),
-    prisma.booking.count({ where: { status: 'NEW' } }),
+    prisma.booking.count({ where: { isTest: false, status: 'ACTIVE' } }),
+    prisma.booking.count({ where: { isTest: false, status: 'NEW' } }),
     prisma.booking.findMany({
-      where: { status: { in: BLOCKING_STATUSES }, startAt: { lte: now }, endAt: { gte: now } },
+      where: {
+        isTest: false,
+        status: { in: BLOCKING_STATUSES },
+        startAt: { lte: now },
+        endAt: { gte: now },
+      },
       select: { carId: true },
       distinct: ['carId'],
     }),
