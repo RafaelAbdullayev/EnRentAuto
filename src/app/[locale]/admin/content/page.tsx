@@ -4,6 +4,7 @@ import { loadDefaults, loadOverrides } from '@/lib/siteText';
 import { ContentEditor, type LocaleContent } from '@/components/admin/ContentEditor';
 import { BrandImageUploader } from '@/components/admin/BrandImageUploader';
 import { findBrandImage } from '@/lib/brand';
+import { getHeroFit } from '@/lib/settings';
 
 export const metadata: Metadata = { title: 'Оформление и тексты сайта' };
 export const dynamic = 'force-dynamic';
@@ -20,7 +21,11 @@ export default async function AdminContentPage() {
     }),
   );
   const content = Object.fromEntries(entries);
-  const [logo, hero] = await Promise.all([findBrandImage('logo'), findBrandImage('hero')]);
+  const [logo, hero, heroFit] = await Promise.all([
+    findBrandImage('logo'),
+    findBrandImage('hero'),
+    getHeroFit(),
+  ]);
 
   const totalEdits = entries.reduce((sum, [, c]) => sum + Object.keys(c.overrides).length, 0);
 
@@ -59,6 +64,7 @@ export default async function AdminContentPage() {
           hint="Фото: JPG, PNG, WEBP, AVIF, GIF · до 8 МБ. Видео: MP4 или WEBM · до 40 МБ, 10–15 секунд"
           hasImage={hero !== null}
           mime={hero?.mime}
+          heroFit={heroFit}
           previewClassName="h-24 w-44"
           previewFit="cover"
         />

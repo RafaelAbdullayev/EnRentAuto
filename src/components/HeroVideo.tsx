@@ -10,7 +10,7 @@ import { brandUrl } from '@/lib/brand.client';
  * браузерах, но при системной настройке «уменьшить движение» ролик надо
  * остановить — это делается только из JS, поэтому компонент клиентский.
  */
-export function HeroVideo({ mime }: { mime: string }) {
+export function HeroVideo({ mime, fit = 'cover' }: { mime: string; fit?: 'cover' | 'contain' }) {
   const ref = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -56,7 +56,7 @@ export function HeroVideo({ mime }: { mime: string }) {
   return (
     <video
       ref={ref}
-      className="hero-photo"
+      className={`hero-photo${fit === 'contain' ? ' hero-photo-contain' : ''}`}
       autoPlay
       muted
       loop

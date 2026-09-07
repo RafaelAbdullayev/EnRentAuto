@@ -8,6 +8,7 @@ import { CarCard } from '@/components/CarCard';
 import { cn, formatNumber } from '@/lib/format';
 import { brandUrl, isVideoMime } from '@/lib/brand.client';
 import { findBrandImage } from '@/lib/brand';
+import { getHeroFit } from '@/lib/settings';
 import { HeroVideo } from '@/components/HeroVideo';
 
 export const dynamic = 'force-dynamic';
@@ -17,7 +18,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   setRequestLocale(locale);
   const t = await getTranslations('home');
 
-  const [cars, carCount, completedCount, hero] = await Promise.all([
+  const [cars, carCount, completedCount, hero, heroFit] = await Promise.all([
     prisma.car.findMany({
       where: { isArchived: false, status: 'AVAILABLE' },
       include: { images: { orderBy: { position: 'asc' }, take: 1 } },
@@ -29,6 +30,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     // Фон первого экрана, загруженный в админке («Оформление»):
     // фотография, GIF или видео.
     findBrandImage('hero'),
+    // Заполнять им экран или вписывать целиком.
+    getHeroFit(),
   ]);
   const hasHero = hero !== null;
 
@@ -64,10 +67,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           {hero ? (
             <>
               {isVideoMime(hero.mime) ? (
-                <HeroVideo mime={hero.mime} />
+                <HeroVideo mime={hero.mime} fit={heroFit} />
               ) : (
                 /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={brandUrl('hero')} alt="" className="hero-photo" />
+                <img
+                  src={brandUrl('hero')}
+                  alt=""
+                  className={cn('hero-photo', heroFit === 'contain' && 'hero-photo-contain')}
+                />
               )}
               <div className="hero-scrim-x" />
               <div className="hero-scrim-y" />

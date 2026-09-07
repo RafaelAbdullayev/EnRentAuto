@@ -17,6 +17,7 @@ export function BrandImageUploader({
   hint,
   hasImage,
   mime,
+  heroFit,
   previewClassName = 'h-24 w-56',
   previewFit = 'contain',
 }: {
@@ -27,6 +28,8 @@ export function BrandImageUploader({
   hasImage: boolean;
   /** Тип уже загруженного файла — нужен, чтобы показать видео, а не картинку. */
   mime?: string;
+  /** Только для фона: как он показывается на сайте. */
+  heroFit?: 'cover' | 'contain';
   /** Размер окошка предпросмотра. */
   previewClassName?: string;
   /** Логотип вписываем целиком, фон — кадрируем, как на сайте. */
@@ -42,6 +45,7 @@ export function BrandImageUploader({
   const [currentMime, setCurrentMime] = useState(mime ?? '');
   // Метка времени в адресе: браузер не показывает старую картинку из кэша.
   const [version, setVersion] = useState(0);
+  const [fit, setFit] = useState<'cover' | 'contain'>(heroFit ?? 'cover');
 
   const url = brandUrl(kind);
 
@@ -87,6 +91,26 @@ export function BrandImageUploader({
   async function remove() {
     if (!confirm(`Удалить: ${title.toLowerCase()}?`)) return;
     await send(() => fetch(`/api/admin/brand/${kind}`, { method: 'DELETE' }), false);
+  }
+
+  /** Как вписывать фон: заполнить экран или показать целиком. */
+  async function changeFit(next: 'cover' | 'contain') {
+    setFit(next);
+    setError(null);
+    try {
+      const res = await fetch('/api/admin/hero-fit', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fit: next }),
+      });
+      if (!res.ok) {
+        setError('Не удалось сохранить настройку');
+        return;
+      }
+      router.refresh();
+    } catch {
+      setError('Сеть недоступна. Повторите попытку.');
+    }
   }
 
   return (
@@ -162,6 +186,52 @@ export function BrandImageUploader({
           />
         </div>
       </div>
+
+      {/* Эмблему или логотип нельзя обрезать — для них нужен режим «целиком». */}
+      {heroFit && (
+        <fieldset className="mt-5 border-t border-ink-700/70 pt-4">
+          <legend className="sr-only">Как показывать фон</legend>
+          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+            Как показывать фон
+          </p>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            {([
+              {
+                value: 'cover' as const,
+                title: 'Заполнить экран',
+                note: 'Кадр растягивается на весь блок, лишнее обрезается. Подходит фотографиям.',
+              },
+              {
+                value: 'contain' as const,
+                title: 'Показать целиком',
+                note: 'Изображение вписывается полностью, ничего не обрезается. Для эмблем и логотипов.',
+              },
+            ]).map((option) => (
+              <label
+                key={option.value}
+                className={cn(
+                  'cursor-pointer rounded-xl border p-3 transition-colors duration-200',
+                  fit === option.value
+                    ? 'border-accent/60 bg-accent/5'
+                    : 'border-ink-600 hover:border-accent/40',
+                )}
+              >
+                <input
+                  type="radio"
+                  name="heroFit"
+                  className="sr-only"
+                  checked={fit === option.value}
+                  onChange={() => void changeFit(option.value)}
+                />
+                <span className="block text-sm font-medium text-zinc-200">{option.title}</span>
+                <span className="mt-1 block text-xs leading-relaxed text-zinc-500">
+                  {option.note}
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      )}
 
       {error && <p className="error-text">{error}</p>}
 
