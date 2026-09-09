@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { prisma } from '@/lib/prisma';
+import { pickCarText } from '@/lib/carTranslations';
 import { Link } from '@/i18n/navigation';
 import { SiteHeader } from '@/components/SiteHeader';
 import { SiteFooter } from '@/components/SiteFooter';
@@ -48,9 +49,18 @@ export default async function CarPage({
 
   const car = await prisma.car.findFirst({
     where: { id, isArchived: false },
-    include: { images: { orderBy: { position: 'asc' } } },
+    include: {
+      images: { orderBy: { position: 'asc' } },
+      // Описание и опции на языке страницы; нет перевода — берём русский.
+      translations: { where: { locale }, take: 1 },
+    },
   });
   if (!car) notFound();
+
+  const text = pickCarText(
+    { description: car.description, features: car.features },
+    car.translations[0],
+  );
 
   // Ближайшие занятые периоды — показываем клиенту заранее.
   const busy = await prisma.booking.findMany({
@@ -130,9 +140,9 @@ export default async function CarPage({
                   </div>
                 </div>
 
-                {car.description && (
+                {text.description && (
                   <p className="mt-5 whitespace-pre-line leading-relaxed text-zinc-400">
-                    {car.description}
+                    {text.description}
                   </p>
                 )}
 
@@ -145,13 +155,13 @@ export default async function CarPage({
                   ))}
                 </dl>
 
-                {car.features.length > 0 && (
+                {text.features.length > 0 && (
                   <div className="mt-6">
                     <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-500">
                       {t('featuresTitle')}
                     </h2>
                     <ul className="mt-3 flex flex-wrap gap-2">
-                      {car.features.map((f) => (
+                      {text.features.map((f) => (
                         <li
                           key={f}
                           className="rounded-lg border border-ink-600 bg-ink-800/60 px-3 py-1.5 text-xs text-zinc-300 transition-colors hover:border-accent/40"

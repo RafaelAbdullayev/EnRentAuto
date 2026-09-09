@@ -1,9 +1,11 @@
-import { NextResponse, type NextRequest } from 'next/server';
+import { NextResponse, after, type NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireStaff } from '@/lib/auth';
 import { carInputSchema, zodErrors } from '@/lib/validation';
 import { busyCarIds } from '@/lib/availability';
 import { logAction } from '@/lib/audit';
+import { translateCar } from '@/lib/carTranslations';
+import { isTranslateConfigured } from '@/lib/translate';
 
 export const runtime = 'nodejs';
 
@@ -53,6 +55,23 @@ export async function GET(request: NextRequest) {
 }
 
 /**
+ * Перевод описания на остальные языки сайта. Запускается после ответа
+ * (`after`), чтобы админ не ждал переводчика: сохранение остаётся мгновенным,
+ * а переводы догоняют через пару секунд. Без ключа переводчика — тихо ничего
+ * не делает, тексты показываются по-русски.
+ */
+function scheduleTranslation(carId: string): void {
+  if (!isTranslateConfigured()) return;
+  after(async () => {
+    try {
+      await translateCar(carId);
+    } catch (error) {
+      console.error('[cars] фоновый перевод не удался:', error);
+    }
+  });
+}
+
+/**
  * POST /api/cars — создание автомобиля. Только для сотрудников (ADMIN/MANAGER).
  */
 export async function POST(request: NextRequest) {
@@ -93,6 +112,8 @@ export async function POST(request: NextRequest) {
       entityId: car.id,
       meta: { title: `${car.brand} ${car.model}` },
     });
+
+    scheduleTranslation(car.id);
 
     return NextResponse.json({ ok: true, car }, { status: 201 });
   } catch (error) {

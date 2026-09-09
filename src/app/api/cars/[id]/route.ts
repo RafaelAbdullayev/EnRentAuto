@@ -1,14 +1,33 @@
-import { NextResponse, type NextRequest } from 'next/server';
+import { NextResponse, after, type NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireStaff } from '@/lib/auth';
 import { carInputSchema, zodErrors } from '@/lib/validation';
 import { removeUploadedFile } from '@/lib/upload';
 import { logAction } from '@/lib/audit';
+import { translateCar } from '@/lib/carTranslations';
+import { isTranslateConfigured } from '@/lib/translate';
 import { BLOCKING_STATUSES } from '@/lib/constants';
 
 export const runtime = 'nodejs';
 
 type Ctx = { params: Promise<{ id: string }> };
+
+/**
+ * Перевод описания на остальные языки сайта. Запускается после ответа
+ * (`after`), чтобы админ не ждал переводчика: сохранение остаётся мгновенным,
+ * а переводы догоняют через пару секунд. Без ключа переводчика — тихо ничего
+ * не делает, тексты показываются по-русски.
+ */
+function scheduleTranslation(carId: string): void {
+  if (!isTranslateConfigured()) return;
+  after(async () => {
+    try {
+      await translateCar(carId);
+    } catch (error) {
+      console.error('[cars] фоновый перевод не удался:', error);
+    }
+  });
+}
 
 /** GET /api/cars/[id] — карточка авто со всеми фото. */
 export async function GET(_request: NextRequest, { params }: Ctx) {
@@ -77,6 +96,8 @@ export async function PATCH(request: NextRequest, { params }: Ctx) {
       entityId: car.id,
       meta: { removedImages: orphans.length },
     });
+
+    scheduleTranslation(car.id);
 
     return NextResponse.json({ ok: true, car });
   } catch (error) {

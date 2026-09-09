@@ -3,11 +3,21 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import { CarForm } from '@/components/admin/CarForm';
+import { CarTranslations } from '@/components/admin/CarTranslations';
+import { TRANSLATABLE_LOCALES, carSourceHash } from '@/lib/carTranslations';
+import { translateProvider } from '@/lib/translate';
 import { BOOKING_STATUS_LABELS, BOOKING_STATUS_STYLES } from '@/lib/constants';
 import { formatDateTime, formatMoney } from '@/lib/format';
 
 export const metadata: Metadata = { title: 'Редактирование автомобиля' };
 export const dynamic = 'force-dynamic';
+
+/** Как назвать переводчик в интерфейсе. */
+const PROVIDER_LABELS: Record<string, string | null> = {
+  anthropic: 'Claude',
+  google: 'Google Переводчик',
+  none: null,
+};
 
 export default async function EditCarPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -16,6 +26,7 @@ export default async function EditCarPage({ params }: { params: Promise<{ id: st
     where: { id },
     include: {
       images: { orderBy: { position: 'asc' } },
+      translations: true,
       bookings: {
         orderBy: { createdAt: 'desc' },
         take: 8,
@@ -67,6 +78,21 @@ export default async function EditCarPage({ params }: { params: Promise<{ id: st
           status: car.status,
           images: car.images.map((i) => i.url),
         }}
+      />
+
+      <CarTranslations
+        carId={car.id}
+        locales={TRANSLATABLE_LOCALES}
+        sourceHash={carSourceHash({ description: car.description, features: car.features })}
+        baseFeatures={car.features}
+        initial={car.translations.map((t) => ({
+          locale: t.locale,
+          description: t.description,
+          features: t.features,
+          sourceHash: t.sourceHash,
+          isAuto: t.isAuto,
+        }))}
+        provider={PROVIDER_LABELS[translateProvider() ?? 'none']}
       />
 
       {car.bookings.length > 0 && (
