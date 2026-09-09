@@ -63,7 +63,10 @@ export interface TranslateCarResult {
  * @param options.force     переводить заново даже свежие переводы;
  * @param options.overwriteManual  перезаписывать переводы, правленные руками.
  *
- * Языки переводятся по очереди: ошибка на одном не мешает остальным.
+ * Языки переводятся одновременно, а строки внутри языка — по очереди:
+ * бесплатный переводчик принимает по одной строке за запрос, и десяток опций
+ * подряд на пять языков занял бы минуту. Ошибка на одном языке не мешает
+ * остальным — каждый сохраняется сам по себе.
  */
 export async function translateCar(
   carId: string,
@@ -89,35 +92,92 @@ export async function translateCar(
 
   const locales = options.locales ?? TRANSLATABLE_LOCALES;
 
+  const pending: Locale[] = [];
   for (const locale of locales) {
     const existing = car.translations.find((t) => t.locale === locale);
 
     // Свежий перевод не трогаем, ручной — только по прямой просьбе.
     if (!options.force && existing && existing.sourceHash === hash) {
       result.skipped.push(locale);
-      continue;
-    }
-    if (existing && !existing.isAuto && !options.overwriteManual) {
+    } else if (existing && !existing.isAuto && !options.overwriteManual) {
       result.skipped.push(locale);
-      continue;
-    }
-
-    try {
-      const texts = await translateTexts([source.description, ...source.features], locale);
-      const [description, ...features] = texts;
-
-      await prisma.carTranslation.upsert({
-        where: { carId_locale: { carId, locale } },
-        update: { description, features, sourceHash: hash, isAuto: true },
-        create: { carId, locale, description, features, sourceHash: hash, isAuto: true },
-      });
-      result.done.push(locale);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      console.error(`[translate] ${carId} → ${locale}:`, message);
-      result.failed.push({ locale, error: message });
+    } else {
+      pending.push(locale);
     }
   }
 
+  if (pending.length === 0) return result;
+
+  const started = Date.now();
+  console.info(`[translate] ${carId}: перевожу на ${pending.join(', ')}`);
+
+  await Promise.all(
+    pending.map(async (locale) => {
+      try {
+        const texts = await translateTexts([source.description, ...source.features], locale);
+        const [description, ...features] = texts;
+
+        await prisma.carTranslation.upsert({
+          where: { carId_locale: { carId, locale } },
+          update: { description, features, sourceHash: hash, isAuto: true },
+          create: { carId, locale, description, features, sourceHash: hash, isAuto: true },
+        });
+        result.done.push(locale);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.error(`[translate] ${carId} → ${locale}: ${message}`);
+        result.failed.push({ locale, error: message });
+      }
+    }),
+  );
+
+  console.info(
+    `[translate] ${carId}: готово за ${Math.round((Date.now() - started) / 1000)} с — ` +
+      `переведено ${result.done.join(', ') || '—'}` +
+      (result.failed.length ? `, не удалось ${result.failed.map((f) => f.locale).join(', ')}` : ''),
+  );
+
   return result;
+}
+
+/**
+ * Автомобили, у которых перевода нет или он устарел.
+ * Отпечаток текста считается в коде, поэтому проверяем не запросом, а в памяти:
+ * машин в парке десятки, это дешевле, чем усложнять схему.
+ */
+export async function carsNeedingTranslation(): Promise<
+  { id: string; title: string }[]
+> {
+  const cars = await prisma.car.findMany({
+    where: { isArchived: false },
+    orderBy: { createdAt: 'asc' },
+    select: {
+      id: true,
+      brand: true,
+      model: true,
+      description: true,
+      features: true,
+      translations: { select: { locale: true, sourceHash: true, isAuto: true } },
+    },
+  });
+
+  return cars
+    .filter((car) => {
+      // Пустую карточку переводить нечего.
+      if (!car.description.trim() && car.features.length === 0) return false;
+
+      const hash = carSourceHash({ description: car.description, features: car.features });
+      return TRANSLATABLE_LOCALES.some((locale) => {
+        const row = car.translations.find((t) => t.locale === locale);
+        if (!row) return true;
+        // Ручные переводы не трогаем, даже если исходник менялся.
+        return row.isAuto && row.sourceHash !== hash;
+      });
+    })
+    .map((car) => ({ id: car.id, title: `${car.brand} ${car.model}` }));
+}
+
+/** Ошибка про исчерпанный дневной лимит бесплатного переводчика. */
+export function isLimitError(message: string): boolean {
+  return /лимит/i.test(message);
 }

@@ -2,6 +2,8 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import { CarRowActions } from '@/components/admin/CarRowActions';
+import { TranslateFleet } from '@/components/admin/TranslateFleet';
+import { carsNeedingTranslation } from '@/lib/carTranslations';
 import { MediaThumb } from '@/components/CarMedia';
 import { BODY_TYPE_LABELS, TRANSMISSION_LABELS, CAR_STATUS_LABELS } from '@/lib/constants';
 import { formatMoney, cn } from '@/lib/format';
@@ -38,9 +40,10 @@ export default async function AdminCarsPage({
     orderBy: { createdAt: 'desc' },
   });
 
-  const [activeCount, archivedCount] = await Promise.all([
+  const [activeCount, archivedCount, needTranslation] = await Promise.all([
     prisma.car.count({ where: { isArchived: false } }),
     prisma.car.count({ where: { isArchived: true } }),
+    carsNeedingTranslation(),
   ]);
 
   return (
@@ -56,6 +59,8 @@ export default async function AdminCarsPage({
           + Добавить автомобиль
         </Link>
       </header>
+
+      {!showArchived && <TranslateFleet pending={needTranslation.length} />}
 
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex gap-1.5">
