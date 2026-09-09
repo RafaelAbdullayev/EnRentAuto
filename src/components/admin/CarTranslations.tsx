@@ -33,8 +33,8 @@ export function CarTranslations({
   sourceHash: string;
   baseFeatures: string[];
   initial: TranslationRow[];
-  /** Название настроенного переводчика или null, если ключа нет. */
-  provider: string | null;
+  /** Название переводчика — показываем, чтобы было видно, кто переводил. */
+  provider: string;
 }) {
   const [rows, setRows] = useState<TranslationRow[]>(initial);
   const [active, setActive] = useState<Locale>(locales[0]);
@@ -116,25 +116,20 @@ export function CarTranslations({
           <h2 className="text-base font-semibold text-white">Описание на других языках</h2>
           <p className="mt-1 text-sm text-zinc-500">
             Русский текст — основной, он выше. Здесь то, что увидят посетители на
-            остальных языках. Пустое поле — покажем русский.
+            остальных языках: перевод делается сам при сохранении автомобиля.
+            Пустое поле — покажем русский. Переводит {provider}.
           </p>
         </div>
-        {provider ? (
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() =>
-              call('all', { method: 'POST', body: JSON.stringify({}) }, 'Переводы обновлены')
-            }
-            className="btn-ghost btn-sm"
-          >
-            {pending === 'all' ? 'Перевожу…' : 'Перевести все языки'}
-          </button>
-        ) : (
-          <span className="text-xs text-zinc-600">
-            Машинный перевод не настроен — см. README, раздел «Переводы описаний»
-          </span>
-        )}
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() =>
+            call('all', { method: 'POST', body: JSON.stringify({}) }, 'Переводы обновлены')
+          }
+          className="btn-ghost btn-sm"
+        >
+          {pending === 'all' ? 'Перевожу…' : 'Перевести все языки'}
+        </button>
       </div>
 
       <div className="mt-4 flex flex-wrap gap-1.5">
@@ -237,22 +232,20 @@ export function CarTranslations({
             {pending === `save-${active}` ? 'Сохраняю…' : 'Сохранить'}
           </button>
 
-          {provider && (
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() =>
-                call(
-                  `one-${active}`,
-                  { method: 'POST', body: JSON.stringify({ locale: active }) },
-                  `Переведено на ${LOCALE_LABELS[active].native}`,
-                )
-              }
-              className="btn-ghost btn-sm"
-            >
-              {pending === `one-${active}` ? 'Перевожу…' : 'Перевести этот язык заново'}
-            </button>
-          )}
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() =>
+              call(
+                `one-${active}`,
+                { method: 'POST', body: JSON.stringify({ locale: active }) },
+                `Переведено на ${LOCALE_LABELS[active].native}`,
+              )
+            }
+            className="btn-ghost btn-sm"
+          >
+            {pending === `one-${active}` ? 'Перевожу…' : 'Перевести этот язык заново'}
+          </button>
         </div>
       </div>
     </section>

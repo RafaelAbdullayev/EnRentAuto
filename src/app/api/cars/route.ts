@@ -5,7 +5,6 @@ import { carInputSchema, zodErrors } from '@/lib/validation';
 import { busyCarIds } from '@/lib/availability';
 import { logAction } from '@/lib/audit';
 import { translateCar } from '@/lib/carTranslations';
-import { isTranslateConfigured } from '@/lib/translate';
 
 export const runtime = 'nodejs';
 
@@ -57,11 +56,10 @@ export async function GET(request: NextRequest) {
 /**
  * Перевод описания на остальные языки сайта. Запускается после ответа
  * (`after`), чтобы админ не ждал переводчика: сохранение остаётся мгновенным,
- * а переводы догоняют через пару секунд. Без ключа переводчика — тихо ничего
- * не делает, тексты показываются по-русски.
+ * а переводы догоняют через несколько секунд. Ошибка переводчика ничего не
+ * ломает — на таком языке просто останется русский текст.
  */
 function scheduleTranslation(carId: string): void {
-  if (!isTranslateConfigured()) return;
   after(async () => {
     try {
       await translateCar(carId);

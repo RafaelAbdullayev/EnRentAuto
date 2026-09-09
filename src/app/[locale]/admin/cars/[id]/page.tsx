@@ -13,10 +13,10 @@ export const metadata: Metadata = { title: 'Редактирование авт�
 export const dynamic = 'force-dynamic';
 
 /** Как назвать переводчик в интерфейсе. */
-const PROVIDER_LABELS: Record<string, string | null> = {
+const PROVIDER_LABELS: Record<string, string> = {
   anthropic: 'Claude',
   google: 'Google Переводчик',
-  none: null,
+  mymemory: 'бесплатный переводчик MyMemory',
 };
 
 export default async function EditCarPage({ params }: { params: Promise<{ id: string }> }) {
@@ -92,7 +92,7 @@ export default async function EditCarPage({ params }: { params: Promise<{ id: st
           sourceHash: t.sourceHash,
           isAuto: t.isAuto,
         }))}
-        provider={PROVIDER_LABELS[translateProvider() ?? 'none']}
+        provider={PROVIDER_LABELS[translateProvider()]}
       />
 
       {car.bookings.length > 0 && (

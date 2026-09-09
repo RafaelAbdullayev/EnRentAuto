@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { prisma } from '@/lib/prisma';
 import { routing, type Locale } from '@/i18n/routing';
-import { translateTexts, isTranslateConfigured } from '@/lib/translate';
+import { translateTexts } from '@/lib/translate';
 
 /**
  * Переводы карточки автомобиля.
@@ -70,7 +70,6 @@ export async function translateCar(
   options: { locales?: Locale[]; force?: boolean; overwriteManual?: boolean } = {},
 ): Promise<TranslateCarResult> {
   const result: TranslateCarResult = { done: [], failed: [], skipped: [] };
-  if (!isTranslateConfigured()) return result;
 
   const car = await prisma.car.findUnique({
     where: { id: carId },

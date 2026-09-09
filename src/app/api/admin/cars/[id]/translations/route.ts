@@ -10,7 +10,6 @@ import {
   carSourceHash,
   translateCar,
 } from '@/lib/carTranslations';
-import { isTranslateConfigured } from '@/lib/translate';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -45,17 +44,6 @@ export async function POST(request: NextRequest, { params }: Ctx) {
   const session = await requireStaff();
   if (!session) {
     return NextResponse.json({ error: 'Требуется авторизация администратора' }, { status: 401 });
-  }
-
-  if (!isTranslateConfigured()) {
-    return NextResponse.json(
-      {
-        error:
-          'Машинный перевод не настроен: добавьте ANTHROPIC_API_KEY или ' +
-          'GOOGLE_TRANSLATE_API_KEY в .env и перезапустите сервис',
-      },
-      { status: 503 },
-    );
   }
 
   const { id } = await params;
