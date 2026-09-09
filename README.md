@@ -829,8 +829,8 @@ After=network.target postgresql.service
 
 [Service]
 Type=simple
-WorkingDirectory=/var/www/enrentauto
-EnvironmentFile=/var/www/enrentauto/.env
+WorkingDirectory=/opt/enrentauto
+EnvironmentFile=/opt/enrentauto/.env
 # Без флага -H: Next слушает 0.0.0.0 и строит адреса по заголовку Host.
 # Порт закрывается от интернета правилом файрвола (см. ниже), а не привязкой —
 # любая привязка через -H ломает маршрутизацию языков, см. «Частые проблемы».
