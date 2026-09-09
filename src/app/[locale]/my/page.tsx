@@ -23,7 +23,7 @@ export default async function MyBookingsPage({ params }: { params: Params }) {
     <>
       <SiteHeader />
 
-      <main className="pt-28 pb-20 sm:pt-32">
+      <main className="pt-32 pb-20 sm:pt-36">
         <div className="container-page">
           <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
             {t('title')}

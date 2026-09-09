@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/format';
 import { brandUrl } from '@/lib/brand.client';
 
@@ -9,16 +10,28 @@ import { brandUrl } from '@/lib/brand.client';
  * на телефоне знак должен читаться, но не съедать половину шапки.
  */
 const SIZES = {
-  sm: { img: 'h-9 max-w-[150px]', mark: 'h-9 w-9 text-xs', text: 'text-[15px]' },
+  sm: {
+    img: 'h-9 max-w-[150px]',
+    mark: 'h-9 w-9 text-xs',
+    text: 'text-[15px]',
+    tag: 'text-[8px] tracking-[0.28em]',
+    nameWrap: 'flex',
+  },
   md: {
-    img: 'h-11 max-w-[160px] sm:h-14 sm:max-w-[230px]',
-    mark: 'h-11 w-11 text-sm sm:h-14 sm:w-14 sm:text-base',
-    text: 'text-[17px] sm:text-xl',
+    img: 'h-[52px] max-w-[170px] sm:h-16 sm:max-w-[260px]',
+    mark: 'h-[52px] w-[52px] text-sm sm:h-16 sm:w-16 sm:text-base',
+    text: 'text-[18px] sm:text-[22px]',
+    tag: 'text-[9px] tracking-[0.3em] sm:text-[10px] sm:tracking-[0.34em]',
+    // На совсем узких экранах (до 360 px) название прячем: знак крупный и
+    // читается сам, а иначе он налезал бы на переключатель языка.
+    nameWrap: 'hidden min-[360px]:flex',
   },
   lg: {
-    img: 'h-16 max-w-[240px] sm:h-20 sm:max-w-[300px]',
-    mark: 'h-16 w-16 text-lg sm:h-20 sm:w-20 sm:text-xl',
-    text: 'text-xl sm:text-2xl',
+    img: 'h-20 max-w-[260px] sm:h-24 sm:max-w-[340px]',
+    mark: 'h-20 w-20 text-lg sm:h-24 sm:w-24 sm:text-2xl',
+    text: 'text-2xl sm:text-3xl',
+    tag: 'text-[10px] tracking-[0.34em] sm:text-xs sm:tracking-[0.38em]',
+    nameWrap: 'flex',
   },
 } as const;
 
@@ -44,6 +57,7 @@ export function Logo({
   /** Показывать название рядом со знаком. */
   withName?: boolean;
 }) {
+  const t = useTranslations('nav');
   const [failed, setFailed] = useState(false);
   const ref = useRef<HTMLImageElement>(null);
   const s = SIZES[size];
@@ -57,7 +71,7 @@ export function Logo({
   }, []);
 
   return (
-    <span className={cn('flex items-center gap-2.5 sm:gap-3', className)}>
+    <span className={cn('flex items-center gap-2.5 sm:gap-3.5', className)}>
       {failed ? (
         <span
           className={cn(
@@ -85,13 +99,25 @@ export function Logo({
       )}
 
       {withName && (
-        <span
-          className={cn(
-            'whitespace-nowrap font-semibold leading-none tracking-tight text-white',
-            s.text,
-          )}
-        >
-          EnRent<span className="text-accent">Auto</span>
+        <span className={cn('flex-col justify-center gap-1', s.nameWrap)}>
+          <span
+            className={cn(
+              'whitespace-nowrap font-semibold leading-none tracking-tight text-white',
+              s.text,
+            )}
+          >
+            EnRent<span className="text-accent">Auto</span>
+          </span>
+          {/* Подпись под названием: «RENT A CAR». Меняется в админке,
+              раздел «Тексты сайта» → ключ nav.tagline, для каждого языка свой. */}
+          <span
+            className={cn(
+              'whitespace-nowrap font-medium uppercase leading-none text-accent/70',
+              s.tag,
+            )}
+          >
+            {t('tagline')}
+          </span>
         </span>
       )}
     </span>

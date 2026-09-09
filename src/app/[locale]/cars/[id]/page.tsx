@@ -105,7 +105,7 @@ export default async function CarPage({
     <>
       <SiteHeader />
 
-      <main className="pt-28 pb-20 sm:pt-32">
+      <main className="pt-32 pb-20 sm:pt-36">
         <div className="container-page">
           <nav className="flex flex-wrap items-center text-sm text-zinc-600">
             <Link href="/" className="link-row">{nav('home')}</Link>
