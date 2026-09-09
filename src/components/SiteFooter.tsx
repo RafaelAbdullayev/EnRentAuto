@@ -50,7 +50,7 @@ export function SiteFooter() {
       <footer id="contacts" className="border-t border-ink-800 bg-ink-950">
       <div className="container-page grid gap-10 py-14 md:grid-cols-4">
         <div className="md:col-span-2">
-          <Logo size="md" />
+          <Logo size="lg" />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-zinc-500">{t('about')}</p>
         </div>
 

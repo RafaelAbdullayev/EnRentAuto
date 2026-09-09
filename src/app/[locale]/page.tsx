@@ -73,7 +73,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <section
           className={cn(
             // Отступ сверху ровно под фиксированную шапку (64 px) плюс воздух.
-            'relative isolate overflow-hidden pt-24 pb-12 sm:pt-40 sm:pb-28',
+            'relative isolate overflow-hidden pt-28 pb-12 sm:pt-44 sm:pb-28',
             // Высоту в целый экран задаём только там, где содержимое в него
             // помещается: на телефоне оно выше окна, и лишняя высота уводила
             // форму поиска под нижний край.

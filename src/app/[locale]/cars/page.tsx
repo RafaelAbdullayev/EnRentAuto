@@ -68,7 +68,7 @@ export default async function CarsPage({
     <>
       <SiteHeader />
 
-      <main className="pt-28 pb-20">
+      <main className="pt-28 pb-20 sm:pt-32">
         <div className="container-page">
           <p className="eyebrow">{t('eyebrow')}</p>
           <h1 className="mt-3 text-4xl font-semibold tracking-tight text-white sm:text-5xl">

@@ -36,8 +36,8 @@ export function SiteHeader() {
           : 'border-b border-transparent',
       )}
     >
-      <div className="container-page flex h-16 items-center justify-between gap-4">
-        <Link href="/" className="group flex items-center gap-2.5">
+      <div className="container-page flex h-[72px] items-center justify-between gap-3 sm:h-20 sm:gap-4">
+        <Link href="/" className="group flex min-w-0 items-center" aria-label="EnRentAuto">
           <Logo size="md" hover />
         </Link>
 
