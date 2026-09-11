@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import '../globals.css';
 import { PresenceTracker } from '@/components/PresenceTracker';
 import { routing, isRtl } from '@/i18n/routing';
+import { getLogoScale } from '@/lib/settings';
 
 /** Пререндерим все языки статически. */
 export function generateStaticParams() {
@@ -54,8 +55,17 @@ export default async function LocaleLayout({
   // Включает статический рендеринг для этой локали.
   setRequestLocale(locale);
 
+  // Размер логотипа из админки. Значение кэшируется, поэтому страницы
+  // остаются статическими; кэш сбрасывается при сохранении нового размера.
+  const logoScale = await getLogoScale();
+
   return (
-    <html lang={locale} dir={isRtl(locale) ? 'rtl' : 'ltr'} suppressHydrationWarning>
+    <html
+      lang={locale}
+      dir={isRtl(locale) ? 'rtl' : 'ltr'}
+      suppressHydrationWarning
+      style={{ '--logo-scale': String(logoScale / 100) } as React.CSSProperties}
+    >
       <body>
         <NextIntlClientProvider>
           {children}

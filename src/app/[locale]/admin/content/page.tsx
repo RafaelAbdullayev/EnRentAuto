@@ -5,7 +5,7 @@ import { loadDefaults, loadOverrides } from '@/lib/siteText';
 import { ContentEditor, type LocaleContent } from '@/components/admin/ContentEditor';
 import { BrandImageUploader } from '@/components/admin/BrandImageUploader';
 import { findBrandImage } from '@/lib/brand';
-import { getHeroSettings } from '@/lib/settings';
+import { getHeroSettings, getLogoScale } from '@/lib/settings';
 
 export const metadata: Metadata = { title: 'Оформление и тексты сайта' };
 export const dynamic = 'force-dynamic';
@@ -22,11 +22,12 @@ export default async function AdminContentPage() {
     }),
   );
   const content = Object.fromEntries(entries);
-  const [logo, hero, heroSettings, carsWithPhoto] = await Promise.all([
+  const [logo, hero, heroSettings, carsWithPhoto, logoScale] = await Promise.all([
     findBrandImage('logo'),
     findBrandImage('hero'),
     getHeroSettings(),
     prisma.car.count({ where: { isArchived: false, images: { some: {} } } }),
+    getLogoScale(),
   ]);
 
   const totalEdits = entries.reduce((sum, [, c]) => sum + Object.keys(c.overrides).length, 0);
@@ -57,6 +58,7 @@ export default async function AdminContentPage() {
           hint="PNG, JPG, WEBP, AVIF, GIF · до 8 МБ"
           hasImage={logo !== null}
           mime={logo?.mime}
+          logoScale={logoScale}
         />
 
         <BrandImageUploader

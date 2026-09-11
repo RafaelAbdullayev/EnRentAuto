@@ -8,18 +8,23 @@ import { brandUrl } from '@/lib/brand.client';
 /**
  * Размеры логотипа. Первое значение — телефон, второе — экран пошире:
  * на телефоне знак должен читаться, но не съедать половину шапки.
+ *
+ * Высота задаётся переменными `--logo-h` и `--logo-w`, а итоговый размер
+ * умножается на `--logo-scale` — её ставит страница по настройке из админки
+ * («Оформление и тексты» → «Размер логотипа»). Так один ползунок меняет
+ * логотип во всей витрине, не трогая вёрстку.
  */
 const SIZES = {
   sm: {
-    img: 'h-9 max-w-[150px]',
-    mark: 'h-9 w-9 text-xs',
+    box: '[--logo-h:36px] [--logo-w:150px]',
+    mark: 'text-xs',
     text: 'text-[15px]',
     tag: 'text-[8px] tracking-[0.28em]',
     nameWrap: 'flex',
   },
   md: {
-    img: 'h-[52px] max-w-[170px] sm:h-16 sm:max-w-[260px]',
-    mark: 'h-[52px] w-[52px] text-sm sm:h-16 sm:w-16 sm:text-base',
+    box: '[--logo-h:52px] [--logo-w:170px] sm:[--logo-h:64px] sm:[--logo-w:260px]',
+    mark: 'text-sm sm:text-base',
     text: 'text-[18px] sm:text-[22px]',
     tag: 'text-[9px] tracking-[0.3em] sm:text-[10px] sm:tracking-[0.34em]',
     // На совсем узких экранах (до 360 px) название прячем: знак крупный и
@@ -27,13 +32,25 @@ const SIZES = {
     nameWrap: 'hidden min-[360px]:flex',
   },
   lg: {
-    img: 'h-20 max-w-[260px] sm:h-24 sm:max-w-[340px]',
-    mark: 'h-20 w-20 text-lg sm:h-24 sm:w-24 sm:text-2xl',
+    box: '[--logo-h:80px] [--logo-w:260px] sm:[--logo-h:96px] sm:[--logo-w:340px]',
+    mark: 'text-lg sm:text-2xl',
     text: 'text-2xl sm:text-3xl',
     tag: 'text-[10px] tracking-[0.34em] sm:text-xs sm:tracking-[0.38em]',
     nameWrap: 'flex',
   },
 } as const;
+
+/** Высота и ширина знака с учётом настроенного масштаба. */
+const SCALED: React.CSSProperties = {
+  height: 'calc(var(--logo-h) * var(--logo-scale, 1))',
+  maxWidth: 'calc(var(--logo-w) * var(--logo-scale, 1))',
+};
+
+/** Квадратный запасной знак «ER» — ширина равна высоте. */
+const SCALED_MARK: React.CSSProperties = {
+  height: 'calc(var(--logo-h) * var(--logo-scale, 1))',
+  width: 'calc(var(--logo-h) * var(--logo-scale, 1))',
+};
 
 /**
  * Логотип сайта: загруженная картинка плюс название рядом.
@@ -71,9 +88,10 @@ export function Logo({
   }, []);
 
   return (
-    <span className={cn('flex items-center gap-2.5 sm:gap-3.5', className)}>
+    <span className={cn('flex items-center gap-2.5 sm:gap-3.5', s.box, className)}>
       {failed ? (
         <span
+          style={SCALED_MARK}
           className={cn(
             'grid shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-accent-soft to-accent-deep font-bold text-ink-950',
             s.mark,
@@ -89,10 +107,10 @@ export function Logo({
           src={brandUrl('logo')}
           alt="EnRentAuto"
           onError={() => setFailed(true)}
+          style={SCALED}
           className={cn(
             // Тень отделяет тёмную эмблему от тёмной шапки.
             'w-auto shrink-0 object-contain drop-shadow-[0_2px_12px_rgba(0,0,0,0.55)]',
-            s.img,
             hover && 'transition-transform duration-300 group-hover:scale-105',
           )}
         />

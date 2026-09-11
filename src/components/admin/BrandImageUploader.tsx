@@ -19,6 +19,7 @@ export function BrandImageUploader({
   mime,
   heroSettings,
   carsWithPhoto = 0,
+  logoScale,
   previewClassName = 'h-24 w-56',
   previewFit = 'contain',
 }: {
@@ -33,6 +34,8 @@ export function BrandImageUploader({
   heroSettings?: { mode: 'media' | 'cars'; fit: 'cover' | 'contain' };
   /** Сколько автомобилей с фотографиями — из них собирается слайдшоу. */
   carsWithPhoto?: number;
+  /** Только для логотипа: размер в процентах от обычного. */
+  logoScale?: number;
   /** Размер окошка предпросмотра. */
   previewClassName?: string;
   /** Логотип вписываем целиком, фон — кадрируем, как на сайте. */
@@ -50,6 +53,8 @@ export function BrandImageUploader({
   const [version, setVersion] = useState(0);
   const [fit, setFit] = useState<'cover' | 'contain'>(heroSettings?.fit ?? 'cover');
   const [mode, setMode] = useState<'media' | 'cars'>(heroSettings?.mode ?? 'media');
+  const [scale, setScale] = useState(logoScale ?? 100);
+  const [scaleSaved, setScaleSaved] = useState(false);
 
   const url = brandUrl(kind);
 
@@ -112,6 +117,28 @@ export function BrandImageUploader({
         setError('Не удалось сохранить настройку');
         return;
       }
+      router.refresh();
+    } catch {
+      setError('Сеть недоступна. Повторите попытку.');
+    }
+  }
+
+  /** Сохранить размер логотипа. Вызывается, когда ползунок отпустили. */
+  async function saveScale(next: number) {
+    setError(null);
+    setScaleSaved(false);
+    try {
+      const res = await fetch('/api/admin/logo', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ scale: next }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error ?? 'Не удалось сохранить размер');
+        return;
+      }
+      setScaleSaved(true);
       router.refresh();
     } catch {
       setError('Сеть недоступна. Повторите попытку.');
@@ -291,6 +318,81 @@ export function BrandImageUploader({
             ))}
           </div>
         </fieldset>
+      )}
+
+      {logoScale !== undefined && (
+        <div className="mt-5 border-t border-ink-700/70 pt-4">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <span className="label">Размер логотипа на сайте</span>
+            <span className="text-xs text-zinc-400">{scale}% от обычного</span>
+          </div>
+
+          <input
+            type="range"
+            min={60}
+            max={200}
+            step={5}
+            value={scale}
+            aria-label="Размер логотипа в процентах"
+            onChange={(e) => setScale(Number(e.target.value))}
+            // Сохраняем, когда ползунок отпустили: иначе запрос уходил бы
+            // на каждое движение пальцем.
+            onPointerUp={() => void saveScale(scale)}
+            onKeyUp={() => void saveScale(scale)}
+            className="mt-3 w-full accent-accent"
+          />
+
+          <div className="mt-4 flex flex-wrap items-end gap-4">
+            <div className="grid place-items-center rounded-xl border border-ink-600 bg-ink-950 p-3">
+              {present ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={`${url}?v=${version}`}
+                  alt="Логотип в выбранном размере"
+                  style={{ height: `${Math.round((64 * scale) / 100)}px` }}
+                  className="w-auto max-w-[280px] object-contain"
+                />
+              ) : (
+                <span
+                  style={{
+                    height: `${Math.round((64 * scale) / 100)}px`,
+                    width: `${Math.round((64 * scale) / 100)}px`,
+                  }}
+                  className="grid place-items-center rounded-2xl bg-gradient-to-br from-accent-soft to-accent-deep font-bold text-ink-950"
+                >
+                  ER
+                </span>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {[80, 100, 130, 160].map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => {
+                    setScale(preset);
+                    void saveScale(preset);
+                  }}
+                  className={cn(
+                    'rounded-lg px-3 py-1.5 text-xs transition-colors',
+                    scale === preset
+                      ? 'bg-accent text-ink-950'
+                      : 'border border-ink-600 text-zinc-400 hover:border-accent/40 hover:text-white',
+                  )}
+                >
+                  {preset}%
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <p className="mt-3 text-xs text-zinc-500">
+            Так логотип выглядит в шапке на компьютере; на телефоне он
+            пропорционально меньше. Меняется сразу на всём сайте — в шапке,
+            подвале и на странице входа.
+            {scaleSaved && <span className="ml-1 text-signal-active">Сохранено.</span>}
+          </p>
+        </div>
       )}
 
       {error && <p className="error-text">{error}</p>}
