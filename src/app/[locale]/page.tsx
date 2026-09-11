@@ -153,7 +153,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                   {t('popularTitle')}
                 </h2>
               </div>
-              <Link href="/cars" className="btn-ghost">
+              {/* На широком экране ссылка живёт в заголовке; на телефоне она
+                  прячется — там работает крупная кнопка под карточками. */}
+              <Link href="/cars" className="btn-ghost hidden sm:inline-flex">
                 {t('popularAll')}
               </Link>
             </div>
@@ -163,11 +165,24 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                 {t('popularEmpty')}
               </div>
             ) : (
-              <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {cars.map((car) => (
-                  <CarCard key={car.id} car={car} />
-                ))}
-              </div>
+              <>
+                <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {cars.map((car) => (
+                    <CarCard key={car.id} car={car} />
+                  ))}
+                </div>
+
+                {/* Главный переход в каталог: показаны только шесть машин,
+                    и после них посетитель должен видеть, куда идти дальше. */}
+                <div className="mt-10 flex justify-center">
+                  <Link
+                    href="/cars"
+                    className="btn-primary w-full justify-center px-10 py-4 text-base sm:w-auto sm:min-w-[320px]"
+                  >
+                    {t('popularAll')}
+                  </Link>
+                </div>
+              </>
             )}
           </div>
         </section>
