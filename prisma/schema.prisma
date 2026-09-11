@@ -357,6 +357,26 @@ model DeveloperProfile {
   updatedAt DateTime @updatedAt
 }
 
+/// Оценка работы разработчика от посетителя сайта.
+///
+/// Один голос на посетителя: привязка к анонимному cookie era_sid, тому же,
+/// по которому считается «онлайн сейчас». Оценку можно переставить — запись
+/// не создаётся заново, а обновляется.
+model DeveloperRating {
+  id    String @id @default(cuid())
+  /// Анонимный идентификатор посетителя из cookie
+  sid   String @unique
+  /// Оценка от 1 до 5
+  stars Int
+  /// IP на момент голоса — только чтобы разбирать накрутки
+  ip    String @default("")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
+}
+
 /// Одноразовый код для входа в «Мои брони», когда клиент забыл номер заказа.
 /// Отправляется на e-mail, указанный при бронировании. Живёт 15 минут.
 model AccessCode {

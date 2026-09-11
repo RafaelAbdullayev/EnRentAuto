@@ -79,12 +79,12 @@ export function DeveloperForm({ initial }: { initial: DeveloperValues }) {
       >
         <div>
           <p className="text-base font-semibold text-white">
-            {values.isPublished ? 'Страница «О сайте» открыта' : 'Страница «О сайте» скрыта'}
+            {values.isPublished ? 'Визитка показывается' : 'Визитка скрыта'}
           </p>
           <p className="mt-1 text-xs text-zinc-400">
             {values.isPublished
-              ? 'Пункт «О сайте» виден в шапке сайта всем посетителям.'
-              : 'Пока выключено, пункта в шапке нет, а страница отвечает «не найдено».'}
+              ? 'Раздел «Разработчик» виден на странице «О сайте» всем посетителям.'
+              : 'Страница «О сайте» работает, но раздела с вашей визиткой на ней нет.'}
           </p>
         </div>
         <button
@@ -92,7 +92,7 @@ export function DeveloperForm({ initial }: { initial: DeveloperValues }) {
           onClick={() => set('isPublished', !values.isPublished)}
           className={values.isPublished ? 'btn-ghost btn-sm' : 'btn-primary btn-sm px-6'}
         >
-          {values.isPublished ? 'Скрыть страницу' : 'Показать на сайте'}
+          {values.isPublished ? 'Скрыть визитку' : 'Показать на сайте'}
         </button>
       </section>
 
