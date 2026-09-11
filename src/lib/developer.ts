@@ -1,5 +1,4 @@
 import { createHash } from 'node:crypto';
-import { unstable_cache, revalidateTag } from 'next/cache';
 import type { DeveloperProfile } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { routing, type Locale } from '@/i18n/routing';
@@ -143,28 +142,25 @@ export async function translateDeveloperProfile(): Promise<void> {
   });
 }
 
-const PUBLISHED_TAG = 'developer-published';
-
 /**
- * Открыта ли страница «О сайте». Флаг читает шапка на каждой странице,
- * поэтому он кэшируется; кэш сбрасывается при сохранении визитки.
+ * Открыта ли страница «О сайте» — от этого зависит пункт в шапке.
+ *
+ * Намеренно без кэша: это выборка одной строки по первичному ключу, дешевле
+ * миллисекунды. Кэш здесь уже подводил — значение переживало и перезапуск, и
+ * правку прямо в базе, а сайт продолжал показывать старое состояние.
  */
-export const isDeveloperPageOpen = unstable_cache(
-  async (): Promise<boolean> => {
-    try {
-      const profile = await prisma.developerProfile.findUnique({
-        where: { id: 'singleton' },
-        select: { isPublished: true, name: true },
-      });
-      return Boolean(profile?.isPublished && profile.name.trim());
-    } catch (error) {
-      console.error('[developer] не удалось прочитать флаг публикации:', error);
-      return false;
-    }
-  },
-  [PUBLISHED_TAG],
-  { tags: [PUBLISHED_TAG] },
-);
+export async function isDeveloperPageOpen(): Promise<boolean> {
+  try {
+    const profile = await prisma.developerProfile.findUnique({
+      where: { id: 'singleton' },
+      select: { isPublished: true, name: true },
+    });
+    return Boolean(profile?.isPublished && profile.name.trim());
+  } catch (error) {
+    console.error('[developer] не удалось прочитать флаг публикации:', error);
+    return false;
+  }
+}
 
 /** Сохранение из админки. Переводы обновляются отдельно, после ответа. */
 export async function saveDeveloperProfile(input: DeveloperInput): Promise<DeveloperProfile> {
@@ -173,8 +169,6 @@ export async function saveDeveloperProfile(input: DeveloperInput): Promise<Devel
     update: input,
     create: { id: 'singleton', ...input },
   });
-  // Иначе пункт в шапке появился бы только после перезапуска.
-  revalidateTag(PUBLISHED_TAG);
   return profile;
 }
 
