@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/format';
 
 /**
  * Перевод описаний всего автопарка одной кнопкой.
@@ -66,9 +67,22 @@ export function TranslateFleet({ pending }: { pending: number }) {
   }
 
   return (
-    <div className="surface flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+    <div
+      className={cn(
+        'flex flex-wrap items-center justify-between gap-4 rounded-2xl border px-5 py-5',
+        // Пока есть непереведённые машины, блок подсвечен фирменным цветом:
+        // иначе его не замечают и описания так и остаются русскими.
+        left > 0
+          ? 'border-accent/45 bg-accent/[0.07] shadow-[0_0_0_1px_rgba(212,175,110,0.08)]'
+          : 'surface',
+      )}
+    >
       <div className="min-w-0">
-        <p className="text-sm text-zinc-300">
+        <p
+          className={cn(
+            left > 0 ? 'text-base font-semibold text-white' : 'text-sm text-zinc-300',
+          )}
+        >
           {left > 0
             ? `Описания без перевода: ${left} ${plural(left)}`
             : 'Все описания переведены'}
@@ -76,14 +90,21 @@ export function TranslateFleet({ pending }: { pending: number }) {
         {status && <p className="mt-1 text-xs text-signal-active">{status}</p>}
         {error && <p className="mt-1 text-xs text-signal-cancel">{error}</p>}
         {!status && !error && (
-          <p className="mt-1 text-xs text-zinc-500">
+          <p className={cn('mt-1 text-xs', left > 0 ? 'text-zinc-400' : 'text-zinc-500')}>
             {left > 0
-              ? 'Посетитель на другом языке видит русский текст, пока перевода нет.'
+              ? 'Посетитель на другом языке видит русский текст, пока перевода нет. Нажмите — переведём все разом.'
               : 'Новые машины переводятся сами при сохранении.'}
           </p>
         )}
       </div>
-      <button type="button" disabled={running || left === 0} onClick={run} className="btn-primary btn-sm">
+      <button
+        type="button"
+        disabled={running || left === 0}
+        onClick={run}
+        // Кнопка нажимается редко, но она главная в этом блоке: на телефоне
+        // во всю ширину, на большом экране — широкая, чтобы не теряться.
+        className="btn-primary w-full px-8 py-3 text-sm sm:w-auto sm:min-w-[280px]"
+      >
         {running ? 'Перевожу…' : 'Перевести весь автопарк'}
       </button>
     </div>
