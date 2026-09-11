@@ -228,7 +228,11 @@
           el('h3', { class: 'job__role', text: job.role }),
           el('span', { class: 'job__period', text: job.period }),
         ),
-        el('p', { class: 'job__where' }, document.createTextNode(job.company),
+        el('p', { class: 'job__where' },
+          /* Название компании становится ссылкой, только если в конфиге задан url */
+          job.url
+            ? el('a', { class: 'job__link', href: job.url, target: '_blank', rel: 'noopener noreferrer', text: job.company })
+            : document.createTextNode(job.company),
           job.place ? el('span', { text: ` · ${job.place}` }) : null),
         el('ul', { class: 'job__points' }, (job.points || []).map((pt) => el('li', { text: pt }))),
       )));

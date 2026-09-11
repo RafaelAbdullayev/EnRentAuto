@@ -433,6 +433,12 @@ main,header,footer{position:relative;z-index:1}
 .job--current .job__period{color:var(--emerald)}
 .job__where{font-size:14px;color:var(--neon);margin-bottom:12px}
 .job__where span{color:var(--dim)}
+/* Подчёркивание проявляется на hover — ссылка заметна, но не спорит с акцентом */
+.job__link{
+  border-bottom:1px solid transparent;transition:border-color .3s var(--ease);
+}
+.job__link:hover{border-bottom-color:currentColor}
+.job__link::after{content:' ↗';font-size:.85em;opacity:.65}
 .job__points{margin:0;padding:0;list-style:none;display:grid;gap:7px}
 .job__points li{position:relative;padding-left:18px;font-size:14.5px;color:var(--muted);line-height:1.6}
 .job__points li::before{
