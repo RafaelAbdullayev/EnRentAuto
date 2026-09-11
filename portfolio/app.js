@@ -35,7 +35,7 @@
       if (k === 'class') node.className = v;
       else if (k === 'text') node.textContent = v;
       else if (k === 'html') node.innerHTML = v;
-      else if (v !== '' && v != null) node.setAttribute(k, v);
+      else if (v != null) node.setAttribute(k, v);
     }
     children.flat().forEach((c) => c && node.append(c));
     return node;
@@ -211,6 +211,66 @@
       el('div', { class: 'step__num', text: step.num }),
       el('div', { class: 'step__body' }, el('h3', { text: step.title }), el('p', { text: step.text })),
     )));
+  });
+
+  /* ── ОПЫТ РАБОТЫ ─────────────────────────────────────────────────────── */
+  safe('experience', () => {
+    const x = SITE.experience; if (!x) return;
+    const lead = $('#experience .lead'); if (lead && x.lead) lead.textContent = x.lead;
+
+    const list = $('#xpList');
+    if (list && Array.isArray(x.jobs)) {
+      list.replaceChildren(...x.jobs.map((job, i) => el('article', {
+        class: `job reveal${job.current ? ' job--current' : ''}`,
+        'data-delay': String((i % 3) + 1),
+      },
+        el('div', { class: 'job__top' },
+          el('h3', { class: 'job__role', text: job.role }),
+          el('span', { class: 'job__period', text: job.period }),
+        ),
+        el('p', { class: 'job__where' }, document.createTextNode(job.company),
+          job.place ? el('span', { text: ` · ${job.place}` }) : null),
+        el('ul', { class: 'job__points' }, (job.points || []).map((pt) => el('li', { text: pt }))),
+      )));
+    }
+
+    const side = $('#xpSide');
+    if (!side) return;
+    const cards = [];
+
+    if (Array.isArray(x.education) && x.education.length) {
+      cards.push(el('div', { class: 'side-card reveal', 'data-delay': '1' },
+        el('h4', { text: 'Образование' }),
+        el('ul', { class: 'edu' }, x.education.map((ed) => el('li', {},
+          el('b', { text: ed.title }),
+          el('span', { text: ed.org }),
+          el('em', { text: ed.period }),
+        ))),
+      ));
+    }
+
+    if (Array.isArray(x.languages) && x.languages.length) {
+      cards.push(el('div', { class: 'side-card reveal', 'data-delay': '2' },
+        el('h4', { text: 'Языки' }),
+        el('ul', { class: 'langs' }, x.languages.map((l) => el('li', {},
+          document.createTextNode(l.name), el('span', { text: l.level }),
+        ))),
+      ));
+    }
+
+    /* download заставляет браузер скачать файл, а не пытаться его открыть */
+    if (x.cvFile) {
+      cards.push(el('a', {
+        class: 'btn btn--primary btn--wide reveal',
+        href: x.cvFile,
+        download: x.cvFile.split('/').pop(),
+        'data-delay': '3',
+        'data-magnetic': '',
+        text: x.cvLabel || 'Скачать CV',
+      }));
+    }
+
+    side.replaceChildren(...cards);
   });
 
   /* ── КОНТАКТЫ: каналы, футер, соцсети ────────────────────────────────── */

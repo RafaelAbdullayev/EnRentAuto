@@ -28,20 +28,15 @@ const SITE = {
     avatar: 'assets/avatar.jpg',   // положите фото сюда; если файла нет — покажутся инициалы
     initials: 'RA',
     bio: [
-      'Меня зовут Рафаэль. Я фулстек-разработчик: беру продукт на всех уровнях — от интерфейса, который видит клиент, до базы данных, очередей и деплоя. Работаю с бизнесом, которому нужен не «сайт ради сайта», а инструмент, приносящий заявки и экономящий часы ручной работы.',
-      'Мой подход простой: сначала разбираюсь в задаче и цифрах, потом проектирую архитектуру, и только затем пишу код. Чистая структура, типизация, понятные ошибки и логи — чтобы через полгода проект можно было развивать, а не переписывать.',
+      'Меня зовут Рафаэль. Больше 8 лет я в ИТ: начинал с поддержки пользователей и сетевой инфраструктуры, вырос до fullstack-разработчика. Такой путь даёт редкое преимущество — я понимаю не только код, но и среду, в которой он живёт: сервер, сеть, почту, реальные ограничения железа.',
+      'Сегодня основной стек — Python и FastAPI на бэкенде, TypeScript и React на фронтенде. Строго типизированный код, валидация на границах (Pydantic и Zod), чистая архитектура с разделением логики и представления. Активно применяю AI-инструменты и локальные LLM, чтобы ускорять разработку без потери качества.',
       'Больше всего в разработке люблю момент, когда сложная система начинает работать предсказуемо: быстрый интерфейс, стабильный API, зелёные метрики и довольный клиент, который говорит «наконец-то всё просто».',
     ],
-    // Цифры анимируются при скролле. value — только число, suffix — приписка ('+', 'K')
-    stats: [
-      { value: 25, suffix: '+', label: 'проектов' },
-      { value: 5,  suffix: '',  label: 'лет опыта' },
-      { value: 18, suffix: '+', label: 'клиентов' },
-    ],
     stack: [
-      { group: 'Frontend',   items: ['HTML5', 'CSS3', 'JavaScript', 'React', 'Next.js', 'Tailwind CSS', 'TypeScript'] },
-      { group: 'Backend',    items: ['Node.js', 'Python', 'Express', 'REST API', 'PostgreSQL', 'MongoDB', 'Prisma'] },
-      { group: 'Инструменты', items: ['Git', 'Docker', 'Telegram Bot API', 'Vercel', 'Nginx', 'CI/CD'] },
+      { group: 'Backend',    items: ['Python', 'FastAPI', 'Pydantic v2', 'Async', 'Node.js', 'REST API', 'PostgreSQL', 'MongoDB'] },
+      { group: 'Frontend',   items: ['TypeScript', 'React', 'Next.js', 'React Hook Form', 'Zod', 'Tailwind CSS', 'HTML5', 'CSS3'] },
+      { group: 'AI и автоматизация', items: ['Локальные LLM (Ollama)', 'Fine-tuning', 'Whisper', 'Telegram Bot API', 'AI-assisted development'] },
+      { group: 'DevOps и инфраструктура', items: ['Git', 'Docker', 'Linux', 'Nginx', 'CI/CD', 'Сетевая инфраструктура'] },
     ],
   },
 
@@ -118,6 +113,85 @@ const SITE = {
     ],
   },
 
+  /* ── 5.5 ОПЫТ РАБОТЫ (данные из CV) ───────────────────────────────────── */
+  experience: {
+    lead: 'Путь от инженера поддержки и сетевой инфраструктуры до fullstack-разработчика. Ниже — места работы и то, за что я отвечал.',
+    // current: true — период подсвечивается как текущее место
+    jobs: [
+      {
+        role: 'Fullstack Developer и программный инженер',
+        company: 'Фриланс / проектная работа',
+        place: 'Азербайджан',
+        period: '2023 — настоящее время',
+        current: true,
+        points: [
+          'InvoicePro: архитектура и разработка веб- и мобильного приложения для автоматизации выставления счетов на FastAPI и React.',
+          'Telegram-бот с нуля: транскрипция голосовых сообщений в текст и автоматическое логирование задач в календарь.',
+          'AI-assisted development: проектирование и ускорение разработки с помощью ИИ-инструментов без потери качества кода.',
+          'Веб-системы и цифровой брендинг — в том числе система ProLogistik.',
+        ],
+      },
+      {
+        role: 'Техник',
+        company: 'StartTelecom MMC',
+        place: 'Баку',
+        period: 'янв. — июнь 2024',
+        current: false,
+        points: [
+          'Монтаж, настройка и прокладка кабельных трасс для интернет- и сетевого оборудования.',
+          'Оперативное решение сложных технических проблем клиентов на месте.',
+          'Постоянная техническая поддержка телекоммуникационных услуг.',
+        ],
+      },
+      {
+        role: 'ИТ-специалист, отдел интернет-технологий',
+        company: 'Aztelecom MMC',
+        place: 'Сумгаит',
+        period: 'июль 2022 — сент. 2023',
+        current: false,
+        points: [
+          'Настройка Windows и Linux, систем безопасности и антивирусного ПО.',
+          'Конфигурация почтовых клиентов Outlook, Yandex и Office 365 по протоколам POP3, IMAP и Exchange.',
+          'Прокладка Ethernet, обжим RJ45, восстановление сетевых соединений.',
+        ],
+      },
+      {
+        role: 'Координатор маршрутов',
+        company: 'ООО «Акватрейд»',
+        place: 'Сургут, Россия',
+        period: 'май 2019 — апр. 2022',
+        current: false,
+        points: [
+          'Планирование, анализ и оптимизация ежедневных транспортных маршрутов.',
+          'Координация водителей, контроль своевременности доставок и отчётность руководству.',
+        ],
+      },
+      {
+        role: 'ИТ-специалист, HelpDesk',
+        company: 'ОАО «Телепорт-лаборатория»',
+        place: 'Россия',
+        period: 'март 2015 — нояб. 2018',
+        current: false,
+        points: [
+          'Техническая поддержка пользователей первой линии, настройка ОС и прикладного ПО.',
+          'Диагностика сетевых неисправностей, установка принтеров, сканеров и другой периферии.',
+        ],
+      },
+    ],
+    education: [
+      { title: 'Курс «Программист Python»', org: 'TOP Akademiya', period: '2024 — настоящее время' },
+      { title: 'Оператор ЭВМ / HelpDesk',   org: 'ТУСУР, Томск',  period: '2008' },
+    ],
+    languages: [
+      { name: 'Азербайджанский', level: 'родной' },
+      { name: 'Русский',         level: 'свободно' },
+      { name: 'Английский',      level: 'технический' },
+    ],
+    // Файл лежит в assets/. Пустая строка — кнопка скачивания скрывается.
+    cvFile: 'assets/Rafael-Abdullayev-CV.docx',
+    cvLabel: 'Скачать CV',
+  },
+
   /* ── 6. КОНТАКТЫ ──────────────────────────────────────────────────────── */
   contact: {
     lead: 'Расскажите задачу в двух предложениях — отвечу с оценкой сроков и бюджета.',
@@ -132,15 +206,15 @@ const SITE = {
     formEndpoint: '',                 // нужен только при formMode: 'endpoint'
 
     channels: [
-      { icon: '✈️', title: 'Telegram', subtitle: '@Audify007_bot',   href: 'https://t.me/Audify007_bot' },
+      { icon: '✈️', title: 'Telegram', subtitle: '@Rafael005t',       href: 'https://t.me/Rafael005t' },
       { icon: '📞', title: 'WhatsApp', subtitle: '+994 55 434 50 06', href: 'https://wa.me/994554345006' },
+      { icon: '✉️', title: 'Email',    subtitle: 'djigit1220@gmail.com', href: 'mailto:djigit1220@gmail.com' },
       { icon: '💻', title: 'GitHub',   subtitle: 'github.com/RafaelAbdullayev', href: 'https://github.com/RafaelAbdullayev' },
-      // { icon: '✉️', title: 'Email', subtitle: 'you@mail.com', href: 'mailto:you@mail.com' },
     ],
 
     whatsappNumber: '994554345006',   // только цифры, без + и пробелов
-    telegramUser:   'Audify007_bot',  // без @
-    email:          '',               // для formMode: 'mailto'
+    telegramUser:   'Rafael005t',     // без @
+    email:          'djigit1220@gmail.com',  // для formMode: 'mailto'
   },
 
   /* ── 7. ФУТЕР ─────────────────────────────────────────────────────────── */
@@ -154,7 +228,7 @@ const SITE = {
     // type определяет иконку: github | telegram | whatsapp | link
     social: [
       { type: 'github',   href: 'https://github.com/RafaelAbdullayev', label: 'GitHub' },
-      { type: 'telegram', href: 'https://t.me/Audify007_bot',          label: 'Telegram' },
+      { type: 'telegram', href: 'https://t.me/Rafael005t',             label: 'Telegram' },
       { type: 'whatsapp', href: 'https://wa.me/994554345006',          label: 'WhatsApp' },
     ],
   },

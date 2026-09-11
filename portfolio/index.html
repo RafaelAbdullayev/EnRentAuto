@@ -399,6 +399,66 @@ main,header,footer{position:relative;z-index:1}
 }
 
 /* ═══════════════════════════════════════════════════════════
+   10.5 ОПЫТ РАБОТЫ
+   Рельс с годами слева, карточки мест работы справа.
+   Намеренно отличается от таймлайна процесса: там шаги-кружки,
+   здесь — хронология, где важен период, а не номер.
+   ═══════════════════════════════════════════════════════════ */
+.xp{display:grid;gap:clamp(28px,5vw,56px);grid-template-columns:1fr;margin-top:44px}
+@media(min-width:1000px){.xp{grid-template-columns:1fr 300px;align-items:start}}
+
+.xp__list{display:grid;gap:14px;position:relative}
+.job{
+  position:relative;padding:22px 24px 22px 26px;border-radius:var(--radius);
+  border:1px solid var(--stroke);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.012));
+  transition:border-color .45s var(--ease),transform .45s var(--ease),background .45s;
+}
+/* Вертикальный рельс слева — «полоса времени» */
+.job::before{
+  content:'';position:absolute;left:0;top:22px;bottom:22px;width:2px;border-radius:2px;
+  background:linear-gradient(var(--stroke-strong),transparent);
+  transition:background .45s var(--ease);
+}
+.job:hover{border-color:rgba(0,212,255,.3);transform:translateX(3px);background:rgba(0,212,255,.035)}
+.job:hover::before{background:linear-gradient(var(--neon),rgba(0,212,255,0))}
+.job--current{border-color:rgba(0,255,163,.28);background:rgba(0,255,163,.045)}
+.job--current::before{background:linear-gradient(var(--emerald),rgba(0,255,163,0))}
+
+.job__top{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;margin-bottom:4px}
+.job__role{font-family:var(--font-display);font-size:clamp(17px,2.3vw,20px);font-weight:600;letter-spacing:-.02em}
+.job__period{
+  margin-left:auto;font-size:12.5px;letter-spacing:.05em;color:var(--dim);white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+}
+.job--current .job__period{color:var(--emerald)}
+.job__where{font-size:14px;color:var(--neon);margin-bottom:12px}
+.job__where span{color:var(--dim)}
+.job__points{margin:0;padding:0;list-style:none;display:grid;gap:7px}
+.job__points li{position:relative;padding-left:18px;font-size:14.5px;color:var(--muted);line-height:1.6}
+.job__points li::before{
+  content:'';position:absolute;left:2px;top:10px;width:5px;height:5px;border-radius:50%;
+  background:var(--stroke-strong);
+}
+.job:hover .job__points li::before{background:rgba(0,212,255,.7)}
+
+/* Боковая колонка: образование, языки, CV */
+.xp__side{display:grid;gap:14px;position:sticky;top:90px}
+@media(max-width:999px){.xp__side{position:static}}
+.side-card{padding:20px 22px;border-radius:var(--radius);border:1px solid var(--stroke);background:var(--surface)}
+.side-card h4{
+  font-family:var(--font-display);font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--dim);margin:0 0 14px;font-weight:600;
+}
+.edu{display:grid;gap:14px;margin:0;padding:0}
+.edu li{list-style:none}
+.edu b{display:block;font-size:14.5px;font-weight:500;line-height:1.4}
+.edu span{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.edu em{display:block;font-size:12px;color:var(--dim);font-style:normal;font-variant-numeric:tabular-nums;margin-top:3px}
+.langs{display:grid;gap:10px;margin:0;padding:0}
+.langs li{list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:baseline;font-size:14px}
+.langs span{color:var(--dim);font-size:12.5px}
+
+/* ═══════════════════════════════════════════════════════════
    11. КОНТАКТЫ
    ═══════════════════════════════════════════════════════════ */
 .contact{display:grid;gap:26px;grid-template-columns:1fr;margin-top:42px}
@@ -516,6 +576,7 @@ main,header,footer{position:relative;z-index:1}
       <a href="#projects">Проекты</a>
       <a href="#services">Услуги</a>
       <a href="#process">Процесс</a>
+      <a href="#experience">Опыт</a>
       <a href="#contact">Контакты</a>
     </nav>
 
@@ -532,6 +593,7 @@ main,header,footer{position:relative;z-index:1}
   <a href="#projects">Проекты</a>
   <a href="#services">Услуги</a>
   <a href="#process">Процесс</a>
+  <a href="#experience">Опыт</a>
   <a href="#contact">Контакты</a>
 </nav>
 
@@ -667,10 +729,25 @@ main,header,footer{position:relative;z-index:1}
     </div>
   </section>
 
+  <!-- ═══════════════ 5. ОПЫТ ═══════════════ -->
+  <section class="section" id="experience">
+    <div class="wrap">
+      <p class="eyebrow reveal">05 — Опыт</p>
+      <h2 class="h2 reveal" data-delay="1">Где работал<br>и чем занимался</h2>
+      <p class="lead reveal" data-delay="2" data-bind="experience.lead"></p>
+
+      <div class="xp">
+        <!-- Места работы и боковую колонку рендерит app.js из SITE.experience -->
+        <div class="xp__list" id="xpList"></div>
+        <aside class="xp__side" id="xpSide"></aside>
+      </div>
+    </div>
+  </section>
+
   <!-- ═══════════════ 6. КОНТАКТЫ ═══════════════ -->
   <section class="section" id="contact">
     <div class="wrap">
-      <p class="eyebrow reveal">05 — Контакты</p>
+      <p class="eyebrow reveal">06 — Контакты</p>
       <h2 class="h2 reveal" data-delay="1">Обсудим ваш проект</h2>
       <p class="lead reveal" data-delay="2" data-bind="contact.lead">Расскажите задачу в двух предложениях — отвечу с оценкой сроков и бюджета.</p>
 
