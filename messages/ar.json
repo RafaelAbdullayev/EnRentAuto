@@ -154,7 +154,10 @@
     "email": "hello@enrentauto.az",
     "waText": "مرحباً! أرغب في استئجار سيارة.",
     "mapUrl": "https://maps.google.com/?cid=5428542692223396213",
-    "mapUrlAlt": "https://yandex.com/maps/org/en_rent_auto/86569465600/"
+    "mapUrlAlt": "https://yandex.com/maps/org/en_rent_auto/86569465600/",
+    "devLabel": "تطوير الموقع",
+    "devName": "",
+    "devUrl": ""
   },
   "enums": {
     "body": {

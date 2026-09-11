@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { prisma } from '@/lib/prisma';
@@ -27,6 +28,12 @@ async function readVersions() {
 }
 
 export default async function AdminAboutPage() {
+  // Подпись разработчика в подвале сайта — показываем её же здесь, чтобы
+  // было видно, что именно увидит посетитель, и куда это правится.
+  const footer = await getTranslations({ locale: 'ru', namespace: 'footer' });
+  const devName = footer('devName').trim();
+  const devUrl = footer('devUrl').trim();
+
   const { version, clean } = await readVersions();
 
   const [cars, bookings, texts, admins] = await Promise.all([
@@ -105,6 +112,43 @@ export default async function AdminAboutPage() {
             <div className="mt-1 text-xs text-zinc-500">{item.label}</div>
           </div>
         ))}
+      </section>
+
+      <section className="surface p-6">
+        <h2 className="text-base font-semibold text-white">Разработчик</h2>
+        {devName ? (
+          <>
+            <p className="mt-3 text-sm text-zinc-300">
+              {devName}
+              {devUrl && (
+                <>
+                  {' · '}
+                  <a
+                    href={devUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-accent underline-offset-4 hover:underline"
+                  >
+                    {devUrl}
+                  </a>
+                </>
+              )}
+            </p>
+            <p className="mt-2 text-xs text-zinc-500">
+              Эта подпись стоит в подвале сайта на всех языках. Правится в разделе
+              «Оформление и тексты»: ключи footer.devName, footer.devUrl и
+              footer.devLabel.
+            </p>
+          </>
+        ) : (
+          <p className="mt-3 text-sm text-zinc-500">
+            Подпись в подвале сайта пока пустая. Заполните в разделе «Оформление и
+            тексты» ключ <span className="font-mono text-zinc-300">footer.devName</span>{' '}
+            (имя или название студии) и, если нужно,{' '}
+            <span className="font-mono text-zinc-300">footer.devUrl</span> — ссылку на
+            сайт или профиль. Подпись появится внизу каждой страницы.
+          </p>
+        )}
       </section>
 
       <section className="surface p-6">

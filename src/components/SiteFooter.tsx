@@ -135,9 +135,37 @@ export function SiteFooter() {
       </div>
 
       <div className="border-t border-ink-800/80">
-        <div className="container-page flex flex-col items-center justify-between gap-3 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-xs text-zinc-600 sm:flex-row">
-          <span>{t('rights', { year: new Date().getFullYear() })}</span>
-          <Link href="/login" className="link-row hover:text-zinc-400">
+        {/* Нижний отступ на телефоне больше: снизу справа висит кнопка
+            WhatsApp, и без запаса она перекрывала бы последнюю строку. */}
+        <div className="container-page flex flex-col items-center justify-between gap-4 py-6 pb-[max(5.5rem,calc(env(safe-area-inset-bottom)+4.5rem))] text-xs text-zinc-600 sm:flex-row sm:pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+          <span className="order-1">{t('rights', { year: new Date().getFullYear() })}</span>
+
+          {/* Подпись того, кто сделал сайт. Пустое имя — строки нет вовсе;
+              заполняется в админке («Оформление и тексты» → footer.devName,
+              devUrl и devLabel), для каждого языка свой текст. */}
+          {t('devName').trim() && (
+            <span className="order-2 flex items-center gap-2">
+              <span className="hidden h-px w-6 bg-ink-700 sm:block" />
+              <span className="uppercase tracking-[0.18em] text-zinc-700">
+                {t('devLabel')}
+              </span>
+              {isHttpUrl(t('devUrl')) ? (
+                <a
+                  href={t('devUrl')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-zinc-400 underline-offset-4 transition-colors hover:text-accent hover:underline"
+                >
+                  {t('devName')}
+                </a>
+              ) : (
+                <span className="font-medium text-zinc-400">{t('devName')}</span>
+              )}
+              <span className="hidden h-px w-6 bg-ink-700 sm:block" />
+            </span>
+          )}
+
+          <Link href="/login" className="link-row order-3 hover:text-zinc-400">
             {t('staff')}
           </Link>
         </div>
