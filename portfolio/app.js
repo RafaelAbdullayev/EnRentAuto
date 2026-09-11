@@ -258,15 +258,17 @@
       ));
     }
 
-    /* download заставляет браузер скачать файл, а не пытаться его открыть */
+    /* PDF открываем в новой вкладке: работает везде, включая мобильные,
+       а сохранить файл читатель может из штатного просмотрщика. */
     if (x.cvFile) {
       cards.push(el('a', {
         class: 'btn btn--primary btn--wide reveal',
         href: x.cvFile,
-        download: x.cvFile.split('/').pop(),
+        target: '_blank',
+        rel: 'noopener noreferrer',
         'data-delay': '3',
         'data-magnetic': '',
-        text: x.cvLabel || 'Скачать CV',
+        text: x.cvLabel || 'Открыть CV',
       }));
     }
 

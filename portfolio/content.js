@@ -188,8 +188,8 @@ const SITE = {
       { name: 'Английский',      level: 'технический' },
     ],
     // Файл лежит в assets/. Пустая строка — кнопка скачивания скрывается.
-    cvFile: 'assets/Rafael-Abdullayev-CV.docx',
-    cvLabel: 'Скачать CV',
+    cvFile: 'assets/Rafael-Abdullayev-CV.pdf',
+    cvLabel: 'Открыть CV',
   },
 
   /* ── 6. КОНТАКТЫ ──────────────────────────────────────────────────────── */
