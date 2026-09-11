@@ -505,8 +505,8 @@ nginx -t && systemctl reload nginx
 
 ```bash
 # с локальной машины
-scp ~/Downloads/logo.png root@178.209.127.144:/tmp/logo.png
-scp ~/Downloads/hero.mp4 root@178.209.127.144:/tmp/hero.mp4
+scp ~/Downloads/logo.png root@СЕРВЕР:/tmp/logo.png
+scp ~/Downloads/hero.mp4 root@СЕРВЕР:/tmp/hero.mp4
 
 # на сервере
 mkdir -p /opt/enrentauto/data/uploads/brand
