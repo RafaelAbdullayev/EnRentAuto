@@ -17,7 +17,8 @@
     "menu": "Menyu",
     "language": "Dil",
     "my": "Rezervasiyalarım",
-    "tagline": "RENT A CAR"
+    "tagline": "RENT A CAR",
+    "about": "Sayt haqqında"
   },
   "home": {
     "eyebrow": "Premium avtomobil icarəsi",
@@ -240,5 +241,27 @@
     "resend": "Yenidən göndər",
     "mailDisabled": "E-poçt göndərişi qurulmayıb. WhatsApp-a yazın — menecer rezervasiyanızı tapacaq.",
     "back": "Geri"
+  },
+  "dev": {
+    "eyebrow": "İşləmə",
+    "title": "Sayt haqqında",
+    "lead": "Bu saytı kim hazırlayıb və onunla necə əlaqə saxlamaq olar.",
+    "aboutTitle": "Haqqımda",
+    "servicesTitle": "Xidmətlər",
+    "skillsTitle": "Texnologiyalar",
+    "contactsTitle": "Əlaqə",
+    "stackTitle": "Bu sayt nə üzərində qurulub",
+    "stackText": "Fərdi işləmə: hazır konstruktor və şablonlar olmadan. Altı dil, idarə paneli, onlayn rezervasiya.",
+    "years": "il təcrübə",
+    "projects": "layihə",
+    "city": "şəhər",
+    "ctaTitle": "Belə bir sayt lazımdır?",
+    "ctaText": "Yazın — tapşırığı və müddəti müzakirə edək.",
+    "write": "WhatsApp-da yazın",
+    "mail": "E-məktub yazın",
+    "call": "Zəng edin",
+    "telegram": "Telegram",
+    "site": "Sayt",
+    "metaTitle": "Sayt haqqında"
   }
 }

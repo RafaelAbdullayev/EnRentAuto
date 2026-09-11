@@ -17,7 +17,8 @@
     "menu": "Menü",
     "language": "Dil",
     "my": "Rezervasyonlarım",
-    "tagline": "RENT A CAR"
+    "tagline": "RENT A CAR",
+    "about": "Site hakkında"
   },
   "home": {
     "eyebrow": "Premium araç kiralama",
@@ -240,5 +241,27 @@
     "resend": "Tekrar gönder",
     "mailDisabled": "E-posta gönderimi yapılandırılmamış. WhatsApp’tan yazın, yönetici rezervasyonunuzu bulsun.",
     "back": "Geri"
+  },
+  "dev": {
+    "eyebrow": "Geliştirme",
+    "title": "Site hakkında",
+    "lead": "Bu siteyi kim yaptı ve nasıl iletişime geçilir.",
+    "aboutTitle": "Hakkımda",
+    "servicesTitle": "Hizmetler",
+    "skillsTitle": "Teknolojiler",
+    "contactsTitle": "İletişim",
+    "stackTitle": "Bu site neyle yapıldı",
+    "stackText": "Özel geliştirme: hazır site kurucuları ve şablonlar olmadan. Altı dil, yönetim paneli, çevrimiçi rezervasyon.",
+    "years": "yıl deneyim",
+    "projects": "proje",
+    "city": "şehir",
+    "ctaTitle": "Böyle bir site ister misiniz?",
+    "ctaText": "Yazın — işi ve süreyi konuşalım.",
+    "write": "WhatsApp’tan yazın",
+    "mail": "E-posta gönderin",
+    "call": "Arayın",
+    "telegram": "Telegram",
+    "site": "Web sitesi",
+    "metaTitle": "Site hakkında"
   }
 }

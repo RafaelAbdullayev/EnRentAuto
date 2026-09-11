@@ -6,6 +6,8 @@ import '../globals.css';
 import { PresenceTracker } from '@/components/PresenceTracker';
 import { routing, isRtl } from '@/i18n/routing';
 import { getLogoScale } from '@/lib/settings';
+import { isDeveloperPageOpen } from '@/lib/developer';
+import { SiteFlagsProvider } from '@/components/SiteFlags';
 
 /** Пререндерим все языки статически. */
 export function generateStaticParams() {
@@ -57,7 +59,10 @@ export default async function LocaleLayout({
 
   // Размер логотипа из админки. Значение кэшируется, поэтому страницы
   // остаются статическими; кэш сбрасывается при сохранении нового размера.
-  const logoScale = await getLogoScale();
+  const [logoScale, aboutPublished] = await Promise.all([
+    getLogoScale(),
+    isDeveloperPageOpen(),
+  ]);
 
   return (
     <html
@@ -68,7 +73,7 @@ export default async function LocaleLayout({
     >
       <body>
         <NextIntlClientProvider>
-          {children}
+          <SiteFlagsProvider value={{ aboutPublished }}>{children}</SiteFlagsProvider>
           {/* Пинг присутствия для модуля «Онлайн сейчас» */}
           <PresenceTracker />
         </NextIntlClientProvider>

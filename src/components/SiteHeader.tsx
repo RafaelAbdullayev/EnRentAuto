@@ -5,10 +5,12 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { Logo } from '@/components/Logo';
+import { useSiteFlags } from '@/components/SiteFlags';
 import { cn } from '@/lib/format';
 
 export function SiteHeader() {
   const t = useTranslations('nav');
+  const { aboutPublished } = useSiteFlags();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -24,6 +26,8 @@ export function SiteHeader() {
     { href: '/cars', label: t('fleet') },
     { href: '/#how', label: t('how') },
     { href: '/my', label: t('my') },
+    // Пункт появляется, только когда визитка разработчика опубликована.
+    ...(aboutPublished ? [{ href: '/about', label: t('about') }] : []),
     { href: '/#contacts', label: t('contacts') },
   ];
 

@@ -3,7 +3,7 @@
  * Вынесено отдельно от src/lib/brand.ts: тот работает с файловой системой
  * и не должен попадать в клиентский бандл.
  */
-export const BRAND_KINDS = ['logo', 'hero'] as const;
+export const BRAND_KINDS = ['logo', 'hero', 'developer'] as const;
 
 export type BrandKind = (typeof BRAND_KINDS)[number];
 
@@ -25,4 +25,6 @@ export function isVideoMime(mime: string): boolean {
 export const BRAND_ACCEPT: Record<BrandKind, string> = {
   logo: 'image/png,image/jpeg,image/webp,image/avif,image/gif',
   hero: 'image/png,image/jpeg,image/webp,image/avif,image/gif,video/mp4,video/webm',
+  /** Фото разработчика на странице «О сайте». */
+  developer: 'image/png,image/jpeg,image/webp,image/avif',
 };

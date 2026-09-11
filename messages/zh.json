@@ -17,7 +17,8 @@
     "menu": "菜单",
     "language": "语言",
     "my": "我的预订",
-    "tagline": "RENT A CAR"
+    "tagline": "RENT A CAR",
+    "about": "关于网站"
   },
   "home": {
     "eyebrow": "高端租车服务",
@@ -240,5 +241,27 @@
     "resend": "重新发送",
     "mailDisabled": "邮件发送尚未配置。请通过 WhatsApp 联系我们，客服会为您查找预订。",
     "back": "返回"
+  },
+  "dev": {
+    "eyebrow": "开发",
+    "title": "关于网站",
+    "lead": "这个网站由谁开发，以及如何联系。",
+    "aboutTitle": "关于我",
+    "servicesTitle": "服务",
+    "skillsTitle": "技术",
+    "contactsTitle": "联系",
+    "stackTitle": "本站的技术构成",
+    "stackText": "完全定制开发，不使用建站工具或模板。六种语言、管理后台、在线预订。",
+    "years": "年经验",
+    "projects": "个项目",
+    "city": "城市",
+    "ctaTitle": "需要同样的网站吗？",
+    "ctaText": "联系我，一起讨论需求与周期。",
+    "write": "WhatsApp 联系",
+    "mail": "发送邮件",
+    "call": "致电",
+    "telegram": "Telegram",
+    "site": "网站",
+    "metaTitle": "关于网站"
   }
 }

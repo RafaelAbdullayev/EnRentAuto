@@ -17,7 +17,8 @@
     "menu": "Menu",
     "language": "Language",
     "my": "My bookings",
-    "tagline": "RENT A CAR"
+    "tagline": "RENT A CAR",
+    "about": "About the site"
   },
   "home": {
     "eyebrow": "Premium car rental",
@@ -240,5 +241,27 @@
     "resend": "Send again",
     "mailDisabled": "E-mail sending is not configured. Message us on WhatsApp and the manager will find your booking.",
     "back": "Back"
+  },
+  "dev": {
+    "eyebrow": "Development",
+    "title": "About the site",
+    "lead": "Who built this site and how to get in touch.",
+    "aboutTitle": "About me",
+    "servicesTitle": "Services",
+    "skillsTitle": "Technologies",
+    "contactsTitle": "Get in touch",
+    "stackTitle": "How this site is built",
+    "stackText": "Custom development — no website builders or templates. Six languages, admin panel, online booking.",
+    "years": "years of experience",
+    "projects": "projects",
+    "city": "city",
+    "ctaTitle": "Want a site like this?",
+    "ctaText": "Write to me — we will discuss the task and the timeline.",
+    "write": "Message on WhatsApp",
+    "mail": "Send an email",
+    "call": "Call",
+    "telegram": "Telegram",
+    "site": "Website",
+    "metaTitle": "About the site"
   }
 }

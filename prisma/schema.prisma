@@ -307,6 +307,56 @@ model Settings {
   updatedAt    DateTime @updatedAt
 }
 
+/// Визитка разработчика для страницы «О сайте» (единственная строка).
+///
+/// Тексты админ пишет на русском; переводы на остальные языки делаются
+/// машиной при сохранении и лежат в поле translations, как у автомобилей.
+model DeveloperProfile {
+  id String @id @default("singleton")
+
+  /// Показывать ли пункт «О сайте» в шапке и саму страницу
+  isPublished Boolean @default(false)
+
+  // ─── Кто ───────────────────────────────────────────────────────────────
+  name     String @default("")
+  /// Должность: «Full-stack разработчик», «Веб-студия», …
+  role     String @default("")
+  /// Короткая строка под именем
+  tagline  String @default("")
+  /// Рассказ о себе, несколько абзацев
+  about    String @default("")
+  city     String @default("")
+  /// Опыт в годах — показываем цифрой в плитках
+  years    Int    @default(0)
+  /// Сколько проектов сделано
+  projects Int    @default(0)
+
+  // ─── Как связаться ─────────────────────────────────────────────────────
+  phone     String @default("")
+  whatsapp  String @default("")
+  telegram  String @default("")
+  email     String @default("")
+  website   String @default("")
+  github    String @default("")
+  linkedin  String @default("")
+  instagram String @default("")
+
+  // ─── Чем занимается ────────────────────────────────────────────────────
+  /// Технологии: «Next.js», «PostgreSQL», …
+  skills    String[] @default([])
+  /// Услуги: «Сайты под ключ», «Telegram-боты», …
+  services  String[] @default([])
+  /// Приписка о цене или условиях — свободный текст
+  priceNote String   @default("")
+
+  /// Переводы текстовых полей: { "az": { "role": "...", ... }, … }
+  translations Json?
+  /// Отпечаток русских текстов, с которых сделаны переводы
+  sourceHash   String @default("")
+
+  updatedAt DateTime @updatedAt
+}
+
 /// Одноразовый код для входа в «Мои брони», когда клиент забыл номер заказа.
 /// Отправляется на e-mail, указанный при бронировании. Живёт 15 минут.
 model AccessCode {
