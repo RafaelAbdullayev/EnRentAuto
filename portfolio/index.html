@@ -634,8 +634,10 @@ main,header,footer{position:relative;z-index:1}
                Пока файла нет — onerror показывает инициалы. -->
           <div class="avatar">
             <div class="avatar__inner">
-              <img src="assets/avatar.jpg" alt="Rafael Abdullayev" loading="lazy" decoding="async"
-                   onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'avatar__fallback',textContent:'RA'}))" />
+              <!-- Если файла нет, app.js подменит картинку на инициалы.
+                   Обработчик вынесен в скрипт, а не в onerror: inline-обработчики
+                   запрещены заголовком CSP на боевом сервере. -->
+              <img src="assets/avatar.jpg" alt="Rafael Abdullayev" loading="lazy" decoding="async" />
             </div>
           </div>
 

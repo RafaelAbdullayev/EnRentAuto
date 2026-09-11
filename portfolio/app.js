@@ -84,7 +84,15 @@
     if (title && a.title) title.innerHTML = multiline(a.title);
 
     const img = $('.avatar__inner img');
-    if (img && a.avatar) { img.src = a.avatar; img.alt = `${SITE.hero?.firstName || ''} ${SITE.hero?.lastName || ''}`.trim(); }
+    if (img) {
+      img.alt = `${SITE.hero?.firstName || ''} ${SITE.hero?.lastName || ''}`.trim();
+      /* Фото может отсутствовать — тогда вместо битой картинки показываем инициалы */
+      const fallback = () => img.replaceWith(el('div', { class: 'avatar__fallback', text: a.initials || 'RA' }));
+      img.addEventListener('error', fallback, { once: true });
+      if (a.avatar) img.src = a.avatar; else fallback();
+      /* Картинка могла не загрузиться ещё до того, как повесили слушатель */
+      if (img.complete && img.naturalWidth === 0 && a.avatar) fallback();
+    }
 
     /* Био: первый .lead в колонке — шаблон, остальные клонируем */
     const bioHost = $('#about .about > div:last-child');
