@@ -196,7 +196,7 @@
   "errors": {
     "notFoundEyebrow": "Xəta 404",
     "notFoundTitle": "Səhifə tapılmadı",
-    "notFoundText": "Ola bilsin ki, avtomobil dərcdən çıxarılıb və ya keçid köhnəlib.",
+    "notFoundText": "Səhifə gizlədilmiş ola bilər və ya keçid köhnəlib.",
     "errorEyebrow": "Nəsə səhv getdi",
     "errorTitle": "Səhifəni yükləmək mümkün olmadı",
     "errorText": "Problemdən xəbərimiz var. Səhifəni yeniləməyə çalışın.",

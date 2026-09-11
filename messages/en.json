@@ -196,7 +196,7 @@
   "errors": {
     "notFoundEyebrow": "Error 404",
     "notFoundTitle": "Page not found",
-    "notFoundText": "The car may have been unpublished or the link is out of date.",
+    "notFoundText": "The page may be hidden or the link is out of date.",
     "errorEyebrow": "Something went wrong",
     "errorTitle": "The page could not be loaded",
     "errorText": "We already know about the problem. Try refreshing the page.",

@@ -196,7 +196,7 @@
   "errors": {
     "notFoundEyebrow": "Hata 404",
     "notFoundTitle": "Sayfa bulunamadı",
-    "notFoundText": "Araç yayından kaldırılmış veya bağlantı eskimiş olabilir.",
+    "notFoundText": "Sayfa gizlenmiş olabilir ya da bağlantı eskimiş.",
     "errorEyebrow": "Bir şeyler ters gitti",
     "errorTitle": "Sayfa yüklenemedi",
     "errorText": "Sorundan haberdarız. Sayfayı yenilemeyi deneyin.",

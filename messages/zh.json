@@ -196,7 +196,7 @@
   "errors": {
     "notFoundEyebrow": "错误 404",
     "notFoundTitle": "页面未找到",
-    "notFoundText": "该车辆可能已下架，或链接已失效。",
+    "notFoundText": "该页面可能已隐藏，或链接已失效。",
     "errorEyebrow": "出了点问题",
     "errorTitle": "页面加载失败",
     "errorText": "我们已知晓该问题，请尝试刷新页面。",
