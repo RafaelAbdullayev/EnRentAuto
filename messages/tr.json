@@ -158,7 +158,10 @@
     "mapUrlAlt": "https://yandex.com/maps/org/en_rent_auto/86569465600/",
     "devLabel": "Web sitesi geliştirme",
     "devName": "",
-    "devUrl": ""
+    "devUrl": "",
+    "mapEmbedUrl": "",
+    "mapOpen": "Haritada aç",
+    "mapEmbedYandex": ""
   },
   "enums": {
     "body": {

@@ -158,7 +158,10 @@
     "mapUrlAlt": "https://yandex.com/maps/org/en_rent_auto/86569465600/",
     "devLabel": "تطوير الموقع",
     "devName": "",
-    "devUrl": ""
+    "devUrl": "",
+    "mapEmbedUrl": "",
+    "mapOpen": "افتح في الخرائط",
+    "mapEmbedYandex": ""
   },
   "enums": {
     "body": {

@@ -2,6 +2,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Logo } from '@/components/Logo';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
+import { FooterMap } from '@/components/FooterMap';
 import { isHttpUrl, mapLink, mapServiceName, whatsappLink } from '@/lib/contact';
 
 /** Логотип WhatsApp. Инлайн-SVG: без сторонних запросов и лишних файлов. */
@@ -133,6 +134,9 @@ export function SiteFooter() {
           </ul>
         </div>
       </div>
+
+      {/* Карта с адресом — в самом низу, перед строкой с правами */}
+      <FooterMap />
 
       <div className="border-t border-ink-800/80">
         {/* Нижний отступ на телефоне больше: снизу справа висит кнопка

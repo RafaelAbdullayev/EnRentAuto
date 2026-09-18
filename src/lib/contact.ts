@@ -38,6 +38,33 @@ export function mapLink(address: string, customUrl?: string): string {
 }
 
 /**
+ * Адрес карты для встраивания в страницу (iframe).
+ *
+ * Своя ссылка из «Поделиться → Встроить карту» используется как есть — так
+ * можно поставить точную метку организации. Ссылки нет — собираем поиск по
+ * адресу в Google Maps: ключ API для этого не нужен.
+ */
+export function mapEmbedUrl(address: string, customUrl?: string): string {
+  const url = (customUrl ?? '').trim();
+  if (url.startsWith('https://') || url.startsWith('http://')) return url;
+  if (!address.trim()) return '';
+  return `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`;
+}
+
+/**
+ * Адрес карты Яндекса для встраивания.
+ *
+ * Своя ссылка из «Конструктора карт» используется как есть. Иначе собираем
+ * виджет с поиском по адресу: он тоже работает без ключа и без регистрации.
+ */
+export function yandexEmbedUrl(address: string, customUrl?: string): string {
+  const url = (customUrl ?? '').trim();
+  if (url.startsWith('https://') || url.startsWith('http://')) return url;
+  if (!address.trim()) return '';
+  return `https://yandex.com/map-widget/v1/?text=${encodeURIComponent(address)}&z=16`;
+}
+
+/**
  * Название картографического сервиса по адресу ссылки — для подписи
  * второй кнопки рядом с адресом. Разбираем host, а не заводим отдельный
  * ключ перевода: названия сервисов на всех языках пишутся одинаково.
