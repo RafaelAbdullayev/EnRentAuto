@@ -127,6 +127,17 @@ async function translateWithClaude(texts: string[], target: Locale): Promise<str
   return response.parsed_output.items;
 }
 
+/**
+ * Предел ожидания ответа переводчика.
+ *
+ * Без него зависший чужой сервер держит наш запрос бесконечно: `fetch` сам по
+ * себе не отваливается по времени. Перевод всего автопарка идёт по машинам
+ * одна за другой — одно такое зависание останавливает всю очередь, а фоновая
+ * задача после сохранения машины продолжает висеть в процессе. Лучше честно
+ * упасть и оставить русский текст.
+ */
+const TRANSLATE_TIMEOUT_MS = 15_000;
+
 // ─── Google Cloud Translation v2 ───────────────────────────────────────────
 
 interface GoogleResponse {
@@ -139,6 +150,7 @@ async function translateWithGoogle(texts: string[], target: Locale): Promise<str
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ q: texts, source: 'ru', target, format: 'text' }),
+    signal: AbortSignal.timeout(TRANSLATE_TIMEOUT_MS),
   });
 
   const json = (await response.json().catch(() => null)) as GoogleResponse | null;
@@ -202,7 +214,10 @@ async function myMemoryOne(text: string, target: Locale): Promise<string> {
   url.searchParams.set('langpair', `ru|${target}`);
   if (process.env.MYMEMORY_EMAIL) url.searchParams.set('de', process.env.MYMEMORY_EMAIL);
 
-  const response = await fetch(url, { headers: { Accept: 'application/json' } });
+  const response = await fetch(url, {
+    headers: { Accept: 'application/json' },
+    signal: AbortSignal.timeout(TRANSLATE_TIMEOUT_MS),
+  });
   const json = (await response.json().catch(() => null)) as MyMemoryResponse | null;
   const translated = json?.responseData?.translatedText ?? '';
 
