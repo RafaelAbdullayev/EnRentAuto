@@ -23,7 +23,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const [cars, carCount, completedCount, hero, heroSettings] = await Promise.all([
     prisma.car.findMany({
       where: { isArchived: false, status: 'AVAILABLE' },
-      include: { images: { orderBy: { position: 'asc' }, take: 1 } },
+      include: { images: { orderBy: { position: 'asc' }, take: 6 } },
       orderBy: [{ discount: 'desc' }, { createdAt: 'desc' }],
       take: 6,
     }),

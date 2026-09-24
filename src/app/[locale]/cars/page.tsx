@@ -58,7 +58,7 @@ export default async function CarsPage({
           }
         : {}),
     },
-    include: { images: { orderBy: { position: 'asc' }, take: 1 } },
+    include: { images: { orderBy: { position: 'asc' }, take: 6 } },
     orderBy: [{ discount: 'desc' }, { pricePerDay: 'asc' }],
   });
 

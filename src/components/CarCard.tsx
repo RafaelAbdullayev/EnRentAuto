@@ -38,14 +38,15 @@ export function CarCard({
   const locale = useLocale();
 
   const price = effectivePricePerDay(car.pricePerDay, car.discount);
-  const cover = car.images[0]?.url;
+  // Обложка крутит всё, что загрузили: фотографии и короткие ролики.
+  const media = car.images.map((image) => image.url);
 
   return (
     <article className="surface surface-hover group relative overflow-hidden">
       <Link href={href} className="block">
         <div className="relative aspect-[16/10] overflow-hidden bg-ink-800">
-          {cover ? (
-            <CarCover url={cover} alt={`${car.brand} ${car.model}`} />
+          {media.length > 0 ? (
+            <CarCover media={media} alt={`${car.brand} ${car.model}`} />
           ) : (
             <div className="grid h-full w-full place-items-center text-4xl text-ink-600">🚗</div>
           )}
