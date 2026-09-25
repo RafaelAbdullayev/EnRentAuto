@@ -310,5 +310,10 @@
     "rateYour": "Your rating",
     "rateNone": "No ratings yet — be the first.",
     "rateVotesCount": "{count, plural, one {# rating} other {# ratings}}"
+  },
+  "music": {
+    "on": "Turn music on",
+    "off": "Turn music off",
+    "volume": "Volume"
   }
 }

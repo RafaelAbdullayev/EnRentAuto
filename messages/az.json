@@ -310,5 +310,10 @@
     "rateYour": "Sizin qiymətiniz",
     "rateNone": "Hələ qiymət yoxdur — birinci siz olun.",
     "rateVotesCount": "{count, plural, other {# qiymət}}"
+  },
+  "music": {
+    "on": "Musiqini aç",
+    "off": "Musiqini söndür",
+    "volume": "Səs"
   }
 }

@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { clampMusicVolume, MUSIC_VOLUME_DEFAULT } from '@/lib/settings.client';
 
 /**
  * Настройки сайта в единственном экземпляре (строка «singleton»).
@@ -89,4 +90,50 @@ export async function saveLogoScale(value: number): Promise<number> {
     create: { id: 'singleton', logoScale: scale },
   });
   return scale;
+}
+
+// ─── Фоновая музыка ────────────────────────────────────────────────────────
+
+export {
+  MUSIC_VOLUME_MIN,
+  MUSIC_VOLUME_MAX,
+  MUSIC_VOLUME_DEFAULT,
+  clampMusicVolume,
+} from '@/lib/settings.client';
+
+export type MusicSettings = { enabled: boolean; volume: number };
+
+/**
+ * Настройки музыки. Намеренно без кэша: выборка одной строки по первичному
+ * ключу дешевле миллисекунды, а кэш здесь уже подводил — значение переживало
+ * и перезапуск, и правку прямо в базе.
+ */
+export async function getMusicSettings(): Promise<MusicSettings> {
+  try {
+    const settings = await prisma.settings.findUnique({
+      where: { id: 'singleton' },
+      select: { musicEnabled: true, musicVolume: true },
+    });
+    return {
+      enabled: settings?.musicEnabled ?? false,
+      volume: clampMusicVolume(settings?.musicVolume ?? MUSIC_VOLUME_DEFAULT),
+    };
+  } catch (error) {
+    console.error('[settings] не удалось прочитать настройки музыки:', error);
+    return { enabled: false, volume: MUSIC_VOLUME_DEFAULT };
+  }
+}
+
+export async function saveMusicSettings(patch: Partial<MusicSettings>): Promise<MusicSettings> {
+  const data = {
+    ...(patch.enabled === undefined ? {} : { musicEnabled: patch.enabled }),
+    ...(patch.volume === undefined ? {} : { musicVolume: clampMusicVolume(patch.volume) }),
+  };
+  const saved = await prisma.settings.upsert({
+    where: { id: 'singleton' },
+    update: data,
+    create: { id: 'singleton', ...data },
+    select: { musicEnabled: true, musicVolume: true },
+  });
+  return { enabled: saved.musicEnabled, volume: clampMusicVolume(saved.musicVolume) };
 }

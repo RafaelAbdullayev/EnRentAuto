@@ -2,6 +2,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Logo } from '@/components/Logo';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
+import { BackgroundMusicMount } from '@/components/BackgroundMusicMount';
 import { FooterMap } from '@/components/FooterMap';
 import { isHttpUrl, mapLink, mapServiceName, whatsappLink } from '@/lib/contact';
 
@@ -47,6 +48,7 @@ export function SiteFooter() {
   return (
     <>
       <WhatsAppButton />
+      <BackgroundMusicMount />
 
       <footer id="contacts" className="border-t border-ink-800 bg-ink-950">
       <div className="container-page grid gap-10 py-14 md:grid-cols-4">

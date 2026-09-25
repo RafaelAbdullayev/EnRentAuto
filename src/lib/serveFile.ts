@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { Readable } from 'node:stream';
 
 /**
- * Отдача файла с диска: ETag, 304 и поддержка Range для видео.
+ * Отдача файла с диска: ETag, 304 и поддержка Range для видео и звука.
  * Общий код для /uploads/<файл> и /brand/<вид>.
  */
 export type ServedFile = {
@@ -49,9 +49,9 @@ export function serveFile(
     return new NextResponse(null, { status: 304, headers: { ETag: etag } });
   }
 
-  // Видео отдаём потоком с поддержкой Range: без 206-ответов Safari
+  // Видео и звук отдаём потоком с поддержкой Range: без 206-ответов Safari
   // и iOS вообще отказываются проигрывать файл.
-  if (file.mime.startsWith('video/')) {
+  if (file.mime.startsWith('video/') || file.mime.startsWith('audio/')) {
     const rangeHeader = request.headers.get('range');
     const range = rangeHeader ? parseRange(rangeHeader, file.size) : null;
 

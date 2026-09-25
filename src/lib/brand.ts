@@ -3,13 +3,15 @@ import path from 'node:path';
 import {
   ALLOWED_MIME,
   ALL_EXT_TO_MIME,
+  AUDIO_MIME,
+  MAX_AUDIO_BYTES,
   MAX_BYTES,
   MAX_VIDEO_BYTES,
   UPLOAD_DIR,
   UploadError,
   VIDEO_MIME,
 } from '@/lib/upload';
-import { isVideoMime, type BrandKind } from '@/lib/brand.client';
+import { isAudioMime, isVideoMime, type BrandKind } from '@/lib/brand.client';
 
 /**
  * Оформление сайта: логотип и фон первого экрана (фотография или видео).
@@ -21,12 +23,21 @@ import { isVideoMime, type BrandKind } from '@/lib/brand.client';
  */
 export const BRAND_DIR = path.join(UPLOAD_DIR, 'brand');
 
-export { BRAND_KINDS, isBrandKind, brandUrl, isVideoMime, BRAND_ACCEPT } from '@/lib/brand.client';
+export { BRAND_KINDS, isBrandKind, brandUrl, isAudioMime, isVideoMime, BRAND_ACCEPT } from '@/lib/brand.client';
 export type { BrandKind } from '@/lib/brand.client';
 
 /** Что разрешено загружать для каждого вида. */
 function allowedMime(kind: BrandKind): Record<string, string> {
-  return kind === 'hero' ? { ...ALLOWED_MIME, ...VIDEO_MIME } : ALLOWED_MIME;
+  if (kind === 'hero') return { ...ALLOWED_MIME, ...VIDEO_MIME };
+  if (kind === 'music') return AUDIO_MIME;
+  return ALLOWED_MIME;
+}
+
+/** Понятное человеку перечисление форматов — для текста ошибки. */
+function formatsFor(kind: BrandKind): string {
+  if (kind === 'hero') return 'JPG, PNG, WEBP, AVIF, GIF и видео MP4, WEBM';
+  if (kind === 'music') return 'MP3, OGG, M4A, AAC';
+  return 'PNG, JPG, WEBP, AVIF, GIF';
 }
 
 
@@ -74,18 +85,22 @@ export async function saveBrandImage(kind: BrandKind, file: File): Promise<void>
   const ext = allowedMime(kind)[file.type];
   if (!ext) {
     throw new UploadError(
-      kind === 'hero'
-        ? `Недопустимый формат: ${file.type || 'неизвестно'}. Разрешены JPG, PNG, WEBP, AVIF, GIF и видео MP4, WEBM`
-        : `Недопустимый формат: ${file.type || 'неизвестно'}. Разрешены PNG, JPG, WEBP, AVIF, GIF`,
+      `Недопустимый формат: ${file.type || 'неизвестно'}. Разрешены ${formatsFor(kind)}`,
     );
   }
 
-  const limit = isVideoMime(file.type) ? MAX_VIDEO_BYTES : MAX_BYTES;
+  const limit = isVideoMime(file.type)
+    ? MAX_VIDEO_BYTES
+    : isAudioMime(file.type)
+      ? MAX_AUDIO_BYTES
+      : MAX_BYTES;
   if (file.size > limit) {
-    throw new UploadError(
-      `Файл больше ${Math.round(limit / 1024 / 1024)} МБ` +
-        (isVideoMime(file.type) ? '. Сожмите ролик или сократите его до 10–15 секунд' : ''),
-    );
+    const advice = isVideoMime(file.type)
+      ? '. Сожмите ролик или сократите его до 10–15 секунд'
+      : isAudioMime(file.type)
+        ? '. Пережмите мелодию в 128 кбит/с или возьмите отрывок покороче'
+        : '';
+    throw new UploadError(`Файл больше ${Math.round(limit / 1024 / 1024)} МБ${advice}`);
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());

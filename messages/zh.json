@@ -310,5 +310,10 @@
     "rateYour": "您的评分",
     "rateNone": "还没有评分，欢迎第一个打分。",
     "rateVotesCount": "{count, plural, other {# 个评分}}"
+  },
+  "music": {
+    "on": "播放音乐",
+    "off": "关闭音乐",
+    "volume": "音量"
   }
 }

@@ -310,5 +310,10 @@
     "rateYour": "Puanınız",
     "rateNone": "Henüz puan yok — ilk siz olun.",
     "rateVotesCount": "{count, plural, other {# puan}}"
+  },
+  "music": {
+    "on": "Müziği aç",
+    "off": "Müziği kapat",
+    "volume": "Ses"
   }
 }

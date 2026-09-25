@@ -38,6 +38,19 @@ export const VIDEO_MIME: Record<string, string> = {
   'video/webm': '.webm',
 };
 
+/**
+ * Звук: фоновая мелодия сайта. MP3 понимают все браузеры, OGG и M4A —
+ * варианты полегче.
+ */
+export const AUDIO_MIME: Record<string, string> = {
+  'audio/mpeg': '.mp3',
+  'audio/mp3': '.mp3',
+  'audio/ogg': '.ogg',
+  'audio/mp4': '.m4a',
+  'audio/x-m4a': '.m4a',
+  'audio/aac': '.aac',
+};
+
 /** Обратное соответствие для отдачи файла. */
 export const EXT_TO_MIME: Record<string, string> = {
   '.jpg': 'image/jpeg',
@@ -54,9 +67,17 @@ export const VIDEO_EXT_TO_MIME: Record<string, string> = {
 };
 
 /** Всё, что вообще может лежать в хранилище. */
+export const AUDIO_EXT_TO_MIME: Record<string, string> = {
+  '.mp3': 'audio/mpeg',
+  '.ogg': 'audio/ogg',
+  '.m4a': 'audio/mp4',
+  '.aac': 'audio/aac',
+};
+
 export const ALL_EXT_TO_MIME: Record<string, string> = {
   ...EXT_TO_MIME,
   ...VIDEO_EXT_TO_MIME,
+  ...AUDIO_EXT_TO_MIME,
 };
 
 export const MAX_BYTES = Number(process.env.UPLOAD_MAX_BYTES ?? 8 * 1024 * 1024);
@@ -66,6 +87,12 @@ export const MAX_VIDEO_BYTES = Number(
   // BRAND_VIDEO_MAX_BYTES — прежнее имя, когда видео было только у фона.
   process.env.VIDEO_MAX_BYTES ?? process.env.BRAND_VIDEO_MAX_BYTES ?? 40 * 1024 * 1024,
 );
+
+/**
+ * Мелодия весит меньше видео, но больше картинки. Восьми мегабайт хватает
+ * на пять минут в 192 кбит/с — больше для фона и не нужно.
+ */
+export const MAX_AUDIO_BYTES = Number(process.env.AUDIO_MAX_BYTES ?? 8 * 1024 * 1024);
 
 export class UploadError extends Error {}
 

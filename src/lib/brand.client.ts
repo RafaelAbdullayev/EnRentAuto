@@ -3,7 +3,7 @@
  * Вынесено отдельно от src/lib/brand.ts: тот работает с файловой системой
  * и не должен попадать в клиентский бандл.
  */
-export const BRAND_KINDS = ['logo', 'hero', 'developer'] as const;
+export const BRAND_KINDS = ['logo', 'hero', 'developer', 'music'] as const;
 
 export type BrandKind = (typeof BRAND_KINDS)[number];
 
@@ -14,6 +14,11 @@ export function isBrandKind(value: string): value is BrandKind {
 /** Публичный адрес файла — один и тот же при любом расширении. */
 export function brandUrl(kind: BrandKind): string {
   return `/brand/${kind}`;
+}
+
+/** Звук допустим только для фоновой музыки. */
+export function isAudioMime(mime: string): boolean {
+  return mime.startsWith('audio/');
 }
 
 /** Видео допустимо только для фона первого экрана. */
@@ -27,4 +32,6 @@ export const BRAND_ACCEPT: Record<BrandKind, string> = {
   hero: 'image/png,image/jpeg,image/webp,image/avif,image/gif,video/mp4,video/webm',
   /** Фото разработчика на странице «О сайте». */
   developer: 'image/png,image/jpeg,image/webp,image/avif',
+  /** Фоновая мелодия. */
+  music: 'audio/mpeg,audio/ogg,audio/mp4,audio/aac,audio/x-m4a',
 };
