@@ -314,6 +314,7 @@
   "music": {
     "on": "Musiqini aç",
     "off": "Musiqini söndür",
-    "volume": "Səs"
+    "volume": "Səs",
+    "next": "Növbəti melodiya"
   }
 }

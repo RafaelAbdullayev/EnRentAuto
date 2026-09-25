@@ -403,3 +403,16 @@ model AccessCode {
   @@index([phoneDigits])
   @@index([expiresAt])
 }
+
+/// Трек фоновой музыки. Порядок задаётся в админке, играют по кругу.
+model MusicTrack {
+  id        String   @id @default(cuid())
+  /// Публичный путь вида /uploads/xxx.mp3
+  url       String
+  /// Имя файла при загрузке — чтобы админ узнал трек в списке.
+  title     String   @default("")
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([position])
+}

@@ -1,16 +1,22 @@
-import { findBrandImage } from '@/lib/brand';
 import { getMusicSettings } from '@/lib/settings';
+import { getMusicTracks } from '@/lib/music';
 import { BackgroundMusic } from '@/components/BackgroundMusic';
 
 /**
  * Читает настройки музыки и, если есть что играть, ставит проигрыватель.
  *
- * Отдельный серверный компонент, потому что подвал — обычный, не асинхронный:
- * переписывать его целиком ради одного обращения к базе было бы лишним.
- * Флаг и файл проверяются порознь: мелодию можно временно выключить, не удаляя.
+ * Отдельный серверный компонент, потому что каркас страницы не должен знать
+ * про базу. Флаг и плейлист проверяются порознь: музыку можно временно
+ * выключить, не удаляя мелодии.
  */
 export async function BackgroundMusicMount() {
-  const [music, file] = await Promise.all([getMusicSettings(), findBrandImage('music')]);
-  if (!music.enabled || !file) return null;
-  return <BackgroundMusic defaultVolume={music.volume} />;
+  const [music, tracks] = await Promise.all([getMusicSettings(), getMusicTracks()]);
+  if (!music.enabled || tracks.length === 0) return null;
+
+  return (
+    <BackgroundMusic
+      tracks={tracks.map(({ url, title }) => ({ url, title }))}
+      defaultVolume={music.volume}
+    />
+  );
 }

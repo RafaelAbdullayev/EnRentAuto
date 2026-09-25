@@ -3,8 +3,10 @@
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/format';
-import { BRAND_ACCEPT, brandUrl } from '@/lib/brand.client';
+import { BRAND_ACCEPT } from '@/lib/brand.client';
 import { MUSIC_VOLUME_MAX, MUSIC_VOLUME_MIN } from '@/lib/settings.client';
+
+const ACCEPT = BRAND_ACCEPT.music;
 
 /**
  * Фоновая музыка: загрузка мелодии, включатель и громкость по умолчанию.
@@ -13,11 +15,13 @@ import { MUSIC_VOLUME_MAX, MUSIC_VOLUME_MIN } from '@/lib/settings.client';
  * запоминается у него в браузере, перебивая это значение.
  */
 export function MusicUploader({
-  hasFile,
+  tracks,
+  maxTracks,
   enabled,
   volume,
 }: {
-  hasFile: boolean;
+  tracks: { id: string; url: string; title: string }[];
+  maxTracks: number;
   enabled: boolean;
   volume: number;
 }) {
@@ -29,25 +33,23 @@ export function MusicUploader({
   const [isOn, setIsOn] = useState(enabled);
   const [level, setLevel] = useState(volume);
 
-  // Адрес постоянный, поэтому после замены файла браузер отдал бы старый.
-  const [stamp, setStamp] = useState(0);
-  const src = `${brandUrl('music')}${stamp ? `?v=${stamp}` : ''}`;
+  const hasFile = tracks.length > 0;
+  const full = tracks.length >= maxTracks;
 
-  async function upload(file: File) {
+  async function upload(files: FileList) {
     setBusy(true);
     setError(null);
     setNote(null);
     try {
       const form = new FormData();
-      form.append('file', file);
-      const res = await fetch('/api/admin/brand/music', { method: 'POST', body: form });
+      for (const file of Array.from(files)) form.append('files', file);
+      const res = await fetch('/api/admin/music/tracks', { method: 'POST', body: form });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(data.error ?? 'Не удалось загрузить мелодию');
+        setError(data.error ?? 'Не удалось загрузить мелодии');
         return;
       }
-      setStamp(Date.now());
-      setNote('Мелодия загружена');
+      setNote(data.added === 1 ? 'Мелодия добавлена' : `Добавлено мелодий: ${data.added}`);
       router.refresh();
     } catch {
       setError('Сеть недоступна');
@@ -57,16 +59,46 @@ export function MusicUploader({
     }
   }
 
-  async function remove() {
+  async function remove(id: string) {
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch('/api/admin/brand/music', { method: 'DELETE' });
+      const res = await fetch(`/api/admin/music/tracks?id=${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+      });
       if (!res.ok) {
         setError('Не удалось удалить мелодию');
         return;
       }
-      setNote('Мелодия удалена — на сайте музыки больше нет');
+      setNote('Мелодия удалена');
+      router.refresh();
+    } catch {
+      setError('Сеть недоступна');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  /** Перестановка соседей: порядок задаёт очередь на сайте. */
+  async function move(index: number, delta: number) {
+    const next = index + delta;
+    if (next < 0 || next >= tracks.length) return;
+
+    const order = tracks.map((track) => track.id);
+    [order[index], order[next]] = [order[next], order[index]];
+
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/admin/music/tracks', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order }),
+      });
+      if (!res.ok) {
+        setError('Не удалось сохранить порядок');
+        return;
+      }
       router.refresh();
     } catch {
       setError('Сеть недоступна');
@@ -103,8 +135,9 @@ export function MusicUploader({
     >
       <h2 className="text-base font-semibold text-white">Фоновая музыка</h2>
       <p className="mt-1 text-sm text-zinc-500">
-        Тихая мелодия по кругу на страницах сайта. Кнопка со значком ноты появляется
-        в левом нижнем углу: посетитель включает, выключает и убавляет звук сам.
+        Тихие мелодии по кругу на страницах сайта: закончилась одна — начинается
+        следующая. Кнопка появляется в левом нижнем углу: посетитель включает,
+        выключает, убавляет звук и перескакивает на следующую мелодию сам.
       </p>
 
       {/* Это ограничение браузеров, а не недоделка — о нём лучше знать сразу. */}
@@ -116,37 +149,85 @@ export function MusicUploader({
       </p>
 
       <div className="mt-5 space-y-5">
-        {/* ─── Файл ──────────────────────────────────────────────────── */}
+        {/* ─── Плейлист ──────────────────────────────────────────────── */}
         <div>
-          <span className="label">Мелодия</span>
-          {hasFile ? (
-            <audio src={src} controls preload="none" className="mt-1 w-full" />
+          <div className="flex items-center justify-between">
+            <span className="label mb-0">
+              Плейлист{tracks.length > 0 && ` — мелодий: ${tracks.length} из ${maxTracks}`}
+            </span>
+          </div>
+
+          {tracks.length === 0 ? (
+            <p className="mt-2 text-sm text-zinc-500">Пока ни одной мелодии не загружено</p>
           ) : (
-            <p className="mt-1 text-sm text-zinc-500">Пока не загружена</p>
+            <ol className="mt-3 space-y-2">
+              {tracks.map((track, index) => (
+                <li
+                  key={track.id}
+                  className="flex flex-wrap items-center gap-3 rounded-xl border border-ink-600 bg-ink-900/60 px-4 py-3"
+                >
+                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-ink-700 text-xs text-zinc-300">
+                    {index + 1}
+                  </span>
+                  <span className="min-w-0 flex-1 truncate text-sm text-white" title={track.title}>
+                    {track.title || 'Без названия'}
+                  </span>
+
+                  <audio src={track.url} controls preload="none" className="h-8 w-56 max-w-full" />
+
+                  <div className="flex gap-1">
+                    <button
+                      type="button"
+                      onClick={() => move(index, -1)}
+                      disabled={busy || index === 0}
+                      aria-label="Выше"
+                      className="grid h-8 w-8 place-items-center rounded-lg border border-ink-600 text-zinc-400 transition-colors hover:text-white disabled:opacity-30"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => move(index, 1)}
+                      disabled={busy || index === tracks.length - 1}
+                      aria-label="Ниже"
+                      className="grid h-8 w-8 place-items-center rounded-lg border border-ink-600 text-zinc-400 transition-colors hover:text-white disabled:opacity-30"
+                    >
+                      ↓
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => remove(track.id)}
+                      disabled={busy}
+                      aria-label={`Удалить «${track.title}»`}
+                      className="grid h-8 w-8 place-items-center rounded-lg border border-ink-600 text-zinc-500 transition-colors hover:border-signal-cancel/50 hover:text-signal-cancel disabled:opacity-30"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ol>
           )}
 
-          <div className="mt-3 flex flex-wrap gap-3">
+          <div className="mt-3">
             <input
               ref={inputRef}
               type="file"
-              accept={BRAND_ACCEPT.music}
-              disabled={busy}
+              accept={ACCEPT}
+              multiple
+              disabled={busy || full}
               onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) void upload(file);
+                const files = e.target.files;
+                if (files && files.length > 0) void upload(files);
               }}
-              className="field file:me-3 file:rounded-lg file:border-0 file:bg-ink-700 file:px-4 file:py-2 file:text-sm file:text-white"
+              className="field file:me-3 file:rounded-lg file:border-0 file:bg-ink-700 file:px-4 file:py-2 file:text-sm file:text-white disabled:opacity-40"
             />
-            {hasFile && (
-              <button type="button" onClick={remove} disabled={busy} className="btn-ghost btn-sm">
-                Удалить
-              </button>
-            )}
+            <p className="mt-1 text-xs text-zinc-600">
+              {full
+                ? `Плейлист заполнен: ${maxTracks} мелодий — предел. Удалите лишнее, чтобы добавить новое.`
+                : `MP3, OGG, M4A, AAC · до 8 МБ каждая, всего до ${maxTracks} мелодий. Можно выбрать сразу несколько. Играют сверху вниз и дальше по кругу.`}
+            </p>
           </div>
-          <p className="mt-1 text-xs text-zinc-600">
-            MP3, OGG, M4A, AAC · до 8 МБ. Спокойная петля на 1–3 минуты подойдёт лучше
-            всего: длинный трек посетитель всё равно не дослушает, а трафик потратит.
-          </p>
         </div>
 
         {/* ─── Включатель ────────────────────────────────────────────── */}
@@ -157,8 +238,8 @@ export function MusicUploader({
             </p>
             <p className="mt-1 text-xs text-zinc-500">
               {isOn
-                ? 'Кнопка со значком ноты видна посетителям.'
-                : 'Кнопки на сайте нет, файл сохраняется.'}
+                ? 'Кнопка видна посетителям.'
+                : 'Кнопки на сайте нет, плейлист сохраняется.'}
             </p>
           </div>
           <button
@@ -170,7 +251,7 @@ export function MusicUploader({
               void saveSettings({ enabled: value });
             }}
             className={isOn ? 'btn-ghost btn-sm' : 'btn-primary btn-sm px-6'}
-            title={hasFile ? undefined : 'Сначала загрузите мелодию'}
+            title={hasFile ? undefined : 'Сначала загрузите хотя бы одну мелодию'}
           >
             {isOn ? 'Отключить' : 'Включить на сайте'}
           </button>
@@ -194,7 +275,7 @@ export function MusicUploader({
             className="mt-3 h-1 w-full cursor-pointer accent-accent"
           />
           <p className="mt-2 text-xs text-zinc-600">
-            Потолок — {MUSIC_VOLUME_MAX}%. Фоновая мелодия должна быть едва слышна:
+            Потолок — {MUSIC_VOLUME_MAX}%. Фоновая музыка должна быть едва слышна:
             громче человек просто закрывает вкладку. Рекомендую 10–20%.
           </p>
         </div>

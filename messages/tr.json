@@ -314,6 +314,7 @@
   "music": {
     "on": "Müziği aç",
     "off": "Müziği kapat",
-    "volume": "Ses"
+    "volume": "Ses",
+    "next": "Sonraki parça"
   }
 }

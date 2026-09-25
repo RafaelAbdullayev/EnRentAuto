@@ -98,32 +98,49 @@ export class UploadError extends Error {}
 
 /**
  * Сохраняет один файл и возвращает публичный путь вида /uploads/<имя>.
- * `allowVideo` включает приём коротких роликов (карточки автомобилей).
+ * `allowVideo` включает приём коротких роликов (карточки автомобилей),
+ * `allowAudio` — мелодий для плейлиста фоновой музыки.
  */
 export async function saveUploadedFile(
   file: File,
-  { allowVideo = false }: { allowVideo?: boolean } = {},
+  {
+    allowVideo = false,
+    allowAudio = false,
+  }: { allowVideo?: boolean; allowAudio?: boolean } = {},
 ): Promise<string> {
   if (!(file instanceof File) || file.size === 0) {
     throw new UploadError('Пустой файл');
   }
 
-  const allowed = allowVideo ? { ...ALLOWED_MIME, ...VIDEO_MIME } : ALLOWED_MIME;
+  // Звук просят отдельно от картинок: в плейлист незачем класть фотографии.
+  const allowed = allowAudio
+    ? AUDIO_MIME
+    : allowVideo
+      ? { ...ALLOWED_MIME, ...VIDEO_MIME }
+      : ALLOWED_MIME;
   const ext = allowed[file.type];
   if (!ext) {
+    const formats = allowAudio
+      ? 'MP3, OGG, M4A, AAC'
+      : allowVideo
+        ? 'JPG, PNG, WEBP, AVIF, GIF и видео MP4, WEBM'
+        : 'JPG, PNG, WEBP, AVIF, GIF';
     throw new UploadError(
-      allowVideo
-        ? `Недопустимый формат: ${file.type || 'неизвестно'}. Разрешены JPG, PNG, WEBP, AVIF, GIF и видео MP4, WEBM`
-        : `Недопустимый формат: ${file.type || 'неизвестно'}. Разрешены JPG, PNG, WEBP, AVIF, GIF`,
+      `Недопустимый формат: ${file.type || 'неизвестно'}. Разрешены ${formats}`,
     );
   }
 
   const isVideo = file.type in VIDEO_MIME;
-  const limit = isVideo ? MAX_VIDEO_BYTES : MAX_BYTES;
+  const isAudio = file.type in AUDIO_MIME;
+  const limit = isVideo ? MAX_VIDEO_BYTES : isAudio ? MAX_AUDIO_BYTES : MAX_BYTES;
   if (file.size > limit) {
+    const advice = isVideo
+      ? '. Сожмите ролик или сократите его до 10–15 секунд'
+      : isAudio
+        ? '. Пережмите мелодию в 128 кбит/с или возьмите отрывок покороче'
+        : '';
     throw new UploadError(
-      `Файл «${file.name}» больше ${Math.round(limit / 1024 / 1024)} МБ` +
-        (isVideo ? '. Сожмите ролик или сократите его до 10–15 секунд' : ''),
+      `Файл «${file.name}» больше ${Math.round(limit / 1024 / 1024)} МБ${advice}`,
     );
   }
 

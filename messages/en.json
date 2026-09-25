@@ -314,6 +314,7 @@
   "music": {
     "on": "Turn music on",
     "off": "Turn music off",
-    "volume": "Volume"
+    "volume": "Volume",
+    "next": "Next track"
   }
 }

@@ -7,6 +7,7 @@ import { BrandImageUploader } from '@/components/admin/BrandImageUploader';
 import { findBrandImage } from '@/lib/brand';
 import { getHeroSettings, getLogoScale, getMusicSettings } from '@/lib/settings';
 import { MusicUploader } from '@/components/admin/MusicUploader';
+import { getMusicTracks, MAX_TRACKS } from '@/lib/music';
 
 export const metadata: Metadata = { title: 'Оформление и тексты сайта' };
 export const dynamic = 'force-dynamic';
@@ -23,14 +24,14 @@ export default async function AdminContentPage() {
     }),
   );
   const content = Object.fromEntries(entries);
-  const [logo, hero, heroSettings, carsWithPhoto, logoScale, musicFile, music] =
+  const [logo, hero, heroSettings, carsWithPhoto, logoScale, musicTracks, music] =
     await Promise.all([
       findBrandImage('logo'),
       findBrandImage('hero'),
       getHeroSettings(),
       prisma.car.count({ where: { isArchived: false, images: { some: {} } } }),
       getLogoScale(),
-      findBrandImage('music'),
+      getMusicTracks(),
       getMusicSettings(),
     ]);
 
@@ -80,7 +81,8 @@ export default async function AdminContentPage() {
       </div>
 
       <MusicUploader
-        hasFile={musicFile !== null}
+        tracks={musicTracks}
+        maxTracks={MAX_TRACKS}
         enabled={music.enabled}
         volume={music.volume}
       />
