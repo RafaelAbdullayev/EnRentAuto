@@ -268,9 +268,26 @@
   }
 }
 
+/* Полоски эквалайзера на кнопке фоновой музыки: видно, что звук идёт. */
+@keyframes eq-bar {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.eq-bar {
+  transform-origin: center bottom;
+  animation: eq-bar 900ms ease-in-out infinite;
+}
+
 /* Уважаем системную настройку «уменьшить движение». */
 @media (prefers-reduced-motion: reduce) {
-  .hero-photo {
+  .hero-photo,
+  .eq-bar {
     animation: none;
   }
 }

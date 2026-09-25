@@ -4,6 +4,7 @@ import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import '../globals.css';
 import { PresenceTracker } from '@/components/PresenceTracker';
+import { BackgroundMusicMount } from '@/components/BackgroundMusicMount';
 import { routing, isRtl } from '@/i18n/routing';
 import { getLogoScale } from '@/lib/settings';
 
@@ -71,6 +72,12 @@ export default async function LocaleLayout({
           {children}
           {/* Пинг присутствия для модуля «Онлайн сейчас» */}
           <PresenceTracker />
+          {/*
+            Музыка живёт именно здесь, в общем каркасе: при переходе по сайту
+            каркас не пересоздаётся, и звук не обрывается. В подвале элемент
+            умирал вместе со страницей, и мелодия начиналась заново.
+          */}
+          <BackgroundMusicMount />
         </NextIntlClientProvider>
       </body>
     </html>
