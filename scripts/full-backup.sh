@@ -158,8 +158,10 @@ echo "═══ Готово ═══"
 echo "Архив:  $ARCHIVE"
 echo "Размер: $(du -h "$ARCHIVE" | cut -f1)"
 echo
+IP=$(hostname -I | awk '{print $1}')
 echo "Забрать на свой компьютер (выполнять У СЕБЯ, не на сервере):"
-echo "  scp root@$(hostname -I | awk '{print $1}'):$ARCHIVE ~/Downloads/"
+echo "  Windows:    scp root@$IP:$ARCHIVE %USERPROFILE%\\Downloads\\"
+echo "  Mac/Linux:  scp root@$IP:$ARCHIVE ~/Downloads/"
 echo
 echo "ВНИМАНИЕ: внутри .env с паролем базы и ключом сессий."
 echo "Храните архив как пароль."
