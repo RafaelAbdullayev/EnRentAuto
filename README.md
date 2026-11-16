@@ -1078,7 +1078,7 @@ bash /opt/enrentauto/scripts/full-backup.sh
 | `uploads.tar.gz` | фото и видео машин, логотип, фон, музыка |
 | `server/env.txt` | `.env` — **пароль базы и ключ сессий** |
 | `server/*.service`, `server/nginx-*.conf` | настройки systemd и Nginx |
-| `ВОССТАНОВЛЕНИЕ.txt` | порядок действий на чистом сервере |
+| `RESTORE-ВОССТАНОВЛЕНИЕ.txt` | порядок действий на чистом сервере |
 
 `node_modules` и `.next` в архив не идут: первое ставится из
 `package-lock.json`, второе собирается. Вместе они весят больше всего

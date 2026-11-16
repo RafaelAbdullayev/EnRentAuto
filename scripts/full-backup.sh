@@ -86,7 +86,7 @@ node --version > "$STAGE/server/versions.txt" 2>/dev/null
 psql "$DB_URL" -c 'SELECT version();' -tA >> "$STAGE/server/versions.txt" 2>/dev/null
 
 # ── 6. Инструкция ────────────────────────────────────────────────────────
-cat > "$STAGE/ВОССТАНОВЛЕНИЕ.txt" <<'GUIDE'
+cat > "$STAGE/RESTORE-ВОССТАНОВЛЕНИЕ.txt" <<'GUIDE'
 КАК ПОДНЯТЬ ENRENTAUTO ИЗ ЭТОГО АРХИВА
 ======================================
 
