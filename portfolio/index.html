@@ -1,0 +1,926 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+<!-- ============ SEO / OpenGraph — ЗАМЕНИТЬ домен на свой ============ -->
+<title>Rafael Abdullayev — Frontend &amp; Backend Developer</title>
+<meta name="description" content="Создаю быстрые, красивые и надёжные веб-продукты для бизнеса: сайты, SaaS, REST API и Telegram-боты. От идеи до продакшена." />
+<meta name="author" content="Rafael Abdullayev" />
+<meta name="theme-color" content="#0a0a0a" />
+<link rel="canonical" href="https://rafael.dev/" />
+
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="ru_RU" />
+<meta property="og:site_name" content="Rafael Abdullayev" />
+<meta property="og:title" content="Rafael Abdullayev — Frontend &amp; Backend Developer" />
+<meta property="og:description" content="Сайты, веб-приложения, REST API и Telegram-боты. От идеи до продакшена." />
+<meta property="og:url" content="https://rafael.dev/" />
+<meta property="og:image" content="https://rafael.dev/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Rafael Abdullayev — Frontend &amp; Backend Developer" />
+<meta name="twitter:description" content="Сайты, веб-приложения, REST API и Telegram-боты. От идеи до продакшена." />
+<meta name="twitter:image" content="https://rafael.dev/og-image.png" />
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='sans-serif' font-size='54' font-weight='700' fill='%2300d4ff' text-anchor='middle'%3ER%3C/text%3E%3C/svg%3E" />
+
+<!-- Шрифты: preconnect ускоряет первый рендер текста -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<!-- Микроразметка для поиска -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Rafael Abdullayev",
+  "jobTitle": "Frontend & Backend Developer",
+  "url": "https://rafael.dev/",
+  "sameAs": ["https://github.com/RafaelAbdullayev", "https://wa.me/994554345006"]
+}
+</script>
+
+<style>
+/* ═══════════════════════════════════════════════════════════
+   1. ТОКЕНЫ ДИЗАЙН-СИСТЕМЫ
+   Все цвета/отступы/тайминги — здесь. Меняя только этот блок,
+   можно перекрасить сайт целиком, не трогая разметку.
+   ═══════════════════════════════════════════════════════════ */
+:root{
+  --bg:#0a0a0a;
+  --bg-elev:#0d0d0f;
+  --surface:rgba(255,255,255,.035);
+  --stroke:rgba(255,255,255,.09);
+  --stroke-strong:rgba(255,255,255,.16);
+
+  --neon:#00d4ff;        /* основной неоновый акцент */
+  --electric:#0066ff;    /* электрик для градиентов */
+  --emerald:#00ffa3;     /* успех / статусы */
+
+  --text:#f4f6f8;
+  --muted:#8b93a1;
+  --dim:#5d6473;
+
+  --font-display:'Space Grotesk','Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+
+  --radius:18px;
+  --radius-sm:12px;
+  --maxw:1180px;
+  --gutter:clamp(18px,4vw,40px);
+
+  --ease:cubic-bezier(.22,1,.36,1);   /* «дорогая» плавная кривая */
+  --dur:.55s;
+
+  --glow:0 0 0 1px rgba(0,212,255,.22), 0 18px 60px -18px rgba(0,102,255,.55);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   2. БАЗА
+   ═══════════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+/* Якоря не уезжают под фиксированную шапку */
+section[id]{scroll-margin-top:90px}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  font-size:16px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--neon);outline-offset:3px;border-radius:6px}
+
+h1,h2,h3,.display{font-family:var(--font-display);font-weight:700;letter-spacing:-.03em;line-height:1.03;margin:0}
+p{margin:0}
+
+.wrap{width:100%;max-width:var(--maxw);margin-inline:auto;padding-inline:var(--gutter)}
+.section{padding-block:clamp(72px,11vw,140px);position:relative}
+
+/* Заголовок секции: индекс + название + подпись */
+.eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--font-display);font-size:12px;font-weight:600;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--neon);
+  margin-bottom:18px;
+}
+.eyebrow::before{content:'';width:26px;height:1px;background:linear-gradient(90deg,transparent,var(--neon))}
+.h2{font-size:clamp(32px,5.6vw,58px)}
+.lead{color:var(--muted);max-width:60ch;margin-top:18px;font-size:clamp(15px,1.6vw,18px)}
+
+.grad-text{
+  background:linear-gradient(100deg,#fff 0%,#cfefff 38%,var(--neon) 70%,var(--electric) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   3. ФОН: сетка + aurora + шум (все три слоя — pointer-events:none)
+   ═══════════════════════════════════════════════════════════ */
+.bg-layer{position:fixed;inset:0;pointer-events:none;z-index:0}
+.bg-grid{
+  background-image:
+    linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:64px 64px;
+  /* Маска гасит сетку по краям — иначе рябит на мобильных */
+  -webkit-mask-image:radial-gradient(ellipse 90% 65% at 50% 22%,#000 25%,transparent 78%);
+  mask-image:radial-gradient(ellipse 90% 65% at 50% 22%,#000 25%,transparent 78%);
+}
+.bg-aurora{overflow:hidden;filter:blur(70px);opacity:.55}
+.bg-aurora i{position:absolute;display:block;border-radius:50%}
+.bg-aurora i:nth-child(1){width:52vw;height:52vw;left:-12vw;top:-18vw;background:radial-gradient(circle,rgba(0,102,255,.55),transparent 62%);animation:drift 22s var(--ease) infinite alternate}
+.bg-aurora i:nth-child(2){width:44vw;height:44vw;right:-10vw;top:-6vw;background:radial-gradient(circle,rgba(0,212,255,.42),transparent 62%);animation:drift 28s var(--ease) infinite alternate-reverse}
+.bg-aurora i:nth-child(3){width:38vw;height:38vw;left:34vw;top:46vh;background:radial-gradient(circle,rgba(0,255,163,.18),transparent 62%);animation:drift 34s var(--ease) infinite alternate}
+@keyframes drift{to{transform:translate3d(8vw,6vh,0) scale(1.18)}}
+/* Плёночный шум поверх — убирает «пластиковость» градиентов */
+.bg-noise{
+  opacity:.05;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+main,header,footer{position:relative;z-index:1}
+
+/* ═══════════════════════════════════════════════════════════
+   4. ПРОГРЕСС СКРОЛЛА + ШАПКА
+   ═══════════════════════════════════════════════════════════ */
+.progress{
+  position:fixed;top:0;left:0;height:2px;width:100%;z-index:60;
+  transform:scaleX(0);transform-origin:0 50%;
+  background:linear-gradient(90deg,var(--electric),var(--neon),var(--emerald));
+  box-shadow:0 0 14px rgba(0,212,255,.7);
+}
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  transition:background var(--dur) var(--ease),border-color var(--dur) var(--ease),backdrop-filter var(--dur);
+  border-bottom:1px solid transparent;
+}
+.nav.is-stuck{
+  background:rgba(10,10,10,.72);
+  backdrop-filter:blur(16px) saturate(140%);
+  -webkit-backdrop-filter:blur(16px) saturate(140%);
+  border-bottom-color:var(--stroke);
+}
+.nav__inner{display:flex;align-items:center;justify-content:space-between;height:70px}
+.logo{font-family:var(--font-display);font-weight:700;font-size:17px;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
+.logo span{width:9px;height:9px;border-radius:50%;background:var(--neon);box-shadow:0 0 12px var(--neon);animation:pulse 2.4s infinite}
+@keyframes pulse{50%{opacity:.35;transform:scale(.8)}}
+
+.nav__links{display:flex;gap:6px;align-items:center}
+.nav__links a{
+  position:relative;padding:9px 14px;border-radius:10px;font-size:14px;color:var(--muted);
+  transition:color .3s var(--ease),background .3s var(--ease);
+}
+.nav__links a:hover,.nav__links a.is-active{color:var(--text);background:var(--surface)}
+.nav .nav__cta{display:none}
+@media(min-width:900px){.nav .nav__cta{display:inline-flex}}
+
+/* Бургер */
+.burger{display:grid;place-items:center;width:44px;height:44px;background:none;border:1px solid var(--stroke);border-radius:12px;cursor:pointer}
+.burger i{display:block;width:18px;height:1.5px;background:var(--text);border-radius:2px;transition:transform .35s var(--ease),opacity .2s}
+.burger i+i{margin-top:5px}
+.burger[aria-expanded="true"] i:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.burger[aria-expanded="true"] i:nth-child(2){opacity:0}
+.burger[aria-expanded="true"] i:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+
+/* Мобильное меню */
+.drawer{
+  position:fixed;inset:70px 0 auto;z-index:49;
+  background:rgba(10,10,10,.96);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--stroke);
+  display:grid;gap:4px;padding:18px var(--gutter) 28px;
+  transform:translateY(-12px);opacity:0;visibility:hidden;
+  transition:opacity .35s var(--ease),transform .35s var(--ease),visibility .35s;
+}
+.drawer.is-open{opacity:1;transform:none;visibility:visible}
+.drawer a{padding:14px 4px;font-family:var(--font-display);font-size:20px;border-bottom:1px solid rgba(255,255,255,.05)}
+@media(min-width:900px){.burger{display:none}.drawer{display:none}}
+@media(max-width:899px){.nav__links{display:none}}
+
+/* ═══════════════════════════════════════════════════════════
+   5. КНОПКИ (магнитный эффект добавляется из JS)
+   ═══════════════════════════════════════════════════════════ */
+.btn{
+  --btn-bg:var(--surface);
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:14px 24px;border-radius:999px;border:1px solid var(--stroke-strong);
+  background:var(--btn-bg);font-family:var(--font-display);font-weight:600;font-size:15px;
+  cursor:pointer;position:relative;overflow:hidden;isolation:isolate;
+  transition:transform .3s var(--ease),border-color .3s var(--ease),box-shadow .3s var(--ease),color .3s;
+  will-change:transform;
+}
+.btn::after{ /* бегущий блик при наведении */
+  content:'';position:absolute;inset:0;z-index:-1;opacity:0;
+  background:radial-gradient(120px 60px at var(--mx,50%) var(--my,50%),rgba(0,212,255,.28),transparent 70%);
+  transition:opacity .35s var(--ease);
+}
+.btn:hover{border-color:rgba(0,212,255,.5);box-shadow:var(--glow)}
+.btn:hover::after{opacity:1}
+.btn:active{transform:scale(.97)}
+.btn--primary{
+  background:linear-gradient(100deg,var(--electric),var(--neon));
+  border-color:transparent;color:#03131c;
+  box-shadow:0 14px 40px -14px rgba(0,164,255,.8);
+}
+.btn--primary:hover{box-shadow:0 18px 52px -12px rgba(0,196,255,.95)}
+.btn--sm{padding:10px 18px;font-size:14px}
+.btn--wide{width:100%}
+
+/* ═══════════════════════════════════════════════════════════
+   6. HERO
+   ═══════════════════════════════════════════════════════════ */
+.hero{min-height:100svh;display:flex;align-items:center;padding-top:90px;position:relative}
+.badge{
+  display:inline-flex;align-items:center;gap:9px;padding:7px 15px;border-radius:999px;
+  border:1px solid rgba(0,255,163,.28);background:rgba(0,255,163,.06);
+  font-size:13px;color:var(--emerald);
+}
+.badge span{width:7px;height:7px;border-radius:50%;background:var(--emerald);box-shadow:0 0 10px var(--emerald);animation:pulse 2s infinite}
+.hero h1{font-size:clamp(46px,10.5vw,124px);margin:26px 0 0}
+.hero__sub{
+  font-family:var(--font-display);font-weight:500;
+  font-size:clamp(18px,3.4vw,32px);color:var(--muted);margin-top:10px;letter-spacing:-.01em;
+}
+.hero__sub b{color:var(--text);font-weight:600}
+.hero__desc{margin-top:24px;max-width:54ch;color:var(--muted);font-size:clamp(15px,1.8vw,18px)}
+.hero__actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:36px}
+.scroll-hint{
+  position:absolute;left:50%;bottom:28px;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);
+}
+.scroll-hint i{display:block;width:1px;height:46px;background:linear-gradient(var(--neon),transparent);animation:sink 2.2s var(--ease) infinite}
+@keyframes sink{0%{transform:scaleY(.2);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(.2);transform-origin:bottom}}
+@media(max-width:640px){.scroll-hint{display:none}}
+
+/* ═══════════════════════════════════════════════════════════
+   7. ОБО МНЕ
+   ═══════════════════════════════════════════════════════════ */
+.about{display:grid;gap:clamp(32px,5vw,64px);grid-template-columns:1fr}
+@media(min-width:900px){.about{grid-template-columns:300px 1fr;align-items:start}}
+
+.avatar{
+  position:relative;width:clamp(150px,42vw,270px);aspect-ratio:1;border-radius:50%;
+  padding:3px;background:conic-gradient(from 180deg,var(--electric),var(--neon),var(--emerald),var(--electric));
+  animation:spin 9s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.avatar__inner{
+  width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--bg-elev);
+  display:grid;place-items:center;animation:spin 9s linear infinite reverse;
+}
+.avatar__inner img{width:100%;height:100%;object-fit:cover}
+.avatar__fallback{font-family:var(--font-display);font-size:clamp(42px,12vw,76px);font-weight:700;color:var(--neon)}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:34px}
+.stat{
+  padding:18px 14px;border-radius:var(--radius-sm);border:1px solid var(--stroke);
+  background:var(--surface);text-align:center;
+}
+.stat b{display:block;font-family:var(--font-display);font-size:clamp(24px,4.4vw,34px);color:var(--text)}
+.stat span{font-size:12px;color:var(--dim);letter-spacing:.04em}
+
+.stack{display:grid;gap:16px;margin-top:36px}
+.stack__row{display:grid;gap:10px}
+.stack__row h4{font-family:var(--font-display);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin:0;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;
+  border:1px solid var(--stroke);background:var(--surface);font-size:13.5px;color:var(--muted);
+  transition:color .3s var(--ease),border-color .3s var(--ease),transform .3s var(--ease),background .3s;
+}
+.chip:hover{color:var(--text);border-color:rgba(0,212,255,.45);transform:translateY(-2px);background:rgba(0,212,255,.07)}
+.chip svg{width:15px;height:15px;flex:none;color:var(--neon)}
+
+/* ═══════════════════════════════════════════════════════════
+   8. КАРТОЧКИ (общая «стеклянная» основа для проектов/услуг)
+   ═══════════════════════════════════════════════════════════ */
+.card{
+  position:relative;border:1px solid var(--stroke);border-radius:var(--radius);
+  background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  overflow:hidden;isolation:isolate;
+  transition:transform var(--dur) var(--ease),border-color var(--dur) var(--ease),box-shadow var(--dur) var(--ease);
+}
+/* Подсветка следует за курсором: координаты пишет JS в --mx/--my */
+.card::before{
+  content:'';position:absolute;inset:0;z-index:-1;opacity:0;transition:opacity .4s var(--ease);
+  background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),rgba(0,212,255,.14),transparent 62%);
+}
+.card:hover{transform:translateY(-6px);border-color:rgba(0,212,255,.38);box-shadow:var(--glow)}
+.card:hover::before{opacity:1}
+
+/* ── Фильтры портфолио ── */
+.filters{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px}
+.filter{
+  padding:10px 18px;border-radius:999px;border:1px solid var(--stroke);background:transparent;
+  color:var(--muted);font-size:14px;cursor:pointer;
+  transition:color .3s var(--ease),border-color .3s var(--ease),background .3s var(--ease);
+}
+.filter:hover{color:var(--text);border-color:var(--stroke-strong)}
+.filter[aria-pressed="true"]{
+  color:#03131c;background:linear-gradient(100deg,var(--electric),var(--neon));border-color:transparent;font-weight:600;
+}
+
+/* ── Сетка проектов 3 → 2 → 1 ── */
+.projects{display:grid;gap:22px;grid-template-columns:1fr;margin-top:34px}
+@media(min-width:700px){.projects{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1060px){.projects{grid-template-columns:repeat(3,1fr)}}
+
+/* Скрытие фильтром — с анимацией, без «прыжка» сетки */
+.project[hidden]{display:none!important}
+.project{display:flex;flex-direction:column;animation:cardIn .5s var(--ease) both}
+@keyframes cardIn{from{opacity:0;transform:translateY(14px) scale(.98)}}
+
+.thumb{position:relative;aspect-ratio:16/9;overflow:hidden;background:#07090d;border-bottom:1px solid var(--stroke)}
+.thumb img,.thumb svg{width:100%;height:100%;object-fit:cover;display:block;transition:transform .7s var(--ease)}
+.card:hover .thumb img,.card:hover .thumb svg{transform:scale(1.06)}
+.thumb::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(10,10,10,.65))}
+.thumb__tag{
+  position:absolute;z-index:2;left:14px;top:14px;padding:6px 12px;border-radius:999px;
+  background:rgba(10,10,10,.7);border:1px solid var(--stroke-strong);backdrop-filter:blur(8px);
+  font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--neon);
+}
+.project__body{padding:22px;display:flex;flex-direction:column;gap:12px;flex:1}
+.project__body h3{font-size:22px}
+.project__body p{color:var(--muted);font-size:14.5px}
+.tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:auto;padding-top:6px}
+.tag{padding:5px 11px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid var(--stroke);font-size:12px;color:var(--dim)}
+.project__link{margin-top:14px}
+
+/* ═══════════════════════════════════════════════════════════
+   9. УСЛУГИ
+   ═══════════════════════════════════════════════════════════ */
+.services{display:grid;gap:18px;grid-template-columns:1fr;margin-top:40px}
+@media(min-width:640px){.services{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1000px){.services{grid-template-columns:repeat(3,1fr)}}
+.service{padding:26px 24px;display:grid;gap:12px}
+.service__icon{
+  width:52px;height:52px;border-radius:15px;display:grid;place-items:center;font-size:24px;
+  background:linear-gradient(145deg,rgba(0,102,255,.22),rgba(0,212,255,.1));
+  border:1px solid rgba(0,212,255,.24);
+}
+.service h3{font-size:19px}
+.service p{color:var(--muted);font-size:14.5px}
+
+/* ═══════════════════════════════════════════════════════════
+   10. ПРОЦЕСС (таймлайн)
+   ═══════════════════════════════════════════════════════════ */
+.timeline{margin-top:46px;display:grid;gap:0;position:relative}
+.step{
+  display:grid;grid-template-columns:auto 1fr;gap:20px;padding-bottom:34px;position:relative;
+}
+.step:last-child{padding-bottom:0}
+.step__num{
+  position:relative;z-index:1;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;
+  font-family:var(--font-display);font-weight:700;font-size:15px;
+  background:var(--bg-elev);border:1px solid var(--stroke-strong);color:var(--muted);
+  transition:color .4s var(--ease),border-color .4s var(--ease),box-shadow .4s var(--ease);
+}
+.step.is-visible .step__num{color:var(--neon);border-color:rgba(0,212,255,.55);box-shadow:0 0 0 6px rgba(0,212,255,.07)}
+/* Соединительная линия между шагами */
+.step:not(:last-child)::before{
+  content:'';position:absolute;left:28px;top:56px;bottom:0;width:1px;
+  background:linear-gradient(var(--stroke-strong),transparent);
+}
+.step__body h3{font-size:20px;margin-bottom:6px}
+.step__body p{color:var(--muted);font-size:14.5px}
+@media(min-width:900px){
+  .timeline{grid-template-columns:repeat(3,1fr);gap:26px}
+  .step{grid-template-columns:1fr;gap:14px;padding-bottom:0}
+  .step:not(:last-child)::before{display:none}
+}
+
+/* ═══════════════════════════════════════════════════════════
+   10.5 ОПЫТ РАБОТЫ
+   Рельс с годами слева, карточки мест работы справа.
+   Намеренно отличается от таймлайна процесса: там шаги-кружки,
+   здесь — хронология, где важен период, а не номер.
+   ═══════════════════════════════════════════════════════════ */
+.xp{display:grid;gap:clamp(28px,5vw,56px);grid-template-columns:1fr;margin-top:44px}
+@media(min-width:1000px){.xp{grid-template-columns:1fr 300px;align-items:start}}
+
+.xp__list{display:grid;gap:14px;position:relative}
+.job{
+  position:relative;padding:22px 24px 22px 26px;border-radius:var(--radius);
+  border:1px solid var(--stroke);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.012));
+  transition:border-color .45s var(--ease),transform .45s var(--ease),background .45s;
+}
+/* Вертикальный рельс слева — «полоса времени» */
+.job::before{
+  content:'';position:absolute;left:0;top:22px;bottom:22px;width:2px;border-radius:2px;
+  background:linear-gradient(var(--stroke-strong),transparent);
+  transition:background .45s var(--ease);
+}
+.job:hover{border-color:rgba(0,212,255,.3);transform:translateX(3px);background:rgba(0,212,255,.035)}
+.job:hover::before{background:linear-gradient(var(--neon),rgba(0,212,255,0))}
+.job--current{border-color:rgba(0,255,163,.28);background:rgba(0,255,163,.045)}
+.job--current::before{background:linear-gradient(var(--emerald),rgba(0,255,163,0))}
+
+.job__top{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;margin-bottom:4px}
+.job__role{font-family:var(--font-display);font-size:clamp(17px,2.3vw,20px);font-weight:600;letter-spacing:-.02em}
+.job__period{
+  margin-left:auto;font-size:12.5px;letter-spacing:.05em;color:var(--dim);white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+}
+.job--current .job__period{color:var(--emerald)}
+.job__where{font-size:14px;color:var(--neon);margin-bottom:12px}
+.job__where span{color:var(--dim)}
+/* Подчёркивание проявляется на hover — ссылка заметна, но не спорит с акцентом */
+.job__link{
+  border-bottom:1px solid transparent;transition:border-color .3s var(--ease);
+}
+.job__link:hover{border-bottom-color:currentColor}
+.job__link::after{content:' ↗';font-size:.85em;opacity:.65}
+.job__points{margin:0;padding:0;list-style:none;display:grid;gap:7px}
+.job__points li{position:relative;padding-left:18px;font-size:14.5px;color:var(--muted);line-height:1.6}
+.job__points li::before{
+  content:'';position:absolute;left:2px;top:10px;width:5px;height:5px;border-radius:50%;
+  background:var(--stroke-strong);
+}
+.job:hover .job__points li::before{background:rgba(0,212,255,.7)}
+
+/* Боковая колонка: образование, языки, CV */
+.xp__side{display:grid;gap:14px;position:sticky;top:90px}
+@media(max-width:999px){.xp__side{position:static}}
+.side-card{padding:20px 22px;border-radius:var(--radius);border:1px solid var(--stroke);background:var(--surface)}
+.side-card h4{
+  font-family:var(--font-display);font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--dim);margin:0 0 14px;font-weight:600;
+}
+.edu{display:grid;gap:14px;margin:0;padding:0}
+.edu li{list-style:none}
+.edu b{display:block;font-size:14.5px;font-weight:500;line-height:1.4}
+.edu span{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.edu em{display:block;font-size:12px;color:var(--dim);font-style:normal;font-variant-numeric:tabular-nums;margin-top:3px}
+.langs{display:grid;gap:10px;margin:0;padding:0}
+.langs li{list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:baseline;font-size:14px}
+.langs span{color:var(--dim);font-size:12.5px}
+
+/* ═══════════════════════════════════════════════════════════
+   11. КОНТАКТЫ
+   ═══════════════════════════════════════════════════════════ */
+.contact{display:grid;gap:26px;grid-template-columns:1fr;margin-top:42px}
+@media(min-width:920px){.contact{grid-template-columns:1.05fr .95fr;align-items:start}}
+.form{padding:28px;display:grid;gap:16px}
+.field{display:grid;gap:8px}
+.field label{font-size:13px;color:var(--muted);letter-spacing:.03em}
+.field input,.field textarea{
+  width:100%;padding:13px 16px;border-radius:var(--radius-sm);
+  background:rgba(255,255,255,.04);border:1px solid var(--stroke);color:var(--text);
+  font-family:inherit;font-size:15px;transition:border-color .3s var(--ease),box-shadow .3s var(--ease),background .3s;
+}
+.field input::placeholder,.field textarea::placeholder{color:var(--dim)}
+.field input:focus,.field textarea:focus{
+  outline:none;border-color:rgba(0,212,255,.55);background:rgba(0,212,255,.05);
+  box-shadow:0 0 0 4px rgba(0,212,255,.09);
+}
+.field textarea{resize:vertical;min-height:120px}
+.field[data-invalid="true"] input,.field[data-invalid="true"] textarea{border-color:#ff5470;box-shadow:0 0 0 4px rgba(255,84,112,.1)}
+.error{font-size:12.5px;color:#ff8095;min-height:1em}
+.form__note{font-size:13px;color:var(--dim)}
+.form__status{font-size:14px;color:var(--emerald);min-height:1.2em}
+
+.channels{display:grid;gap:12px}
+.channel{
+  display:flex;align-items:center;gap:16px;padding:18px 20px;
+  border-radius:var(--radius);border:1px solid var(--stroke);background:var(--surface);
+  transition:transform .35s var(--ease),border-color .35s var(--ease),box-shadow .35s var(--ease),background .35s;
+}
+.channel:hover{transform:translateX(4px);border-color:rgba(0,212,255,.4);box-shadow:var(--glow);background:rgba(0,212,255,.05)}
+.channel__ico{width:46px;height:46px;flex:none;border-radius:14px;display:grid;place-items:center;font-size:20px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.22)}
+.channel b{display:block;font-family:var(--font-display);font-size:16px}
+.channel span{font-size:13.5px;color:var(--muted)}
+.channel__arrow{margin-left:auto;color:var(--dim);transition:transform .35s var(--ease),color .35s}
+.channel:hover .channel__arrow{transform:translateX(4px);color:var(--neon)}
+.reply-note{
+  display:inline-flex;align-items:center;gap:9px;margin-top:6px;padding:10px 16px;border-radius:999px;
+  border:1px solid rgba(0,255,163,.25);background:rgba(0,255,163,.06);color:var(--emerald);font-size:13.5px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   12. ФУТЕР + UTILITY
+   ═══════════════════════════════════════════════════════════ */
+.footer{border-top:1px solid var(--stroke);padding-block:40px;margin-top:40px}
+.footer__inner{display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between}
+.footer__links{display:flex;flex-wrap:wrap;gap:18px;font-size:14px;color:var(--muted)}
+.footer__links a:hover{color:var(--neon)}
+.footer__social{display:flex;gap:10px}
+.social{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;border:1px solid var(--stroke);background:var(--surface);transition:border-color .3s var(--ease),color .3s,transform .3s var(--ease)}
+.social:hover{border-color:rgba(0,212,255,.45);color:var(--neon);transform:translateY(-3px)}
+.social svg{width:19px;height:19px}
+.copy{font-size:13.5px;color:var(--dim)}
+
+.to-top{
+  position:fixed;right:20px;bottom:20px;z-index:45;width:48px;height:48px;border-radius:14px;
+  display:grid;place-items:center;cursor:pointer;
+  background:rgba(13,13,15,.8);backdrop-filter:blur(12px);border:1px solid var(--stroke-strong);
+  opacity:0;visibility:hidden;transform:translateY(12px);
+  transition:opacity .35s var(--ease),transform .35s var(--ease),visibility .35s,border-color .3s,color .3s;
+}
+.to-top.is-shown{opacity:1;visibility:visible;transform:none}
+.to-top:hover{border-color:rgba(0,212,255,.5);color:var(--neon)}
+
+/* Кастомный курсор — только desktop с точным указателем */
+.cursor,.cursor-dot{position:fixed;top:0;left:0;z-index:70;pointer-events:none;border-radius:50%;mix-blend-mode:difference;opacity:0;transition:opacity .3s}
+.cursor{width:32px;height:32px;border:1px solid rgba(255,255,255,.6);transition:width .25s var(--ease),height .25s var(--ease),opacity .3s}
+.cursor-dot{width:5px;height:5px;background:#fff}
+.cursor.is-hover{width:52px;height:52px;background:rgba(255,255,255,.08)}
+@media(hover:hover) and (pointer:fine){
+  body.has-cursor{cursor:none}
+  body.has-cursor a,body.has-cursor button,body.has-cursor input,body.has-cursor textarea{cursor:none}
+  .cursor,.cursor-dot{opacity:1}
+}
+
+/* Появление при скролле (Intersection Observer вешает .is-visible) */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.reveal.is-visible{opacity:1;transform:none}
+.reveal[data-delay="1"]{transition-delay:.08s}
+.reveal[data-delay="2"]{transition-delay:.16s}
+.reveal[data-delay="3"]{transition-delay:.24s}
+.reveal[data-delay="4"]{transition-delay:.32s}
+.reveal[data-delay="5"]{transition-delay:.4s}
+
+.visually-hidden{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* Уважаем системную настройку «меньше движения» */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<!-- Декоративные фоновые слои (вне потока, не читаются скринридером) -->
+<div class="bg-layer bg-grid" aria-hidden="true"></div>
+<div class="bg-layer bg-aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+<div class="bg-layer bg-noise" aria-hidden="true"></div>
+
+<!-- Кастомный курсор (включается из JS только на desktop) -->
+<div class="cursor" aria-hidden="true"></div>
+<div class="cursor-dot" aria-hidden="true"></div>
+
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<a href="#projects" class="btn visually-hidden">Перейти к содержимому</a>
+
+<!-- ═══════════════ ШАПКА ═══════════════ -->
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a href="#top" class="logo" aria-label="Rafael Abdullayev — на главную"><span aria-hidden="true"></span>Rafael&nbsp;Abdullayev</a>
+
+    <nav class="nav__links" aria-label="Основная навигация">
+      <a href="#about">Обо мне</a>
+      <a href="#projects">Проекты</a>
+      <a href="#services">Услуги</a>
+      <a href="#process">Процесс</a>
+      <a href="#experience">Опыт</a>
+      <a href="#contact">Контакты</a>
+    </nav>
+
+    <a href="#contact" class="btn btn--sm btn--primary nav__cta" data-magnetic>Обсудить проект</a>
+
+    <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="drawer">
+      <i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i>
+    </button>
+  </div>
+</header>
+
+<nav class="drawer" id="drawer" aria-label="Мобильная навигация">
+  <a href="#about">Обо мне</a>
+  <a href="#projects">Проекты</a>
+  <a href="#services">Услуги</a>
+  <a href="#process">Процесс</a>
+  <a href="#experience">Опыт</a>
+  <a href="#contact">Контакты</a>
+</nav>
+
+<main id="top">
+
+  <!-- ═══════════════ 1. HERO ═══════════════ -->
+  <section class="hero" id="hero">
+    <div class="wrap">
+      <p class="badge reveal"><span aria-hidden="true"></span>Открыт для новых заказов</p>
+      <h1 class="reveal" data-delay="1"><span class="grad-text">Rafael<br>Abdullayev</span></h1>
+      <p class="hero__sub reveal" data-delay="2"><b>Frontend</b> &amp; <b>Backend</b> Developer</p>
+      <p class="hero__desc reveal" data-delay="3">
+        Создаю быстрые, красивые и надёжные веб-продукты для бизнеса. От идеи до продакшена.
+      </p>
+      <div class="hero__actions reveal" data-delay="4">
+        <a href="#projects" class="btn btn--primary" data-magnetic>Смотреть работы</a>
+        <a href="#contact" class="btn" data-magnetic>Связаться</a>
+      </div>
+    </div>
+    <div class="scroll-hint" aria-hidden="true">Scroll<i></i></div>
+  </section>
+
+  <!-- ═══════════════ 2. ОБО МНЕ ═══════════════ -->
+  <section class="section" id="about">
+    <div class="wrap">
+      <p class="eyebrow reveal">01 — Обо мне</p>
+      <h2 class="h2 reveal" data-delay="1">Инженер, который<br>доводит до продакшена</h2>
+
+      <div class="about" style="margin-top:44px">
+        <div class="reveal" data-delay="2">
+          <!-- ЗАМЕНИТЬ: положите своё фото в ./assets/avatar.jpg.
+               Пока файла нет — onerror показывает инициалы. -->
+          <div class="avatar">
+            <div class="avatar__inner">
+              <!-- Если файла нет, app.js подменит картинку на инициалы.
+                   Обработчик вынесен в скрипт, а не в onerror: inline-обработчики
+                   запрещены заголовком CSP на боевом сервере. -->
+              <img src="assets/avatar.jpg" alt="Rafael Abdullayev" loading="lazy" decoding="async" />
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat"><b data-count="25">0</b><span>проектов</span></div>
+            <div class="stat"><b data-count="5">0</b><span>лет опыта</span></div>
+            <div class="stat"><b data-count="18">0</b><span>клиентов</span></div>
+          </div>
+        </div>
+
+        <div class="reveal" data-delay="3">
+          <p class="lead" style="margin-top:0">
+            Меня зовут Рафаэль. Я фулстек-разработчик: беру продукт на всех уровнях — от интерфейса,
+            который видит клиент, до базы данных, очередей и деплоя. Работаю с бизнесом, которому нужен
+            не «сайт ради сайта», а инструмент, приносящий заявки и экономящий часы ручной работы.
+          </p>
+          <p class="lead">
+            Мой подход простой: сначала разбираюсь в задаче и цифрах, потом проектирую архитектуру,
+            и только затем пишу код. Чистая структура, типизация, понятные ошибки и логи — чтобы
+            через полгода проект можно было развивать, а не переписывать.
+          </p>
+          <p class="lead">
+            Больше всего в разработке люблю момент, когда сложная система начинает работать
+            предсказуемо: быстрый интерфейс, стабильный API, зелёные метрики и довольный клиент,
+            который говорит «наконец-то всё просто».
+          </p>
+
+          <div class="stack">
+            <div class="stack__row">
+              <h4>Frontend</h4>
+              <div class="chips">
+                <span class="chip">HTML5</span><span class="chip">CSS3</span><span class="chip">JavaScript</span>
+                <span class="chip">React</span><span class="chip">Next.js</span><span class="chip">Tailwind CSS</span>
+                <span class="chip">TypeScript</span>
+              </div>
+            </div>
+            <div class="stack__row">
+              <h4>Backend</h4>
+              <div class="chips">
+                <span class="chip">Node.js</span><span class="chip">Python</span><span class="chip">Express</span>
+                <span class="chip">REST API</span><span class="chip">PostgreSQL</span><span class="chip">MongoDB</span>
+                <span class="chip">Prisma</span>
+              </div>
+            </div>
+            <div class="stack__row">
+              <h4>Инструменты</h4>
+              <div class="chips">
+                <span class="chip">Git</span><span class="chip">Docker</span><span class="chip">Telegram Bot API</span>
+                <span class="chip">Vercel</span><span class="chip">Nginx</span><span class="chip">CI/CD</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ 3. ПОРТФОЛИО ═══════════════ -->
+  <section class="section" id="projects">
+    <div class="wrap">
+      <p class="eyebrow reveal">02 — Портфолио</p>
+      <h2 class="h2 reveal" data-delay="1">Реальные проекты<br>в продакшене</h2>
+      <p class="lead reveal" data-delay="2">Каждый проект — рабочая ссылка, а не концепт из Figma. Можно открыть и потрогать.</p>
+
+      <!-- Фильтры: data-filter сопоставляется с data-cat карточек -->
+      <div class="filters reveal" data-delay="3" role="group" aria-label="Фильтр проектов">
+        <button class="filter" data-filter="all" aria-pressed="true">Все</button>
+        <button class="filter" data-filter="web" aria-pressed="false">Web</button>
+        <button class="filter" data-filter="fullstack" aria-pressed="false">Full-Stack</button>
+        <button class="filter" data-filter="bots" aria-pressed="false">Telegram Bots</button>
+      </div>
+
+      <!-- Карточки рендерит app.js из SITE.projects (content.js) -->
+      <div class="projects" id="projectsGrid"></div>
+      <p class="lead" id="emptyState" hidden>В этой категории пока нет проектов.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════ 4. УСЛУГИ ═══════════════ -->
+  <section class="section" id="services">
+    <div class="wrap">
+      <p class="eyebrow reveal">03 — Услуги</p>
+      <h2 class="h2 reveal" data-delay="1">Что я делаю<br>для клиентов</h2>
+      <p class="lead reveal" data-delay="2" data-bind="services.lead">Полный цикл: от первого созвона до работающего продукта на вашем домене.</p>
+      <!-- Карточки рендерит app.js из SITE.services (content.js) -->
+      <div class="services" id="servicesGrid"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ 5. ПРОЦЕСС ═══════════════ -->
+  <section class="section" id="process">
+    <div class="wrap">
+      <p class="eyebrow reveal">04 — Процесс</p>
+      <h2 class="h2 reveal" data-delay="1">Как идёт работа</h2>
+      <p class="lead reveal" data-delay="2" data-bind="process.lead">Прозрачные этапы: вы всегда знаете, на какой стадии проект и что будет дальше.</p>
+      <div class="timeline" id="timeline"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ 5. ОПЫТ ═══════════════ -->
+  <section class="section" id="experience">
+    <div class="wrap">
+      <p class="eyebrow reveal">05 — Опыт</p>
+      <h2 class="h2 reveal" data-delay="1">Где работал<br>и чем занимался</h2>
+      <p class="lead reveal" data-delay="2" data-bind="experience.lead"></p>
+
+      <div class="xp">
+        <!-- Места работы и боковую колонку рендерит app.js из SITE.experience -->
+        <div class="xp__list" id="xpList"></div>
+        <aside class="xp__side" id="xpSide"></aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ 6. КОНТАКТЫ ═══════════════ -->
+  <section class="section" id="contact">
+    <div class="wrap">
+      <p class="eyebrow reveal">06 — Контакты</p>
+      <h2 class="h2 reveal" data-delay="1">Обсудим ваш проект</h2>
+      <p class="lead reveal" data-delay="2" data-bind="contact.lead">Расскажите задачу в двух предложениях — отвечу с оценкой сроков и бюджета.</p>
+
+      <div class="contact">
+        <!-- Форма: без бэкенда отправляет данные в Telegram/WhatsApp (настройка в content.js) -->
+        <form class="card form reveal" id="contactForm" novalidate data-delay="1">
+          <div class="field">
+            <label for="f-name">Имя</label>
+            <input id="f-name" name="name" type="text" placeholder="Как к вам обращаться" autocomplete="name" required aria-describedby="e-name" />
+            <p class="error" id="e-name" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="f-contact">Email или Telegram</label>
+            <input id="f-contact" name="contact" type="text" placeholder="you@mail.com или @username" autocomplete="email" required aria-describedby="e-contact" />
+            <p class="error" id="e-contact" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="f-message">Сообщение</label>
+            <textarea id="f-message" name="message" rows="4" placeholder="Коротко о задаче, сроках и бюджете" required aria-describedby="e-message"></textarea>
+            <p class="error" id="e-message" role="alert"></p>
+          </div>
+          <button type="submit" class="btn btn--primary btn--wide" data-magnetic>Отправить сообщение</button>
+          <p class="form__status" id="formStatus" role="status" aria-live="polite"></p>
+          <p class="form__note">Нажимая кнопку, вы соглашаетесь на обработку указанных данных для ответа на обращение.</p>
+        </form>
+
+        <div class="reveal" data-delay="2">
+          <div class="channels" id="channels"></div>
+          <p class="reply-note" data-bind="contact.replyNote">⚡ Отвечаю в течение 1–2 часов</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══════════════ 7. ФУТЕР ═══════════════ -->
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <p class="copy" data-bind="footer.copy">© 2026 Rafael Abdullayev</p>
+    <nav class="footer__links" aria-label="Быстрые ссылки">
+      <a href="#projects">Проекты</a>
+      <a href="#services">Услуги</a>
+      <a href="#contact">Контакты</a>
+    </nav>
+    <div class="footer__social" id="footerSocial"></div>
+  </div>
+</footer>
+
+<button class="to-top" id="toTop" aria-label="Наверх">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+
+<!-- ═══ Шаблоны SVG-превью. В content.js ссылка на них: preview: 'car' | 'saas' | 'bot' ═══ -->
+<template id="preview-car"><svg viewBox="0 0 640 360" role="img" aria-label="Превью сайта EnRentAuto: тёмный премиальный интерфейс аренды авто">
+              <defs>
+                <linearGradient id="p1bg" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#0b1220"/><stop offset="1" stop-color="#05070c"/>
+                </linearGradient>
+                <linearGradient id="p1glow" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0" stop-color="#0066ff"/><stop offset="1" stop-color="#00d4ff"/>
+                </linearGradient>
+                <radialGradient id="p1halo" cx="50%" cy="70%" r="60%">
+                  <stop offset="0" stop-color="#00d4ff" stop-opacity=".35"/><stop offset="1" stop-color="#00d4ff" stop-opacity="0"/>
+                </radialGradient>
+              </defs>
+              <rect width="640" height="360" fill="url(#p1bg)"/>
+              <rect width="640" height="360" fill="url(#p1halo)"/>
+              <g opacity=".13" stroke="#7fd7ff">
+                <path d="M0 60h640M0 120h640M0 180h640M0 240h640M0 300h640"/>
+                <path d="M80 0v360M160 0v360M240 0v360M320 0v360M400 0v360M480 0v360M560 0v360"/>
+              </g>
+              <rect x="26" y="22" width="94" height="10" rx="5" fill="#eaf6ff" opacity=".85"/>
+              <g fill="#8fa3bd" opacity=".6">
+                <rect x="420" y="23" width="44" height="8" rx="4"/><rect x="476" y="23" width="44" height="8" rx="4"/>
+              </g>
+              <rect x="532" y="16" width="82" height="22" rx="11" fill="url(#p1glow)"/>
+              <rect x="26" y="86" width="250" height="20" rx="6" fill="#ffffff" opacity=".9"/>
+              <rect x="26" y="116" width="180" height="20" rx="6" fill="#00d4ff" opacity=".75"/>
+              <rect x="26" y="154" width="300" height="8" rx="4" fill="#7c8ba1" opacity=".55"/>
+              <rect x="26" y="170" width="220" height="8" rx="4" fill="#7c8ba1" opacity=".4"/>
+              <rect x="26" y="198" width="118" height="30" rx="15" fill="url(#p1glow)"/>
+              <rect x="154" y="198" width="112" height="30" rx="15" fill="none" stroke="#8fa3bd" opacity=".5"/>
+              <!-- силуэт авто -->
+              <g transform="translate(300 196)">
+                <path d="M18 62c-6 0-10-4-10-10l2-16c1-7 6-12 13-14l38-9c6-8 15-13 27-13h48c14 0 27 6 36 17l16 19 30 6c8 2 13 8 13 16v4c0 5-4 10-10 10z"
+                      fill="#0e1725" stroke="#00d4ff" stroke-opacity=".5"/>
+                <path d="M96 14h44c9 0 17 4 23 11l8 10H96z" fill="#00d4ff" opacity=".18"/>
+                <circle cx="70" cy="62" r="15" fill="#050a12" stroke="#00d4ff" stroke-opacity=".7"/>
+                <circle cx="196" cy="62" r="15" fill="#050a12" stroke="#00d4ff" stroke-opacity=".7"/>
+              </g>
+              <g fill="#ffffff" opacity=".07">
+                <rect x="26" y="272" width="180" height="64" rx="10"/><rect x="222" y="272" width="180" height="64" rx="10"/>
+                <rect x="418" y="272" width="196" height="64" rx="10"/>
+              </g>
+            </svg></template>
+<template id="preview-saas"><svg viewBox="0 0 640 360" role="img" aria-label="Превью InvoicePro CRM: тёмная страница входа со стеклянной карточкой">
+              <defs>
+                <linearGradient id="p2bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0a0d16"/><stop offset="1" stop-color="#05060a"/></linearGradient>
+                <linearGradient id="p2btn" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0066ff"/><stop offset="1" stop-color="#00d4ff"/></linearGradient>
+                <radialGradient id="p2halo" cx="50%" cy="45%" r="52%"><stop offset="0" stop-color="#0066ff" stop-opacity=".45"/><stop offset="1" stop-color="#0066ff" stop-opacity="0"/></radialGradient>
+              </defs>
+              <rect width="640" height="360" fill="url(#p2bg)"/>
+              <rect width="640" height="360" fill="url(#p2halo)"/>
+              <g opacity=".1" stroke="#8fd4ff"><path d="M0 45h640M0 90h640M0 135h640M0 180h640M0 225h640M0 270h640M0 315h640"/><path d="M64 0v360M128 0v360M192 0v360M256 0v360M320 0v360M384 0v360M448 0v360M512 0v360M576 0v360"/></g>
+              <!-- стеклянная карточка логина -->
+              <g>
+                <rect x="186" y="62" width="268" height="238" rx="20" fill="#ffffff" opacity=".055"/>
+                <rect x="186" y="62" width="268" height="238" rx="20" fill="none" stroke="#00d4ff" stroke-opacity=".28"/>
+                <circle cx="320" cy="104" r="17" fill="none" stroke="url(#p2btn)" stroke-width="2"/>
+                <path d="M313 104h14M320 97v14" stroke="#00d4ff" stroke-width="2"/>
+                <rect x="262" y="136" width="116" height="11" rx="5.5" fill="#ffffff" opacity=".85"/>
+                <rect x="286" y="155" width="68" height="7" rx="3.5" fill="#8fa3bd" opacity=".55"/>
+                <rect x="212" y="180" width="216" height="30" rx="9" fill="#ffffff" opacity=".05" stroke="#ffffff" stroke-opacity=".1"/>
+                <rect x="226" y="191" width="72" height="8" rx="4" fill="#7c8ba1" opacity=".6"/>
+                <rect x="212" y="218" width="216" height="30" rx="9" fill="#ffffff" opacity=".05" stroke="#00d4ff" stroke-opacity=".35"/>
+                <g fill="#7c8ba1" opacity=".6"><circle cx="232" cy="233" r="3"/><circle cx="242" cy="233" r="3"/><circle cx="252" cy="233" r="3"/><circle cx="262" cy="233" r="3"/><circle cx="272" cy="233" r="3"/></g>
+                <rect x="212" y="258" width="216" height="30" rx="15" fill="url(#p2btn)"/>
+              </g>
+              <g fill="#00ffa3" opacity=".8"><circle cx="500" cy="318" r="4"/></g>
+              <rect x="512" y="314" width="86" height="8" rx="4" fill="#00ffa3" opacity=".35"/>
+            </svg></template>
+<template id="preview-bot"><svg viewBox="0 0 640 360" role="img" aria-label="Превью Telegram-бота Audify: чат с транскрипцией аудио">
+              <defs>
+                <linearGradient id="p3bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#080b14"/><stop offset="1" stop-color="#04060b"/></linearGradient>
+                <linearGradient id="p3me" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0066ff"/><stop offset="1" stop-color="#00b4ff"/></linearGradient>
+                <radialGradient id="p3halo" cx="70%" cy="30%" r="60%"><stop offset="0" stop-color="#00d4ff" stop-opacity=".3"/><stop offset="1" stop-color="#00d4ff" stop-opacity="0"/></radialGradient>
+              </defs>
+              <rect width="640" height="360" fill="url(#p3bg)"/>
+              <rect width="640" height="360" fill="url(#p3halo)"/>
+              <g opacity=".1" stroke="#8fd4ff"><path d="M0 60h640M0 120h640M0 180h640M0 240h640M0 300h640"/><path d="M80 0v360M240 0v360M400 0v360M560 0v360"/></g>
+              <!-- шапка чата -->
+              <rect x="0" y="0" width="640" height="52" fill="#ffffff" opacity=".04"/>
+              <circle cx="40" cy="26" r="15" fill="#00d4ff" opacity=".18" stroke="#00d4ff" stroke-opacity=".5"/>
+              <path d="M34 26h12M40 20v12" stroke="#00d4ff" stroke-width="2"/>
+              <rect x="66" y="18" width="96" height="9" rx="4.5" fill="#ffffff" opacity=".8"/>
+              <rect x="66" y="33" width="58" height="6" rx="3" fill="#00ffa3" opacity=".6"/>
+              <!-- сообщение бота -->
+              <g><rect x="28" y="78" width="252" height="58" rx="16" fill="#ffffff" opacity=".06" stroke="#ffffff" stroke-opacity=".08"/>
+                 <rect x="46" y="94" width="196" height="8" rx="4" fill="#a9b6c8" opacity=".7"/>
+                 <rect x="46" y="112" width="150" height="8" rx="4" fill="#a9b6c8" opacity=".45"/></g>
+              <!-- голосовое от пользователя -->
+              <g><rect x="330" y="150" width="282" height="56" rx="16" fill="url(#p3me)" opacity=".9"/>
+                 <circle cx="358" cy="178" r="13" fill="#04111c" opacity=".55"/>
+                 <path d="M355 173v10M358 170v16M361 174v8" stroke="#7fe9ff" stroke-width="2"/>
+                 <g fill="#dff6ff" opacity=".85">
+                   <rect x="384" y="172" width="3" height="12" rx="1.5"/><rect x="392" y="166" width="3" height="24" rx="1.5"/>
+                   <rect x="400" y="170" width="3" height="16" rx="1.5"/><rect x="408" y="162" width="3" height="32" rx="1.5"/>
+                   <rect x="416" y="172" width="3" height="12" rx="1.5"/><rect x="424" y="168" width="3" height="20" rx="1.5"/>
+                   <rect x="432" y="174" width="3" height="8" rx="1.5"/><rect x="440" y="164" width="3" height="28" rx="1.5"/>
+                   <rect x="448" y="171" width="3" height="14" rx="1.5"/><rect x="456" y="167" width="3" height="22" rx="1.5"/>
+                   <rect x="464" y="173" width="3" height="10" rx="1.5"/><rect x="472" y="169" width="3" height="18" rx="1.5"/>
+                 </g>
+                 <rect x="560" y="174" width="34" height="8" rx="4" fill="#eaf9ff" opacity=".7"/></g>
+              <!-- ответ-транскрипт -->
+              <g><rect x="28" y="222" width="360" height="104" rx="16" fill="#ffffff" opacity=".06" stroke="#00d4ff" stroke-opacity=".25"/>
+                 <circle cx="48" cy="244" r="5" fill="#00ffa3"/>
+                 <rect x="62" y="240" width="104" height="8" rx="4" fill="#00ffa3" opacity=".65"/>
+                 <rect x="48" y="264" width="320" height="8" rx="4" fill="#c3cfdd" opacity=".7"/>
+                 <rect x="48" y="282" width="296" height="8" rx="4" fill="#c3cfdd" opacity=".55"/>
+                 <rect x="48" y="300" width="212" height="8" rx="4" fill="#c3cfdd" opacity=".4"/></g>
+            </svg></template>
+
+<script src="content.js"></script>
+<script src="app.js" defer></script>
+</body>
+</html>
